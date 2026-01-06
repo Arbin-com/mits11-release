@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MITS11 Installer</title>
+  <style>
+    :root {
+      --bg-1: #0b1b2b;
+      --bg-2: #132c3d;
+      --accent: #ffb000;
+      --accent-2: #2dd4bf;
+      --text: #e6edf3;
+      --muted: #b8c2cc;
+      --card: #0f2231;
+      --border: #234155;
+      --shadow: rgba(0, 0, 0, 0.35);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--text);
+      background: radial-gradient(900px 500px at 10% 10%, #19354a 0%, transparent 60%),
+                  radial-gradient(700px 400px at 90% 10%, #0f3a3d 0%, transparent 55%),
+                  linear-gradient(160deg, var(--bg-1), var(--bg-2));
+      font-family: "Space Grotesk", "Trebuchet MS", "Segoe UI", sans-serif;
+    }
+    .wrap {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 48px 20px 64px;
+    }
+    .hero {
+      display: grid;
+      gap: 16px;
+      padding: 28px 28px 34px;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: linear-gradient(140deg, #0c2233, #122b3a);
+      box-shadow: 0 12px 30px var(--shadow);
+    }
+    .title {
+      font-family: "Bebas Neue", "Impact", sans-serif;
+      letter-spacing: 1px;
+      font-size: 42px;
+      margin: 0;
+    }
+    .subtitle {
+      color: var(--muted);
+      margin: 0;
+      font-size: 16px;
+      line-height: 1.6;
+    }
+    .grid {
+      margin-top: 28px;
+      display: grid;
+      gap: 18px;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 18px;
+      box-shadow: 0 10px 24px var(--shadow);
+    }
+    .card h2 {
+      margin: 0 0 10px;
+      font-size: 18px;
+      letter-spacing: 0.3px;
+    }
+    .note {
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 12px;
+    }
+    pre {
+      margin: 0;
+      padding: 14px;
+      border-radius: 12px;
+      background: #07131d;
+      border: 1px solid #203446;
+      font-family: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+      font-size: 13px;
+      line-height: 1.5;
+      overflow-x: auto;
+    }
+    code { color: #f8fafc; }
+    .actions {
+      margin-top: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .btn {
+      background: linear-gradient(120deg, var(--accent), #ffc857);
+      color: #1b1f24;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 12px;
+    }
+    .btn.secondary {
+      background: linear-gradient(120deg, #20c997, var(--accent-2));
+    }
+    .pill {
+      font-size: 11px;
+      color: var(--muted);
+    }
+    .footer {
+      margin-top: 24px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="hero">
+      <h1 class="title">MITS11 One-Line Install</h1>
+      <p class="subtitle">Copy a command below and paste into your terminal. Default installs the stable release. Use <strong>alpha</strong> or a specific version to override.</p>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <h2>macOS</h2>
+        <div class="note">Terminal (bash/zsh)</div>
+        <pre><code id="cmd-mac">curl -fsSL https://arbin-com.github.io/mits11-release/install.sh | bash
+curl -fsSL https://arbin-com.github.io/mits11-release/install.sh | bash -s -- alpha
+curl -fsSL https://arbin-com.github.io/mits11-release/install.sh | bash -s -- 5.0.1</code></pre>
+        <div class="actions">
+          <span class="pill">3 commands</span>
+          <button class="btn" data-copy="cmd-mac">Copy</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Linux</h2>
+        <div class="note">Debian-based distros</div>
+        <pre><code id="cmd-linux">curl -fsSL https://arbin-com.github.io/mits11-release/install.sh | bash
+curl -fsSL https://arbin-com.github.io/mits11-release/install.sh | bash -s -- alpha
+curl -fsSL https://arbin-com.github.io/mits11-release/install.sh | bash -s -- 5.0.1</code></pre>
+        <div class="actions">
+          <span class="pill">3 commands</span>
+          <button class="btn" data-copy="cmd-linux">Copy</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Windows PowerShell</h2>
+        <div class="note">Run in PowerShell 5+ or Windows Terminal</div>
+        <pre><code id="cmd-win">irm https://arbin-com.github.io/mits11-release/install.ps1 | iex
+irm https://arbin-com.github.io/mits11-release/install.ps1 | iex alpha
+irm https://arbin-com.github.io/mits11-release/install.ps1 | iex 5.0.1</code></pre>
+        <div class="actions">
+          <span class="pill">3 commands</span>
+          <button class="btn secondary" data-copy="cmd-win">Copy</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">Need help? Ask your admin for proxy or firewall rules if downloads are blocked.</div>
+  </div>
+
+  <script>
+    function copyText(id, button) {
+      var text = document.getElementById(id).innerText;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function () {
+          var prev = button.textContent;
+          button.textContent = "Copied";
+          setTimeout(function () { button.textContent = prev; }, 1200);
+        });
+        return;
+      }
+      var area = document.createElement("textarea");
+      area.value = text;
+      document.body.appendChild(area);
+      area.select();
+      document.execCommand("copy");
+      document.body.removeChild(area);
+      var prev2 = button.textContent;
+      button.textContent = "Copied";
+      setTimeout(function () { button.textContent = prev2; }, 1200);
+    }
+
+    document.querySelectorAll("button[data-copy]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        copyText(btn.getAttribute("data-copy"), btn);
+      });
+    });
+  </script>
+</body>
+</html>
