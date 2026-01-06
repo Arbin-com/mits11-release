@@ -3,42 +3,42 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>MITS11 Installer</title>
+  <title>MITS11 installation</title>
   <style>
     :root {
-      --bg: #0b1420;
-      --bg-soft: #0f1c2a;
-      --panel: #0f1b29;
-      --border: #1f2d3d;
+      --bg: #0a111a;
+      --bg-soft: #0f1c2b;
+      --panel: #0e1a28;
+      --border: #1c2a3a;
       --text: #e6edf3;
-      --muted: #a9b4bf;
+      --muted: #9fb0c3;
       --accent: #4ea1ff;
-      --accent-soft: rgba(78, 161, 255, 0.15);
-      --code: #0c1724;
+      --accent-soft: rgba(78, 161, 255, 0.18);
+      --code: #0b1622;
       --shadow: rgba(0, 0, 0, 0.35);
     }
 
     [data-theme="light"] {
-      --bg: #f4f7fb;
-      --bg-soft: #eef3f9;
+      --bg: #f7f3ea;
+      --bg-soft: #f1ede4;
       --panel: #ffffff;
-      --border: #d6deea;
-      --text: #101820;
-      --muted: #556070;
+      --border: #e1dccf;
+      --text: #20262e;
+      --muted: #5b6775;
       --accent: #2d6cdf;
-      --accent-soft: rgba(45, 108, 223, 0.12);
-      --code: #f6f8fb;
-      --shadow: rgba(23, 36, 50, 0.12);
+      --accent-soft: rgba(45, 108, 223, 0.1);
+      --code: #f7f5ef;
+      --shadow: rgba(20, 24, 30, 0.12);
     }
 
     * { box-sizing: border-box; }
     body {
       margin: 0;
-      font-family: "Space Grotesk", "Trebuchet MS", "Segoe UI", sans-serif;
+      font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
       color: var(--text);
       background:
-        radial-gradient(900px 500px at 10% 10%, rgba(78, 161, 255, 0.15) 0%, transparent 60%),
-        radial-gradient(700px 400px at 90% 10%, rgba(45, 108, 223, 0.18) 0%, transparent 55%),
+        radial-gradient(800px 480px at 10% 10%, rgba(78, 161, 255, 0.18) 0%, transparent 60%),
+        radial-gradient(700px 420px at 90% 10%, rgba(78, 161, 255, 0.08) 0%, transparent 55%),
         linear-gradient(160deg, var(--bg), var(--bg-soft));
     }
 
@@ -52,30 +52,29 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
+      gap: 16px;
       margin-bottom: 20px;
     }
 
     .title {
       margin: 0;
-      font-family: "Bebas Neue", "Impact", sans-serif;
-      font-size: 42px;
-      letter-spacing: 1px;
+      font-size: 34px;
+      font-weight: 700;
     }
 
     .subtitle {
       margin: 6px 0 0;
       color: var(--muted);
-      font-size: 15px;
+      font-size: 14px;
     }
 
-    .theme-btn {
+    .theme-select {
       border: 1px solid var(--border);
       background: var(--panel);
       color: var(--text);
       padding: 8px 12px;
       border-radius: 999px;
       font-size: 12px;
-      cursor: pointer;
       box-shadow: 0 8px 18px var(--shadow);
     }
 
@@ -83,15 +82,19 @@
       border: 1px solid var(--border);
       border-radius: 16px;
       padding: 22px;
-      background: linear-gradient(140deg, rgba(15, 27, 41, 0.9), rgba(15, 27, 41, 0.7));
+      background: linear-gradient(140deg, rgba(14, 26, 40, 0.9), rgba(14, 26, 40, 0.7));
       box-shadow: 0 12px 30px var(--shadow);
+    }
+
+    [data-theme="light"] .hero {
+      background: linear-gradient(140deg, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.84));
     }
 
     .tabs {
       display: flex;
       gap: 18px;
       border-bottom: 1px solid var(--border);
-      margin-top: 24px;
+      margin-top: 10px;
       padding-bottom: 10px;
       font-weight: 600;
     }
@@ -132,7 +135,7 @@
 
     .section-title {
       margin: 0 0 12px;
-      font-size: 16px;
+      font-size: 15px;
     }
 
     .snippet {
@@ -147,7 +150,7 @@
 
     .snippet-label {
       color: var(--muted);
-      font-size: 12px;
+      font-size: 11px;
       margin-bottom: 8px;
       text-transform: uppercase;
       letter-spacing: 0.6px;
@@ -155,7 +158,7 @@
 
     pre {
       margin: 0;
-      padding: 14px 38px 14px 14px;
+      padding: 14px 46px 14px 14px;
       border-radius: 10px;
       background: var(--code);
       border: 1px solid var(--border);
@@ -167,10 +170,11 @@
 
     .copy-btn {
       position: absolute;
-      top: 16px;
+      top: 50%;
       right: 16px;
-      width: 28px;
-      height: 28px;
+      transform: translateY(-50%);
+      width: 30px;
+      height: 30px;
       border-radius: 8px;
       border: 1px solid transparent;
       background: transparent;
@@ -201,8 +205,9 @@
     }
 
     @media (max-width: 720px) {
-      .title { font-size: 34px; }
+      .title { font-size: 28px; }
       .tabs { gap: 12px; font-size: 13px; }
+      .topbar { flex-direction: column; align-items: flex-start; }
     }
   </style>
 </head>
@@ -210,10 +215,16 @@
   <div class="wrap">
     <div class="topbar">
       <div>
-        <h1 class="title">MITS11 Installer</h1>
-        <p class="subtitle">One-line install. Default is stable. Use alpha or a version to override.</p>
+        <h1 class="title">MITS11 installation</h1>
+        <p class="subtitle">One-line install. Default is latest stable version. Use alpha or a version to override.</p>
       </div>
-      <button class="theme-btn" id="themeToggle">Theme: System</button>
+      <label>
+        <select class="theme-select" id="themeSelect" aria-label="Theme">
+          <option value="system">System</option>
+          <option value="light">Light</option>
+          <option value="dark">Dark</option>
+        </select>
+      </label>
     </div>
 
     <div class="hero">
@@ -340,7 +351,7 @@
 
   <script>
     (function () {
-      var themeBtn = document.getElementById("themeToggle");
+      var themeSelect = document.getElementById("themeSelect");
       var prefersDark = null;
       try {
         if (window.matchMedia) {
@@ -360,22 +371,18 @@
         } else {
           document.documentElement.setAttribute("data-theme", mode);
         }
-        themeBtn.textContent = "Theme: " + mode.charAt(0).toUpperCase() + mode.slice(1);
       }
 
       function getInitialMode() {
         var saved = null;
-        try {
-          saved = localStorage.getItem("mits11-theme");
-        } catch (err) {
-          saved = null;
-        }
+        try { saved = localStorage.getItem("mits11-theme"); } catch (err) { saved = null; }
         if (saved) return saved;
         if (prefersDark) return "system";
         return "dark";
       }
 
       var mode = getInitialMode();
+      themeSelect.value = mode;
       applyTheme(mode);
 
       if (prefersDark) {
@@ -388,14 +395,8 @@
         });
       }
 
-      themeBtn.addEventListener("click", function () {
-        if (mode === "system") {
-          mode = "light";
-        } else if (mode === "light") {
-          mode = "dark";
-        } else {
-          mode = "system";
-        }
+      themeSelect.addEventListener("change", function () {
+        mode = themeSelect.value;
         try { localStorage.setItem("mits11-theme", mode); } catch (err) { }
         applyTheme(mode);
       });
