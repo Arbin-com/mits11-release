@@ -6,29 +6,37 @@
   <title>MITS11 installation</title>
   <style>
     :root {
-      --bg: #0a111a;
-      --bg-soft: #0f1c2b;
-      --panel: #0e1a28;
-      --border: #1c2a3a;
-      --text: #e6edf3;
-      --muted: #9fb0c3;
-      --accent: #4ea1ff;
-      --accent-soft: rgba(78, 161, 255, 0.18);
-      --code: #0b1622;
+      --bg: #0d1117;
+      --bg-soft: #0d1117;
+      --panel: #161b22;
+      --border: #30363d;
+      --text: #c9d1d9;
+      --muted: #8b949e;
+      --accent: #2f81f7;
+      --accent-soft: rgba(47, 129, 247, 0.18);
+      --code: #0d1117;
       --shadow: rgba(0, 0, 0, 0.35);
+      --hl-cmd: #79c0ff;
+      --hl-url: #a5d6ff;
+      --hl-flag: #ff7b72;
+      --hl-pipe: #c9d1d9;
     }
 
     [data-theme="light"] {
-      --bg: #f7f3ea;
-      --bg-soft: #f1ede4;
-      --panel: #ffffff;
-      --border: #e1dccf;
-      --text: #20262e;
-      --muted: #5b6775;
-      --accent: #2d6cdf;
-      --accent-soft: rgba(45, 108, 223, 0.1);
-      --code: #f7f5ef;
+      --bg: #ffffff;
+      --bg-soft: #ffffff;
+      --panel: #f6f8fa;
+      --border: #d0d7de;
+      --text: #1f2328;
+      --muted: #57606a;
+      --accent: #0969da;
+      --accent-soft: rgba(9, 105, 218, 0.12);
+      --code: #f6f8fa;
       --shadow: rgba(20, 24, 30, 0.12);
+      --hl-cmd: #0550ae;
+      --hl-url: #0a3069;
+      --hl-flag: #cf222e;
+      --hl-pipe: #1f2328;
     }
 
     * { box-sizing: border-box; }
@@ -36,10 +44,7 @@
       margin: 0;
       font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
       color: var(--text);
-      background:
-        radial-gradient(800px 480px at 10% 10%, rgba(78, 161, 255, 0.18) 0%, transparent 60%),
-        radial-gradient(700px 420px at 90% 10%, rgba(78, 161, 255, 0.08) 0%, transparent 55%),
-        linear-gradient(160deg, var(--bg), var(--bg-soft));
+      background: var(--bg);
     }
 
     .wrap {
@@ -72,22 +77,27 @@
       border: 1px solid var(--border);
       background: var(--panel);
       color: var(--text);
-      padding: 8px 12px;
+      padding: 8px 28px 8px 12px;
       border-radius: 999px;
       font-size: 12px;
       box-shadow: 0 8px 18px var(--shadow);
+      appearance: none;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6' fill='none' stroke='%238b949e' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'><path d='M1 1l4 4 4-4'/></svg>");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      background-size: 10px;
+    }
+
+    [data-theme="light"] .theme-select {
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6' fill='none' stroke='%2357606a' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'><path d='M1 1l4 4 4-4'/></svg>");
     }
 
     .hero {
       border: 1px solid var(--border);
       border-radius: 16px;
       padding: 22px;
-      background: linear-gradient(140deg, rgba(14, 26, 40, 0.9), rgba(14, 26, 40, 0.7));
+      background: var(--panel);
       box-shadow: 0 12px 30px var(--shadow);
-    }
-
-    [data-theme="light"] .hero {
-      background: linear-gradient(140deg, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.84));
     }
 
     .tabs {
@@ -139,7 +149,6 @@
     }
 
     .snippet {
-      position: relative;
       background: var(--panel);
       border: 1px solid var(--border);
       border-radius: 14px;
@@ -156,6 +165,10 @@
       letter-spacing: 0.6px;
     }
 
+    .code-wrap {
+      position: relative;
+    }
+
     pre {
       margin: 0;
       padding: 14px 46px 14px 14px;
@@ -168,10 +181,15 @@
       overflow-x: auto;
     }
 
+    .hl-cmd { color: var(--hl-cmd); }
+    .hl-url { color: var(--hl-url); }
+    .hl-flag { color: var(--hl-flag); }
+    .hl-pipe { color: var(--hl-pipe); }
+
     .copy-btn {
       position: absolute;
       top: 50%;
-      right: 16px;
+      right: 12px;
       transform: translateY(-50%);
       width: 30px;
       height: 30px;
@@ -229,45 +247,51 @@
 
     <div class="hero">
       <div class="tabs" role="tablist">
-        <button class="tab active" role="tab" aria-selected="true" data-tab="mac">macOS</button>
+        <button class="tab active" role="tab" aria-selected="true" data-tab="windows">Windows</button>
         <button class="tab" role="tab" aria-selected="false" data-tab="linux">Linux</button>
-        <button class="tab" role="tab" aria-selected="false" data-tab="windows">Windows</button>
+        <button class="tab" role="tab" aria-selected="false" data-tab="mac">macOS</button>
       </div>
 
-      <div class="panel active" role="tabpanel" data-panel="mac">
-        <div class="section-title">Terminal (bash/zsh)</div>
+      <div class="panel active" role="tabpanel" data-panel="windows">
+        <div class="section-title">PowerShell 5+</div>
 
         <div class="snippet">
           <div class="snippet-label">Stable (default)</div>
-          <button class="copy-btn" data-copy="mac-stable" aria-label="Copy stable command">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="9" y="9" width="13" height="13" rx="2"></rect>
-              <rect x="2" y="2" width="13" height="13" rx="2"></rect>
-            </svg>
-          </button>
-          <pre><code id="mac-stable">curl -fsSL https://arbin-com.github.io/mits11-release/install.sh | bash</code></pre>
+          <div class="code-wrap">
+            <button class="copy-btn" data-copy="win-stable" aria-label="Copy stable command">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2"></rect>
+                <rect x="2" y="2" width="13" height="13" rx="2"></rect>
+              </svg>
+            </button>
+            <pre><code id="win-stable"><span class="hl-cmd">irm</span> <span class="hl-url">https://arbin-com.github.io/mits11-release/install.ps1</span> <span class="hl-pipe">|</span> <span class="hl-cmd">iex</span></code></pre>
+          </div>
         </div>
 
         <div class="snippet">
           <div class="snippet-label">Alpha</div>
-          <button class="copy-btn" data-copy="mac-alpha" aria-label="Copy alpha command">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="9" y="9" width="13" height="13" rx="2"></rect>
-              <rect x="2" y="2" width="13" height="13" rx="2"></rect>
-            </svg>
-          </button>
-          <pre><code id="mac-alpha">curl -fsSL https://arbin-com.github.io/mits11-release/install.sh | bash -s -- alpha</code></pre>
+          <div class="code-wrap">
+            <button class="copy-btn" data-copy="win-alpha" aria-label="Copy alpha command">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2"></rect>
+                <rect x="2" y="2" width="13" height="13" rx="2"></rect>
+              </svg>
+            </button>
+            <pre><code id="win-alpha"><span class="hl-cmd">irm</span> <span class="hl-url">https://arbin-com.github.io/mits11-release/install.ps1</span> <span class="hl-pipe">|</span> <span class="hl-cmd">iex</span> <span class="hl-flag">alpha</span></code></pre>
+          </div>
         </div>
 
         <div class="snippet">
           <div class="snippet-label">Specific version</div>
-          <button class="copy-btn" data-copy="mac-version" aria-label="Copy version command">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="9" y="9" width="13" height="13" rx="2"></rect>
-              <rect x="2" y="2" width="13" height="13" rx="2"></rect>
-            </svg>
-          </button>
-          <pre><code id="mac-version">curl -fsSL https://arbin-com.github.io/mits11-release/install.sh | bash -s -- 5.0.1</code></pre>
+          <div class="code-wrap">
+            <button class="copy-btn" data-copy="win-version" aria-label="Copy version command">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2"></rect>
+                <rect x="2" y="2" width="13" height="13" rx="2"></rect>
+              </svg>
+            </button>
+            <pre><code id="win-version"><span class="hl-cmd">irm</span> <span class="hl-url">https://arbin-com.github.io/mits11-release/install.ps1</span> <span class="hl-pipe">|</span> <span class="hl-cmd">iex</span> <span class="hl-flag">5.0.1</span></code></pre>
+          </div>
         </div>
       </div>
 
@@ -276,72 +300,84 @@
 
         <div class="snippet">
           <div class="snippet-label">Stable (default)</div>
-          <button class="copy-btn" data-copy="linux-stable" aria-label="Copy stable command">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="9" y="9" width="13" height="13" rx="2"></rect>
-              <rect x="2" y="2" width="13" height="13" rx="2"></rect>
-            </svg>
-          </button>
-          <pre><code id="linux-stable">curl -fsSL https://arbin-com.github.io/mits11-release/install.sh | bash</code></pre>
+          <div class="code-wrap">
+            <button class="copy-btn" data-copy="linux-stable" aria-label="Copy stable command">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2"></rect>
+                <rect x="2" y="2" width="13" height="13" rx="2"></rect>
+              </svg>
+            </button>
+            <pre><code id="linux-stable"><span class="hl-cmd">curl</span> <span class="hl-flag">-fsSL</span> <span class="hl-url">https://arbin-com.github.io/mits11-release/install.sh</span> <span class="hl-pipe">|</span> <span class="hl-cmd">bash</span></code></pre>
+          </div>
         </div>
 
         <div class="snippet">
           <div class="snippet-label">Alpha</div>
-          <button class="copy-btn" data-copy="linux-alpha" aria-label="Copy alpha command">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="9" y="9" width="13" height="13" rx="2"></rect>
-              <rect x="2" y="2" width="13" height="13" rx="2"></rect>
-            </svg>
-          </button>
-          <pre><code id="linux-alpha">curl -fsSL https://arbin-com.github.io/mits11-release/install.sh | bash -s -- alpha</code></pre>
+          <div class="code-wrap">
+            <button class="copy-btn" data-copy="linux-alpha" aria-label="Copy alpha command">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2"></rect>
+                <rect x="2" y="2" width="13" height="13" rx="2"></rect>
+              </svg>
+            </button>
+            <pre><code id="linux-alpha"><span class="hl-cmd">curl</span> <span class="hl-flag">-fsSL</span> <span class="hl-url">https://arbin-com.github.io/mits11-release/install.sh</span> <span class="hl-pipe">|</span> <span class="hl-cmd">bash</span> <span class="hl-flag">-s</span> <span class="hl-flag">--</span> <span class="hl-flag">alpha</span></code></pre>
+          </div>
         </div>
 
         <div class="snippet">
           <div class="snippet-label">Specific version</div>
-          <button class="copy-btn" data-copy="linux-version" aria-label="Copy version command">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="9" y="9" width="13" height="13" rx="2"></rect>
-              <rect x="2" y="2" width="13" height="13" rx="2"></rect>
-            </svg>
-          </button>
-          <pre><code id="linux-version">curl -fsSL https://arbin-com.github.io/mits11-release/install.sh | bash -s -- 5.0.1</code></pre>
+          <div class="code-wrap">
+            <button class="copy-btn" data-copy="linux-version" aria-label="Copy version command">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2"></rect>
+                <rect x="2" y="2" width="13" height="13" rx="2"></rect>
+              </svg>
+            </button>
+            <pre><code id="linux-version"><span class="hl-cmd">curl</span> <span class="hl-flag">-fsSL</span> <span class="hl-url">https://arbin-com.github.io/mits11-release/install.sh</span> <span class="hl-pipe">|</span> <span class="hl-cmd">bash</span> <span class="hl-flag">-s</span> <span class="hl-flag">--</span> <span class="hl-flag">5.0.1</span></code></pre>
+          </div>
         </div>
       </div>
 
-      <div class="panel" role="tabpanel" data-panel="windows">
-        <div class="section-title">PowerShell 5+</div>
+      <div class="panel" role="tabpanel" data-panel="mac">
+        <div class="section-title">Terminal (bash/zsh)</div>
 
         <div class="snippet">
           <div class="snippet-label">Stable (default)</div>
-          <button class="copy-btn" data-copy="win-stable" aria-label="Copy stable command">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="9" y="9" width="13" height="13" rx="2"></rect>
-              <rect x="2" y="2" width="13" height="13" rx="2"></rect>
-            </svg>
-          </button>
-          <pre><code id="win-stable">irm https://arbin-com.github.io/mits11-release/install.ps1 | iex</code></pre>
+          <div class="code-wrap">
+            <button class="copy-btn" data-copy="mac-stable" aria-label="Copy stable command">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2"></rect>
+                <rect x="2" y="2" width="13" height="13" rx="2"></rect>
+              </svg>
+            </button>
+            <pre><code id="mac-stable"><span class="hl-cmd">curl</span> <span class="hl-flag">-fsSL</span> <span class="hl-url">https://arbin-com.github.io/mits11-release/install.sh</span> <span class="hl-pipe">|</span> <span class="hl-cmd">bash</span></code></pre>
+          </div>
         </div>
 
         <div class="snippet">
           <div class="snippet-label">Alpha</div>
-          <button class="copy-btn" data-copy="win-alpha" aria-label="Copy alpha command">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="9" y="9" width="13" height="13" rx="2"></rect>
-              <rect x="2" y="2" width="13" height="13" rx="2"></rect>
-            </svg>
-          </button>
-          <pre><code id="win-alpha">irm https://arbin-com.github.io/mits11-release/install.ps1 | iex alpha</code></pre>
+          <div class="code-wrap">
+            <button class="copy-btn" data-copy="mac-alpha" aria-label="Copy alpha command">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2"></rect>
+                <rect x="2" y="2" width="13" height="13" rx="2"></rect>
+              </svg>
+            </button>
+            <pre><code id="mac-alpha"><span class="hl-cmd">curl</span> <span class="hl-flag">-fsSL</span> <span class="hl-url">https://arbin-com.github.io/mits11-release/install.sh</span> <span class="hl-pipe">|</span> <span class="hl-cmd">bash</span> <span class="hl-flag">-s</span> <span class="hl-flag">--</span> <span class="hl-flag">alpha</span></code></pre>
+          </div>
         </div>
 
         <div class="snippet">
           <div class="snippet-label">Specific version</div>
-          <button class="copy-btn" data-copy="win-version" aria-label="Copy version command">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="9" y="9" width="13" height="13" rx="2"></rect>
-              <rect x="2" y="2" width="13" height="13" rx="2"></rect>
-            </svg>
-          </button>
-          <pre><code id="win-version">irm https://arbin-com.github.io/mits11-release/install.ps1 | iex 5.0.1</code></pre>
+          <div class="code-wrap">
+            <button class="copy-btn" data-copy="mac-version" aria-label="Copy version command">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2"></rect>
+                <rect x="2" y="2" width="13" height="13" rx="2"></rect>
+              </svg>
+            </button>
+            <pre><code id="mac-version"><span class="hl-cmd">curl</span> <span class="hl-flag">-fsSL</span> <span class="hl-url">https://arbin-com.github.io/mits11-release/install.sh</span> <span class="hl-pipe">|</span> <span class="hl-cmd">bash</span> <span class="hl-flag">-s</span> <span class="hl-flag">--</span> <span class="hl-flag">5.0.1</span></code></pre>
+          </div>
         </div>
       </div>
     </div>
