@@ -7,6 +7,11 @@ function Fail([string]$Message) {
   exit 1
 }
 
+function Test-Admin {
+  $currentUser = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
+  return $currentUser.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
+}
+
 if ($Target -and ($Target -notmatch '^(stable|latest|alpha|[0-9]+\.[0-9]+\.[0-9]+([\-+][^\s]+)?)$')) {
   Fail "Usage: install.ps1 [stable|latest|alpha|VERSION]"
 }
@@ -72,30 +77,43 @@ if ($checksum -notmatch '^[a-f0-9]{64}$') {
 $tmpDir = Join-Path $env:TEMP ("mits11-" + [guid]::NewGuid().ToString("N"))
 $zipPath = Join-Path $tmpDir "mits11-$version-$platform.zip"
 $extractRoot = Join-Path $tmpDir "extract"
+$keepTemp = $env:MITS11_KEEP_TEMP -eq "1"
 
-New-Item -ItemType Directory -Path $tmpDir | Out-Null
-
-Write-Host "Downloading MITS11 $version ($platform)..."
 try {
-  Invoke-WebRequest -Uri $url -OutFile $zipPath -UseBasicParsing
-} catch {
-  Fail "Download failed"
+  New-Item -ItemType Directory -Path $tmpDir | Out-Null
+
+  Write-Host "Downloading MITS11 $version ($platform)..."
+  try {
+    Invoke-WebRequest -Uri $url -OutFile $zipPath -UseBasicParsing
+  } catch {
+    Fail "Download failed"
+  }
+
+  $actual = (Get-FileHash -Algorithm SHA256 -Path $zipPath).Hash.ToLower()
+  if ($actual -ne $checksum.ToLower()) {
+    Fail "Checksum verification failed"
+  }
+
+  New-Item -ItemType Directory -Path $extractRoot | Out-Null
+  Expand-Archive -Path $zipPath -DestinationPath $extractRoot -Force
+
+  $installScript = Get-ChildItem -Path $extractRoot -Recurse -Filter "install-das.ps1" | Select-Object -First 1
+  if (-not $installScript) {
+    Fail "Installer not found in package"
+  }
+
+  Write-Host "Running installer..."
+  if (-not (Test-Admin)) {
+    $psExe = if ($PSVersionTable.PSEdition -eq 'Core') { Join-Path $PSHOME "pwsh.exe" } else { Join-Path $PSHOME "powershell.exe" }
+    Start-Process -FilePath $psExe -Verb RunAs -Wait `
+      -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$($installScript.FullName)`""
+  } else {
+    & $installScript.FullName
+  }
+
+  Write-Host "Done."
+} finally {
+  if (-not $keepTemp -and (Test-Path $tmpDir)) {
+    Remove-Item -Recurse -Force $tmpDir
+  }
 }
-
-$actual = (Get-FileHash -Algorithm SHA256 -Path $zipPath).Hash.ToLower()
-if ($actual -ne $checksum.ToLower()) {
-  Fail "Checksum verification failed"
-}
-
-New-Item -ItemType Directory -Path $extractRoot | Out-Null
-Expand-Archive -Path $zipPath -DestinationPath $extractRoot -Force
-
-$installScript = Get-ChildItem -Path $extractRoot -Recurse -Filter "install-das.ps1" | Select-Object -First 1
-if (-not $installScript) {
-  Fail "Installer not found in package"
-}
-
-Write-Host "Running installer..."
-& $installScript.FullName
-
-Write-Host "Done."

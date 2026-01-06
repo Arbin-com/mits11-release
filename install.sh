@@ -165,7 +165,15 @@ if [[ ! "$checksum" =~ ^[a-f0-9]{64}$ ]]; then
   exit 1
 fi
 
+keep_temp="${MITS11_KEEP_TEMP:-0}"
 tmp_dir="$(mktemp -d)"
+
+cleanup() {
+  if [ "$keep_temp" != "1" ] && [ -n "${tmp_dir:-}" ] && [ -d "$tmp_dir" ]; then
+    rm -rf "$tmp_dir"
+  fi
+}
+trap cleanup EXIT
 zip_path="$tmp_dir/mits11-${version}-${platform}.zip"
 extract_root="$tmp_dir/extract"
 
