@@ -114,6 +114,10 @@ try {
   Write-Host "Done."
 } finally {
   if (-not $keepTemp -and (Test-Path $tmpDir)) {
-    Remove-Item -Recurse -Force $tmpDir
+    try {
+      Remove-Item -Recurse -Force $tmpDir -ErrorAction Stop
+    } catch {
+      Write-Warning "Could not remove temp dir: $tmpDir. Try again after reboot."
+    }
   }
 }
