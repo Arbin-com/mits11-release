@@ -1,196 +1,443 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>MITS11 Installer</title>
   <style>
     :root {
-      --bg-1: #0b1b2b;
-      --bg-2: #132c3d;
-      --accent: #ffb000;
-      --accent-2: #2dd4bf;
+      --bg: #0b1420;
+      --bg-soft: #0f1c2a;
+      --panel: #0f1b29;
+      --border: #1f2d3d;
       --text: #e6edf3;
-      --muted: #b8c2cc;
-      --card: #0f2231;
-      --border: #234155;
+      --muted: #a9b4bf;
+      --accent: #4ea1ff;
+      --accent-soft: rgba(78, 161, 255, 0.15);
+      --code: #0c1724;
       --shadow: rgba(0, 0, 0, 0.35);
     }
+
+    [data-theme="light"] {
+      --bg: #f4f7fb;
+      --bg-soft: #eef3f9;
+      --panel: #ffffff;
+      --border: #d6deea;
+      --text: #101820;
+      --muted: #556070;
+      --accent: #2d6cdf;
+      --accent-soft: rgba(45, 108, 223, 0.12);
+      --code: #f6f8fb;
+      --shadow: rgba(23, 36, 50, 0.12);
+    }
+
     * { box-sizing: border-box; }
     body {
       margin: 0;
-      color: var(--text);
-      background: radial-gradient(900px 500px at 10% 10%, #19354a 0%, transparent 60%),
-                  radial-gradient(700px 400px at 90% 10%, #0f3a3d 0%, transparent 55%),
-                  linear-gradient(160deg, var(--bg-1), var(--bg-2));
       font-family: "Space Grotesk", "Trebuchet MS", "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(900px 500px at 10% 10%, rgba(78, 161, 255, 0.15) 0%, transparent 60%),
+        radial-gradient(700px 400px at 90% 10%, rgba(45, 108, 223, 0.18) 0%, transparent 55%),
+        linear-gradient(160deg, var(--bg), var(--bg-soft));
     }
+
     .wrap {
       max-width: 980px;
       margin: 0 auto;
-      padding: 48px 20px 64px;
+      padding: 44px 20px 64px;
     }
-    .hero {
-      display: grid;
-      gap: 16px;
-      padding: 28px 28px 34px;
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      background: linear-gradient(140deg, #0c2233, #122b3a);
-      box-shadow: 0 12px 30px var(--shadow);
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
     }
+
     .title {
+      margin: 0;
       font-family: "Bebas Neue", "Impact", sans-serif;
-      letter-spacing: 1px;
       font-size: 42px;
-      margin: 0;
+      letter-spacing: 1px;
     }
+
     .subtitle {
+      margin: 6px 0 0;
       color: var(--muted);
-      margin: 0;
-      font-size: 16px;
-      line-height: 1.6;
+      font-size: 15px;
     }
-    .grid {
-      margin-top: 28px;
-      display: grid;
-      gap: 18px;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+
+    .theme-btn {
+      border: 1px solid var(--border);
+      background: var(--panel);
+      color: var(--text);
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      cursor: pointer;
+      box-shadow: 0 8px 18px var(--shadow);
     }
-    .card {
-      background: var(--card);
+
+    .hero {
       border: 1px solid var(--border);
       border-radius: 16px;
-      padding: 18px;
+      padding: 22px;
+      background: linear-gradient(140deg, rgba(15, 27, 41, 0.9), rgba(15, 27, 41, 0.7));
+      box-shadow: 0 12px 30px var(--shadow);
+    }
+
+    .tabs {
+      display: flex;
+      gap: 18px;
+      border-bottom: 1px solid var(--border);
+      margin-top: 24px;
+      padding-bottom: 10px;
+      font-weight: 600;
+    }
+
+    .tab {
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-size: 14px;
+      padding: 6px 0;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .tab.active {
+      color: var(--accent);
+    }
+
+    .tab.active::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: -11px;
+      width: 100%;
+      height: 2px;
+      background: var(--accent);
+      border-radius: 999px;
+    }
+
+    .panel {
+      display: none;
+      padding-top: 18px;
+    }
+
+    .panel.active {
+      display: block;
+    }
+
+    .section-title {
+      margin: 0 0 12px;
+      font-size: 16px;
+    }
+
+    .snippet {
+      position: relative;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px 16px 16px;
+      margin-bottom: 14px;
       box-shadow: 0 10px 24px var(--shadow);
     }
-    .card h2 {
-      margin: 0 0 10px;
-      font-size: 18px;
-      letter-spacing: 0.3px;
-    }
-    .note {
+
+    .snippet-label {
       color: var(--muted);
-      font-size: 13px;
-      margin-bottom: 12px;
+      font-size: 12px;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
     }
+
     pre {
       margin: 0;
-      padding: 14px;
-      border-radius: 12px;
-      background: #07131d;
-      border: 1px solid #203446;
+      padding: 14px 38px 14px 14px;
+      border-radius: 10px;
+      background: var(--code);
+      border: 1px solid var(--border);
       font-family: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
       font-size: 13px;
       line-height: 1.5;
       overflow-x: auto;
     }
-    code { color: #f8fafc; }
-    .actions {
-      margin-top: 10px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .btn {
-      background: linear-gradient(120deg, var(--accent), #ffc857);
-      color: #1b1f24;
-      border: none;
-      padding: 8px 12px;
-      border-radius: 999px;
-      font-weight: 700;
+
+    .copy-btn {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--muted);
       cursor: pointer;
-      font-size: 12px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
     }
-    .btn.secondary {
-      background: linear-gradient(120deg, #20c997, var(--accent-2));
+
+    .copy-btn:hover {
+      color: var(--text);
+      border-color: var(--border);
+      background: var(--accent-soft);
     }
-    .pill {
-      font-size: 11px;
-      color: var(--muted);
+
+    .copy-btn.copied {
+      color: var(--accent);
+      border-color: var(--accent);
+      background: transparent;
     }
+
     .footer {
-      margin-top: 24px;
-      font-size: 12px;
+      margin-top: 22px;
       color: var(--muted);
+      font-size: 12px;
+    }
+
+    @media (max-width: 720px) {
+      .title { font-size: 34px; }
+      .tabs { gap: 12px; font-size: 13px; }
     }
   </style>
 </head>
 <body>
   <div class="wrap">
+    <div class="topbar">
+      <div>
+        <h1 class="title">MITS11 Installer</h1>
+        <p class="subtitle">One-line install. Default is stable. Use alpha or a version to override.</p>
+      </div>
+      <button class="theme-btn" id="themeToggle">Theme: System</button>
+    </div>
+
     <div class="hero">
-      <h1 class="title">MITS11 One-Line Install</h1>
-      <p class="subtitle">Copy a command below and paste into your terminal. Default installs the stable release. Use <strong>alpha</strong> or a specific version to override.</p>
+      <div class="tabs" role="tablist">
+        <button class="tab active" role="tab" aria-selected="true" data-tab="mac">macOS</button>
+        <button class="tab" role="tab" aria-selected="false" data-tab="linux">Linux</button>
+        <button class="tab" role="tab" aria-selected="false" data-tab="windows">Windows</button>
+      </div>
+
+      <div class="panel active" role="tabpanel" data-panel="mac">
+        <div class="section-title">Terminal (bash/zsh)</div>
+
+        <div class="snippet">
+          <div class="snippet-label">Stable (default)</div>
+          <button class="copy-btn" data-copy="mac-stable" aria-label="Copy stable command">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="9" y="9" width="13" height="13" rx="2"></rect>
+              <rect x="2" y="2" width="13" height="13" rx="2"></rect>
+            </svg>
+          </button>
+          <pre><code id="mac-stable">curl -fsSL https://arbin-com.github.io/mits11-release/install.sh | bash</code></pre>
+        </div>
+
+        <div class="snippet">
+          <div class="snippet-label">Alpha</div>
+          <button class="copy-btn" data-copy="mac-alpha" aria-label="Copy alpha command">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="9" y="9" width="13" height="13" rx="2"></rect>
+              <rect x="2" y="2" width="13" height="13" rx="2"></rect>
+            </svg>
+          </button>
+          <pre><code id="mac-alpha">curl -fsSL https://arbin-com.github.io/mits11-release/install.sh | bash -s -- alpha</code></pre>
+        </div>
+
+        <div class="snippet">
+          <div class="snippet-label">Specific version</div>
+          <button class="copy-btn" data-copy="mac-version" aria-label="Copy version command">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="9" y="9" width="13" height="13" rx="2"></rect>
+              <rect x="2" y="2" width="13" height="13" rx="2"></rect>
+            </svg>
+          </button>
+          <pre><code id="mac-version">curl -fsSL https://arbin-com.github.io/mits11-release/install.sh | bash -s -- 5.0.1</code></pre>
+        </div>
+      </div>
+
+      <div class="panel" role="tabpanel" data-panel="linux">
+        <div class="section-title">Debian-based distros</div>
+
+        <div class="snippet">
+          <div class="snippet-label">Stable (default)</div>
+          <button class="copy-btn" data-copy="linux-stable" aria-label="Copy stable command">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="9" y="9" width="13" height="13" rx="2"></rect>
+              <rect x="2" y="2" width="13" height="13" rx="2"></rect>
+            </svg>
+          </button>
+          <pre><code id="linux-stable">curl -fsSL https://arbin-com.github.io/mits11-release/install.sh | bash</code></pre>
+        </div>
+
+        <div class="snippet">
+          <div class="snippet-label">Alpha</div>
+          <button class="copy-btn" data-copy="linux-alpha" aria-label="Copy alpha command">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="9" y="9" width="13" height="13" rx="2"></rect>
+              <rect x="2" y="2" width="13" height="13" rx="2"></rect>
+            </svg>
+          </button>
+          <pre><code id="linux-alpha">curl -fsSL https://arbin-com.github.io/mits11-release/install.sh | bash -s -- alpha</code></pre>
+        </div>
+
+        <div class="snippet">
+          <div class="snippet-label">Specific version</div>
+          <button class="copy-btn" data-copy="linux-version" aria-label="Copy version command">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="9" y="9" width="13" height="13" rx="2"></rect>
+              <rect x="2" y="2" width="13" height="13" rx="2"></rect>
+            </svg>
+          </button>
+          <pre><code id="linux-version">curl -fsSL https://arbin-com.github.io/mits11-release/install.sh | bash -s -- 5.0.1</code></pre>
+        </div>
+      </div>
+
+      <div class="panel" role="tabpanel" data-panel="windows">
+        <div class="section-title">PowerShell 5+ or Windows Terminal</div>
+
+        <div class="snippet">
+          <div class="snippet-label">Stable (default)</div>
+          <button class="copy-btn" data-copy="win-stable" aria-label="Copy stable command">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="9" y="9" width="13" height="13" rx="2"></rect>
+              <rect x="2" y="2" width="13" height="13" rx="2"></rect>
+            </svg>
+          </button>
+          <pre><code id="win-stable">irm https://arbin-com.github.io/mits11-release/install.ps1 | iex</code></pre>
+        </div>
+
+        <div class="snippet">
+          <div class="snippet-label">Alpha</div>
+          <button class="copy-btn" data-copy="win-alpha" aria-label="Copy alpha command">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="9" y="9" width="13" height="13" rx="2"></rect>
+              <rect x="2" y="2" width="13" height="13" rx="2"></rect>
+            </svg>
+          </button>
+          <pre><code id="win-alpha">irm https://arbin-com.github.io/mits11-release/install.ps1 | iex alpha</code></pre>
+        </div>
+
+        <div class="snippet">
+          <div class="snippet-label">Specific version</div>
+          <button class="copy-btn" data-copy="win-version" aria-label="Copy version command">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="9" y="9" width="13" height="13" rx="2"></rect>
+              <rect x="2" y="2" width="13" height="13" rx="2"></rect>
+            </svg>
+          </button>
+          <pre><code id="win-version">irm https://arbin-com.github.io/mits11-release/install.ps1 | iex 5.0.1</code></pre>
+        </div>
+      </div>
     </div>
 
-    <div class="grid">
-      <div class="card">
-        <h2>macOS</h2>
-        <div class="note">Terminal (bash/zsh)</div>
-        <pre><code id="cmd-mac">curl -fsSL https://arbin-com.github.io/mits11-release/install.sh | bash
-curl -fsSL https://arbin-com.github.io/mits11-release/install.sh | bash -s -- alpha
-curl -fsSL https://arbin-com.github.io/mits11-release/install.sh | bash -s -- 5.0.1</code></pre>
-        <div class="actions">
-          <span class="pill">3 commands</span>
-          <button class="btn" data-copy="cmd-mac">Copy</button>
-        </div>
-      </div>
-
-      <div class="card">
-        <h2>Linux</h2>
-        <div class="note">Debian-based distros</div>
-        <pre><code id="cmd-linux">curl -fsSL https://arbin-com.github.io/mits11-release/install.sh | bash
-curl -fsSL https://arbin-com.github.io/mits11-release/install.sh | bash -s -- alpha
-curl -fsSL https://arbin-com.github.io/mits11-release/install.sh | bash -s -- 5.0.1</code></pre>
-        <div class="actions">
-          <span class="pill">3 commands</span>
-          <button class="btn" data-copy="cmd-linux">Copy</button>
-        </div>
-      </div>
-
-      <div class="card">
-        <h2>Windows PowerShell</h2>
-        <div class="note">Run in PowerShell 5+ or Windows Terminal</div>
-        <pre><code id="cmd-win">irm https://arbin-com.github.io/mits11-release/install.ps1 | iex
-irm https://arbin-com.github.io/mits11-release/install.ps1 | iex alpha
-irm https://arbin-com.github.io/mits11-release/install.ps1 | iex 5.0.1</code></pre>
-        <div class="actions">
-          <span class="pill">3 commands</span>
-          <button class="btn secondary" data-copy="cmd-win">Copy</button>
-        </div>
-      </div>
-    </div>
-
-    <div class="footer">Need help? Ask your admin for proxy or firewall rules if downloads are blocked.</div>
+    <div class="footer">Need proxy exceptions? Allow access to GitHub Releases and arbin-com.github.io.</div>
   </div>
 
   <script>
-    function copyText(id, button) {
-      var text = document.getElementById(id).innerText;
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text).then(function () {
-          var prev = button.textContent;
-          button.textContent = "Copied";
-          setTimeout(function () { button.textContent = prev; }, 1200);
-        });
-        return;
+    (function () {
+      var themeBtn = document.getElementById("themeToggle");
+      var prefersDark = null;
+      try {
+        if (window.matchMedia) {
+          prefersDark = window.matchMedia("(prefers-color-scheme: dark)");
+        }
+      } catch (err) {
+        prefersDark = null;
       }
-      var area = document.createElement("textarea");
-      area.value = text;
-      document.body.appendChild(area);
-      area.select();
-      document.execCommand("copy");
-      document.body.removeChild(area);
-      var prev2 = button.textContent;
-      button.textContent = "Copied";
-      setTimeout(function () { button.textContent = prev2; }, 1200);
-    }
 
-    document.querySelectorAll("button[data-copy]").forEach(function (btn) {
-      btn.addEventListener("click", function () {
-        copyText(btn.getAttribute("data-copy"), btn);
+      function applyTheme(mode) {
+        if (mode === "system") {
+          if (prefersDark) {
+            document.documentElement.setAttribute("data-theme", prefersDark.matches ? "dark" : "light");
+          } else {
+            document.documentElement.setAttribute("data-theme", "dark");
+          }
+        } else {
+          document.documentElement.setAttribute("data-theme", mode);
+        }
+        themeBtn.textContent = "Theme: " + mode.charAt(0).toUpperCase() + mode.slice(1);
+      }
+
+      function getInitialMode() {
+        var saved = null;
+        try {
+          saved = localStorage.getItem("mits11-theme");
+        } catch (err) {
+          saved = null;
+        }
+        if (saved) return saved;
+        if (prefersDark) return "system";
+        return "dark";
+      }
+
+      var mode = getInitialMode();
+      applyTheme(mode);
+
+      if (prefersDark) {
+        prefersDark.addEventListener("change", function () {
+          var current = null;
+          try { current = localStorage.getItem("mits11-theme"); } catch (err) { current = null; }
+          if (current === "system" || !current) {
+            applyTheme("system");
+          }
+        });
+      }
+
+      themeBtn.addEventListener("click", function () {
+        if (mode === "system") {
+          mode = "light";
+        } else if (mode === "light") {
+          mode = "dark";
+        } else {
+          mode = "system";
+        }
+        try { localStorage.setItem("mits11-theme", mode); } catch (err) { }
+        applyTheme(mode);
       });
-    });
+
+      document.querySelectorAll(".tab").forEach(function (tab) {
+        tab.addEventListener("click", function () {
+          var target = tab.getAttribute("data-tab");
+          document.querySelectorAll(".tab").forEach(function (btn) {
+            btn.classList.toggle("active", btn === tab);
+            btn.setAttribute("aria-selected", btn === tab ? "true" : "false");
+          });
+          document.querySelectorAll(".panel").forEach(function (panel) {
+            panel.classList.toggle("active", panel.getAttribute("data-panel") === target);
+          });
+        });
+      });
+
+      function copyText(id, button) {
+        var text = document.getElementById(id).innerText;
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(function () {
+            button.classList.add("copied");
+            setTimeout(function () { button.classList.remove("copied"); }, 1200);
+          });
+          return;
+        }
+        var area = document.createElement("textarea");
+        area.value = text;
+        document.body.appendChild(area);
+        area.select();
+        document.execCommand("copy");
+        document.body.removeChild(area);
+        button.classList.add("copied");
+        setTimeout(function () { button.classList.remove("copied"); }, 1200);
+      }
+
+      document.querySelectorAll(".copy-btn").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          copyText(btn.getAttribute("data-copy"), btn);
+        });
+      });
+    })();
   </script>
 </body>
 </html>
