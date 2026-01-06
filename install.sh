@@ -89,8 +89,24 @@ get_manifest_values() {
   local json="$1"
   local platform="$2"
   json="$(normalize_json "$json")"
-  if [[ $json =~ \"$platform\"[[:space:]]*:[[:space:]]*\{[^}]*\"url\"[[:space:]]*:[[:space:]]*\"([^\"]+)\"[^}]*\"sha256\"[[:space:]]*:[[:space:]]*\"([a-f0-9]{64})\" ]]; then
-    echo "${BASH_REMATCH[1]} ${BASH_REMATCH[2]}"
+  local section=""
+  if [[ $json =~ \"$platform\"[[:space:]]*:[[:space:]]*\{([^}]*)\} ]]; then
+    section="${BASH_REMATCH[1]}"
+  else
+    return 1
+  fi
+
+  local url=""
+  local checksum=""
+  if [[ $section =~ \"url\"[[:space:]]*:[[:space:]]*\"([^\"]+)\" ]]; then
+    url="${BASH_REMATCH[1]}"
+  fi
+  if [[ $section =~ \"sha256\"[[:space:]]*:[[:space:]]*\"([a-f0-9]{64})\" ]]; then
+    checksum="${BASH_REMATCH[1]}"
+  fi
+
+  if [ -n "$url" ] && [ -n "$checksum" ]; then
+    echo "$url $checksum"
     return 0
   fi
   return 1
