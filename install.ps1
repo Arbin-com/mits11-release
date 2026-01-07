@@ -107,7 +107,7 @@ try {
     $psExe = if ($PSVersionTable.PSEdition -eq 'Core') { Join-Path $PSHOME "pwsh.exe" } else { Join-Path $PSHOME "powershell.exe" }
     $sentinelPath = Join-Path $tmpDir "install-das.exitcode"
     $cmd = "`"$psExe`" -NoProfile -ExecutionPolicy Bypass -File `"$($installScript.FullName)`""
-    $cmd = "$cmd & echo %ERRORLEVEL% > `"$sentinelPath`""
+    $cmd = "$cmd & echo %ERRORLEVEL% > `"$sentinelPath`" & pause"
     Start-Process -FilePath "cmd.exe" -Verb RunAs `
       -ArgumentList "/c", $cmd
 
