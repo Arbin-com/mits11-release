@@ -105,8 +105,30 @@ try {
   Write-Host "Running installer..."
   if (-not (Test-Admin)) {
     $psExe = if ($PSVersionTable.PSEdition -eq 'Core') { Join-Path $PSHOME "pwsh.exe" } else { Join-Path $PSHOME "powershell.exe" }
-    Start-Process -FilePath $psExe -Verb RunAs -Wait `
-      -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$($installScript.FullName)`""
+    $sentinelPath = Join-Path $tmpDir "install-das.exitcode"
+    $cmd = "`"$psExe`" -NoProfile -ExecutionPolicy Bypass -File `"$($installScript.FullName)`""
+    $cmd = "$cmd & echo %ERRORLEVEL% > `"$sentinelPath`""
+    Start-Process -FilePath "cmd.exe" -Verb RunAs `
+      -ArgumentList "/c", $cmd
+
+    $timeoutSeconds = 7200
+    $elapsedSeconds = 0
+    $pollSeconds = 2
+    while (-not (Test-Path $sentinelPath)) {
+      Start-Sleep -Seconds $pollSeconds
+      $elapsedSeconds += $pollSeconds
+      if ($elapsedSeconds -ge $timeoutSeconds) {
+        Fail "Installer did not complete within $timeoutSeconds seconds."
+      }
+    }
+
+    $exitCode = Get-Content -Path $sentinelPath -ErrorAction SilentlyContinue | Select-Object -First 1
+    $parsedExitCode = 0
+    if ($null -ne $exitCode -and [int]::TryParse($exitCode, [ref]$parsedExitCode)) {
+      if ($parsedExitCode -ne 0) {
+        Fail "Installer failed with exit code $parsedExitCode."
+      }
+    }
   } else {
     & $installScript.FullName
   }
