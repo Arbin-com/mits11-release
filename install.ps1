@@ -108,8 +108,10 @@ try {
     $sentinelPath = Join-Path $tmpDir "install-das.exitcode"
     $cmd = "`"$psExe`" -NoProfile -ExecutionPolicy Bypass -File `"$($installScript.FullName)`""
     $cmd = "$cmd & echo %ERRORLEVEL% > `"$sentinelPath`" & pause"
+    # Wrap the full command so cmd.exe doesn't break on paths with spaces.
+    $cmdArg = "`"$cmd`""
     Start-Process -FilePath "cmd.exe" -Verb RunAs `
-      -ArgumentList "/c", $cmd
+      -ArgumentList "/c", $cmdArg
 
     $timeoutSeconds = 7200
     $elapsedSeconds = 0
