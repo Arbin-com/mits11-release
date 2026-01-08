@@ -1,0 +1,26 @@
+{
+  "version": "6.0.0-dev.removeadminactions+build.20260109.1",
+  "channel": "alpha",
+  "platforms": {
+    "osx-x64": {
+      "url": "https://github.com/Arbin-com/MITS11-develop/releases/download/6.0.0-dev.removeadminactions+build.20260109.1/MITS11.6.0.0-dev.removeadminactions+build.20260109.1-osx-x64.zip",
+      "sha256": "5c7c1f1917dd2a927432922ff3050c887706637e641667988602346a581ef45e"
+    },
+    "win-x64": {
+      "url": "https://github.com/Arbin-com/MITS11-develop/releases/download/6.0.0-dev.removeadminactions+build.20260109.1/MITS11.6.0.0-dev.removeadminactions+build.20260109.1-win-x64.zip",
+      "sha256": "1624aa2a78cdfaace78a8b4d8b8ce144bdf7f7c19cff83aa41c2dbf24c151d36"
+    },
+    "osx-arm64": {
+      "url": "https://github.com/Arbin-com/MITS11-develop/releases/download/6.0.0-dev.removeadminactions+build.20260109.1/MITS11.6.0.0-dev.removeadminactions+build.20260109.1-osx-arm64.zip",
+      "sha256": "497e9cd58abb090e5f65444a6637bbf1419c0ec489668fef43fbf404c1dbf317"
+    },
+    "linux-x64": {
+      "url": "https://github.com/Arbin-com/MITS11-develop/releases/download/6.0.0-dev.removeadminactions+build.20260109.1/MITS11.6.0.0-dev.removeadminactions+build.20260109.1-linux-x64.zip",
+      "sha256": "86b3a7ddac9656de299e9510e7fb8fc21e25fc91ea92956fadf9786982d91c41"
+    },
+    "linux-arm64": {
+      "url": "https://github.com/Arbin-com/MITS11-develop/releases/download/6.0.0-dev.removeadminactions+build.20260109.1/MITS11.6.0.0-dev.removeadminactions+build.20260109.1-linux-arm64.zip",
+      "sha256": "d9723a5c1346e13aae27f73177ed6c2df5e8703411036191cf617a0fefbfe076"
+    }
+  }
+}
