@@ -210,6 +210,10 @@ fi
 
 chmod +x "$install_script"
 echo "Running installer..."
-"$install_script"
+if [ -r /dev/tty ]; then
+  "$install_script" </dev/tty
+else
+  "$install_script"
+fi
 
 echo "Done."
