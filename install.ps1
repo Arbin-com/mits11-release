@@ -105,42 +105,12 @@ try {
 
   Write-Host "Running installer..."
   if (-not (Test-Admin)) {
-    $psExe = if ($PSVersionTable.PSEdition -eq 'Core') { Join-Path $PSHOME "pwsh.exe" } else { Join-Path $PSHOME "powershell.exe" }
-    $sentinelPath = Join-Path $tmpDir "install-das.exitcode"
-    $cmd = "`"$psExe`" -NoProfile -ExecutionPolicy Bypass -File `"$($installScript.FullName)`""
-    if ($Silent) {
-      $cmd = "$cmd -Silent"
-    }
-    $cmd = "$cmd & echo %ERRORLEVEL% > `"$sentinelPath`" & pause"
-    # Wrap the full command so cmd.exe doesn't break on paths with spaces.
-    $cmdArg = "`"$cmd`""
-    Start-Process -FilePath "cmd.exe" -Verb RunAs `
-      -ArgumentList "/c", $cmdArg
-
-    $timeoutSeconds = 7200
-    $elapsedSeconds = 0
-    $pollSeconds = 2
-    while (-not (Test-Path $sentinelPath)) {
-      Start-Sleep -Seconds $pollSeconds
-      $elapsedSeconds += $pollSeconds
-      if ($elapsedSeconds -ge $timeoutSeconds) {
-        Fail "Installer did not complete within $timeoutSeconds seconds."
-      }
-    }
-
-    $exitCode = Get-Content -Path $sentinelPath -ErrorAction SilentlyContinue | Select-Object -First 1
-    $parsedExitCode = 0
-    if ($null -ne $exitCode -and [int]::TryParse($exitCode, [ref]$parsedExitCode)) {
-      if ($parsedExitCode -ne 0) {
-        Fail "Installer failed with exit code $parsedExitCode."
-      }
-    }
+    Fail "Administrator privileges required. Re-run this script from an elevated PowerShell (Run as Administrator)."
+  }
+  if ($Silent) {
+    & $installScript.FullName -Silent
   } else {
-    if ($Silent) {
-      & $installScript.FullName -Silent
-    } else {
-      & $installScript.FullName
-    }
+    & $installScript.FullName
   }
 
   Write-Host "Done."
