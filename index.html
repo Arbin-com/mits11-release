@@ -249,15 +249,14 @@
     <div class="hero">
       <div class="tabs" role="tablist">
         <button class="tab active" role="tab" aria-selected="true" data-tab="windows">Windows</button>
-        <button class="tab" role="tab" aria-selected="false" data-tab="linux">Linux</button>
-        <button class="tab" role="tab" aria-selected="false" data-tab="mac">macOS</button>
+        <button class="tab" role="tab" aria-selected="false" data-tab="linux-mac">Linux/MacOS</button>
       </div>
 
       <div class="panel active" role="tabpanel" data-panel="windows">
         <div class="section-title">PowerShell 5+</div>
 
         <div class="snippet">
-          <div class="snippet-label">Stable (default)</div>
+          <div class="snippet-label">Latest stable</div>
           <div class="code-wrap">
             <button class="copy-btn" data-copy="win-stable" aria-label="Copy stable command">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
@@ -270,7 +269,7 @@
         </div>
 
         <div class="snippet">
-          <div class="snippet-label">Alpha</div>
+          <div class="snippet-label">Latest alpha</div>
           <div class="code-wrap">
             <button class="copy-btn" data-copy="win-alpha" aria-label="Copy alpha command">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
@@ -294,13 +293,26 @@
             <pre><code id="win-version"><span class="hl-cmd">&amp;</span> (<span class="hl-cmd">[ScriptBlock]</span>::<span class="hl-cmd">Create</span>((<span class="hl-cmd">irm</span> <span class="hl-url">https://arbin-com.github.io/mits11-release/install.ps1</span>))) <span class="hl-flag">5.0.1</span></code></pre>
           </div>
         </div>
-      </div>
-
-      <div class="panel" role="tabpanel" data-panel="linux">
-        <div class="section-title">Debian-based distros</div>
 
         <div class="snippet">
-          <div class="snippet-label">Stable (default)</div>
+          <div class="snippet-label">Silent mode (auto use default options without asking)</div>
+          <div class="code-wrap">
+            <button class="copy-btn" data-copy="win-silent" aria-label="Copy silent command">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2"></rect>
+                <rect x="2" y="2" width="13" height="13" rx="2"></rect>
+              </svg>
+            </button>
+            <pre><code id="win-silent"><span class="hl-cmd">&amp;</span> (<span class="hl-cmd">[ScriptBlock]</span>::<span class="hl-cmd">Create</span>((<span class="hl-cmd">irm</span> <span class="hl-url">https://arbin-com.github.io/mits11-release/install.ps1</span>))) <span class="hl-flag">alpha</span> <span class="hl-flag">-Silent</span></code></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel" role="tabpanel" data-panel="linux-mac">
+        <div class="section-title">Debian-based Linux distros or OSX 13+</div>
+
+        <div class="snippet">
+          <div class="snippet-label">Latest stable</div>
           <div class="code-wrap">
             <button class="copy-btn" data-copy="linux-stable" aria-label="Copy stable command">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
@@ -313,7 +325,7 @@
         </div>
 
         <div class="snippet">
-          <div class="snippet-label">Alpha</div>
+          <div class="snippet-label">Latest alpha</div>
           <div class="code-wrap">
             <button class="copy-btn" data-copy="linux-alpha" aria-label="Copy alpha command">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
@@ -337,49 +349,20 @@
             <pre><code id="linux-version"><span class="hl-cmd">curl</span> <span class="hl-flag">-fsSL</span> <span class="hl-url">https://arbin-com.github.io/mits11-release/install.sh</span> <span class="hl-pipe">|</span> <span class="hl-cmd">bash</span> <span class="hl-flag">-s</span> <span class="hl-flag">--</span> <span class="hl-flag">5.0.1</span></code></pre>
           </div>
         </div>
+
+        <div class="snippet">
+          <div class="snippet-label">Silent mode (auto use default options without asking)</div>
+          <div class="code-wrap">
+            <button class="copy-btn" data-copy="linux-silent" aria-label="Copy silent command">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2"></rect>
+                <rect x="2" y="2" width="13" height="13" rx="2"></rect>
+              </svg>
+            </button>
+            <pre><code id="linux-silent"><span class="hl-cmd">curl</span> <span class="hl-flag">-fsSL</span> <span class="hl-url">https://arbin-com.github.io/mits11-release/install.sh</span> <span class="hl-pipe">|</span> <span class="hl-cmd">bash</span> <span class="hl-flag">-s</span> <span class="hl-flag">--</span> <span class="hl-flag">alpha</span> <span class="hl-flag">--silent</span></code></pre>
+          </div>
+        </div>
       </div>
-
-      <div class="panel" role="tabpanel" data-panel="mac">
-        <div class="section-title">Terminal (bash/zsh)</div>
-
-        <div class="snippet">
-          <div class="snippet-label">Stable (default)</div>
-          <div class="code-wrap">
-            <button class="copy-btn" data-copy="mac-stable" aria-label="Copy stable command">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="9" y="9" width="13" height="13" rx="2"></rect>
-                <rect x="2" y="2" width="13" height="13" rx="2"></rect>
-              </svg>
-            </button>
-            <pre><code id="mac-stable"><span class="hl-cmd">curl</span> <span class="hl-flag">-fsSL</span> <span class="hl-url">https://arbin-com.github.io/mits11-release/install.sh</span> <span class="hl-pipe">|</span> <span class="hl-cmd">bash</span></code></pre>
-          </div>
-        </div>
-
-        <div class="snippet">
-          <div class="snippet-label">Alpha</div>
-          <div class="code-wrap">
-            <button class="copy-btn" data-copy="mac-alpha" aria-label="Copy alpha command">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="9" y="9" width="13" height="13" rx="2"></rect>
-                <rect x="2" y="2" width="13" height="13" rx="2"></rect>
-              </svg>
-            </button>
-            <pre><code id="mac-alpha"><span class="hl-cmd">curl</span> <span class="hl-flag">-fsSL</span> <span class="hl-url">https://arbin-com.github.io/mits11-release/install.sh</span> <span class="hl-pipe">|</span> <span class="hl-cmd">bash</span> <span class="hl-flag">-s</span> <span class="hl-flag">--</span> <span class="hl-flag">alpha</span></code></pre>
-          </div>
-        </div>
-
-        <div class="snippet">
-          <div class="snippet-label">Specific version</div>
-          <div class="code-wrap">
-            <button class="copy-btn" data-copy="mac-version" aria-label="Copy version command">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="9" y="9" width="13" height="13" rx="2"></rect>
-                <rect x="2" y="2" width="13" height="13" rx="2"></rect>
-              </svg>
-            </button>
-            <pre><code id="mac-version"><span class="hl-cmd">curl</span> <span class="hl-flag">-fsSL</span> <span class="hl-url">https://arbin-com.github.io/mits11-release/install.sh</span> <span class="hl-pipe">|</span> <span class="hl-cmd">bash</span> <span class="hl-flag">-s</span> <span class="hl-flag">--</span> <span class="hl-flag">5.0.1</span></code></pre>
-          </div>
-        </div>
       </div>
     </div>
 
