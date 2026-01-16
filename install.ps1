@@ -1,5 +1,6 @@
 param(
-  [string]$Target
+  [string]$Target,
+  [switch]$Silent
 )
 
 function Fail([string]$Message) {
@@ -107,6 +108,9 @@ try {
     $psExe = if ($PSVersionTable.PSEdition -eq 'Core') { Join-Path $PSHOME "pwsh.exe" } else { Join-Path $PSHOME "powershell.exe" }
     $sentinelPath = Join-Path $tmpDir "install-das.exitcode"
     $cmd = "`"$psExe`" -NoProfile -ExecutionPolicy Bypass -File `"$($installScript.FullName)`""
+    if ($Silent) {
+      $cmd = "$cmd -Silent"
+    }
     $cmd = "$cmd & echo %ERRORLEVEL% > `"$sentinelPath`" & pause"
     # Wrap the full command so cmd.exe doesn't break on paths with spaces.
     $cmdArg = "`"$cmd`""
@@ -132,7 +136,11 @@ try {
       }
     }
   } else {
-    & $installScript.FullName
+    if ($Silent) {
+      & $installScript.FullName -Silent
+    } else {
+      & $installScript.FullName
+    }
   }
 
   Write-Host "Done."
