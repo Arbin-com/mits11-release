@@ -3,28 +3,38 @@ set -euo pipefail
 
 usage() {
   cat <<'EOF'
-Usage: install.sh [stable|latest|alpha|VERSION]
+Usage: install.sh [stable|latest|alpha|VERSION] [--silent|--non-interactive]
 Examples:
   install.sh
   install.sh alpha
   install.sh 5.0.1
+  install.sh --silent
+  install.sh 5.0.1 --non-interactive
 EOF
 }
 
-TARGET="${1:-}"
-if [ "${2:-}" = "-h" ] || [ "${2:-}" = "--help" ]; then
-  usage
-  exit 0
-fi
-if [ "$TARGET" = "-h" ] || [ "$TARGET" = "--help" ]; then
-  usage
-  exit 0
-fi
-if [ -n "${2:-}" ]; then
-  echo "Unexpected argument: $2" >&2
-  usage
-  exit 1
-fi
+TARGET=""
+SILENT_FLAG=""
+for arg in "$@"; do
+  case "$arg" in
+  -h|--help)
+    usage
+    exit 0
+    ;;
+  --silent|--non-interactive)
+    SILENT_FLAG="--silent"
+    ;;
+  *)
+    if [ -z "$TARGET" ]; then
+      TARGET="$arg"
+    else
+      echo "Unexpected argument: $arg" >&2
+      usage
+      exit 1
+    fi
+    ;;
+  esac
+done
 
 if [[ -n "$TARGET" ]] && [[ ! "$TARGET" =~ ^(stable|latest|alpha|[0-9]+\.[0-9]+\.[0-9]+([\-+][^[:space:]]+)?)$ ]]; then
   echo "Invalid target: $TARGET" >&2
@@ -210,10 +220,14 @@ fi
 
 chmod +x "$install_script"
 echo "Running installer..."
+installer_args=()
+if [ -n "$SILENT_FLAG" ]; then
+  installer_args+=("$SILENT_FLAG")
+fi
 if [ -r /dev/tty ]; then
-  "$install_script" </dev/tty
+  "$install_script" "${installer_args[@]}" </dev/tty
 else
-  "$install_script"
+  "$install_script" "${installer_args[@]}"
 fi
 
 echo "Done."
