@@ -1,0 +1,26 @@
+{
+  "version": "5.0.15",
+  "channel": "stable",
+  "platforms": {
+    "osx-x64": {
+      "url": "https://github.com/Arbin-com/MITS11-stable/releases/download/5.0.15/MITS11.5.0.15-osx-x64.zip",
+      "sha256": "7a5f22fcfe2fac774da8134edcd7cd07ead028faeab8d4eeeaa677b1b19515d5"
+    },
+    "win-x64": {
+      "url": "https://github.com/Arbin-com/MITS11-stable/releases/download/5.0.15/MITS11.5.0.15-win-x64.zip",
+      "sha256": "056cd0034948bb367534406de215d31fd065a3edb9dd3838b24e933f4cb8900d"
+    },
+    "osx-arm64": {
+      "url": "https://github.com/Arbin-com/MITS11-stable/releases/download/5.0.15/MITS11.5.0.15-osx-arm64.zip",
+      "sha256": "7c840130361acbdedda3c210df79cdabf93f40ee103db051644fde4744bb03d6"
+    },
+    "linux-x64": {
+      "url": "https://github.com/Arbin-com/MITS11-stable/releases/download/5.0.15/MITS11.5.0.15-linux-x64.zip",
+      "sha256": "9afb753887dd9ab2a31c7655b4f3d39788f48df0890a237d72a9598df5333f71"
+    },
+    "linux-arm64": {
+      "url": "https://github.com/Arbin-com/MITS11-stable/releases/download/5.0.15/MITS11.5.0.15-linux-arm64.zip",
+      "sha256": "a2deb071135e742bf094504cef6d154ff57cbd80e020b2ec9c1df6d205e2fbf0"
+    }
+  }
+}
