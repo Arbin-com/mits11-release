@@ -13,6 +13,10 @@ function Test-Admin {
   return $currentUser.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
 }
 
+if (-not (Test-Admin)) {
+  Fail "Administrator privileges required. Re-run this script from an elevated PowerShell (Run as Administrator)."
+}
+
 if ($Target -and ($Target -notmatch '^(stable|latest|alpha|[0-9]+\.[0-9]+\.[0-9]+([\-+][^\s]+)?)$')) {
   Fail "Usage: install.ps1 [stable|latest|alpha|VERSION]"
 }
