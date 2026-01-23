@@ -1,0 +1,26 @@
+{
+  "version": "6.0.0-alpha+build.20260123.2",
+  "channel": "alpha",
+  "platforms": {
+    "osx-x64": {
+      "url": "https://github.com/Arbin-com/MITS11-develop/releases/download/6.0.0-alpha+build.20260123.2/MITS11.6.0.0-alpha+build.20260123.2-osx-x64.zip",
+      "sha256": "e88fdfda06b12361d59b9c9960193cb3640341051adbd2feaee504334f62ae0c"
+    },
+    "win-x64": {
+      "url": "https://github.com/Arbin-com/MITS11-develop/releases/download/6.0.0-alpha+build.20260123.2/MITS11.6.0.0-alpha+build.20260123.2-win-x64.zip",
+      "sha256": "d8fea331b6db683559a59e7045c76f7565aa1890441fc381321465beb09b7093"
+    },
+    "osx-arm64": {
+      "url": "https://github.com/Arbin-com/MITS11-develop/releases/download/6.0.0-alpha+build.20260123.2/MITS11.6.0.0-alpha+build.20260123.2-osx-arm64.zip",
+      "sha256": "48dc18424c5eb5ce43a7805629deef7edf9ad49568fe949c5381ddd3e7744719"
+    },
+    "linux-x64": {
+      "url": "https://github.com/Arbin-com/MITS11-develop/releases/download/6.0.0-alpha+build.20260123.2/MITS11.6.0.0-alpha+build.20260123.2-linux-x64.zip",
+      "sha256": "305770b8191f1a3e629eb47093507dd1d6a5f5d6b7056473d56f1482c00a24bb"
+    },
+    "linux-arm64": {
+      "url": "https://github.com/Arbin-com/MITS11-develop/releases/download/6.0.0-alpha+build.20260123.2/MITS11.6.0.0-alpha+build.20260123.2-linux-arm64.zip",
+      "sha256": "baf9494c4532905c99fd88a91c28512a6d11574ff249246258e360f28f2c2439"
+    }
+  }
+}
