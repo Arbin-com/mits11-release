@@ -17,8 +17,8 @@ if (-not (Test-Admin)) {
   Fail "Administrator privileges required. Re-run this script from an elevated PowerShell (Run as Administrator)."
 }
 
-if ($Target -and ($Target -notmatch '^(stable|latest|alpha|[0-9]+\.[0-9]+\.[0-9]+([\-+][^\s]+)?)$')) {
-  Fail "Usage: install.ps1 [stable|latest|alpha|VERSION]"
+if ($Target -and ($Target -notmatch '^(stable|latest|alpha|nightly|[0-9]+\.[0-9]+\.[0-9]+([\-+][^\s]+)?)$')) {
+  Fail "Usage: install.ps1 [stable|latest|alpha|nightly|VERSION]"
 }
 
 $baseUrl = "https://arbin-com.github.io/mits11-release"
@@ -47,6 +47,8 @@ if ($target -eq "stable" -or $target -eq "latest") {
   $version = (Get-Text "$baseUrl/stable").Trim()
 } elseif ($target -eq "alpha") {
   $version = (Get-Text "$baseUrl/alpha").Trim()
+} elseif ($target -eq "nightly") {
+  $version = (Get-Text "$baseUrl/nightly").Trim()
 } else {
   $version = $target
 }

@@ -235,7 +235,7 @@
     <div class="topbar">
       <div>
         <h1 class="title">MITS11 installation</h1>
-        <p class="subtitle">One-line install. Default is latest stable version. Use alpha or a version to override.</p>
+        <p class="subtitle">One-line install. Default is latest stable version. Use alpha, nightly, or a version to override.</p>
       </div>
       <label>
         <select class="theme-select" id="themeSelect" aria-label="Theme">
@@ -306,6 +306,32 @@
             <pre><code id="win-silent"><span class="hl-cmd">Set-ExecutionPolicy</span> <span class="hl-flag">Bypass</span> <span class="hl-flag">-Scope</span> <span class="hl-flag">Process</span> <span class="hl-flag">-Force</span>; <span class="hl-cmd">&amp;</span> (<span class="hl-cmd">[ScriptBlock]</span>::<span class="hl-cmd">Create</span>((<span class="hl-cmd">irm</span> <span class="hl-url">https://arbin-com.github.io/mits11-release/install.ps1</span>))) <span class="hl-flag">alpha</span> <span class="hl-flag">-Silent</span></code></pre>
           </div>
         </div>
+
+        <div class="snippet">
+          <div class="snippet-label">Latest nightly</div>
+          <div class="code-wrap">
+            <button class="copy-btn" data-copy="win-nightly" aria-label="Copy nightly command">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2"></rect>
+                <rect x="2" y="2" width="13" height="13" rx="2"></rect>
+              </svg>
+            </button>
+            <pre><code id="win-nightly"><span class="hl-cmd">Set-ExecutionPolicy</span> <span class="hl-flag">Bypass</span> <span class="hl-flag">-Scope</span> <span class="hl-flag">Process</span> <span class="hl-flag">-Force</span>; <span class="hl-cmd">&amp;</span> (<span class="hl-cmd">[ScriptBlock]</span>::<span class="hl-cmd">Create</span>((<span class="hl-cmd">irm</span> <span class="hl-url">https://arbin-com.github.io/mits11-release/install.ps1</span>))) <span class="hl-flag">nightly</span></code></pre>
+          </div>
+        </div>
+
+        <div class="snippet">
+          <div class="snippet-label">Nightly silent mode (auto use default options without asking)</div>
+          <div class="code-wrap">
+            <button class="copy-btn" data-copy="win-nightly-silent" aria-label="Copy nightly silent command">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2"></rect>
+                <rect x="2" y="2" width="13" height="13" rx="2"></rect>
+              </svg>
+            </button>
+            <pre><code id="win-nightly-silent"><span class="hl-cmd">Set-ExecutionPolicy</span> <span class="hl-flag">Bypass</span> <span class="hl-flag">-Scope</span> <span class="hl-flag">Process</span> <span class="hl-flag">-Force</span>; <span class="hl-cmd">&amp;</span> (<span class="hl-cmd">[ScriptBlock]</span>::<span class="hl-cmd">Create</span>((<span class="hl-cmd">irm</span> <span class="hl-url">https://arbin-com.github.io/mits11-release/install.ps1</span>))) <span class="hl-flag">nightly</span> <span class="hl-flag">-Silent</span></code></pre>
+          </div>
+        </div>
       </div>
 
       <div class="panel" role="tabpanel" data-panel="linux-mac">
@@ -360,6 +386,32 @@
               </svg>
             </button>
             <pre><code id="linux-silent"><span class="hl-cmd">curl</span> <span class="hl-flag">-fsSL</span> <span class="hl-url">https://arbin-com.github.io/mits11-release/install.sh</span> <span class="hl-pipe">|</span> <span class="hl-cmd">bash</span> <span class="hl-flag">-s</span> <span class="hl-flag">--</span> <span class="hl-flag">alpha</span> <span class="hl-flag">--silent</span></code></pre>
+          </div>
+        </div>
+
+        <div class="snippet">
+          <div class="snippet-label">Latest nightly</div>
+          <div class="code-wrap">
+            <button class="copy-btn" data-copy="linux-nightly" aria-label="Copy nightly command">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2"></rect>
+                <rect x="2" y="2" width="13" height="13" rx="2"></rect>
+              </svg>
+            </button>
+            <pre><code id="linux-nightly"><span class="hl-cmd">curl</span> <span class="hl-flag">-fsSL</span> <span class="hl-url">https://arbin-com.github.io/mits11-release/install.sh</span> <span class="hl-pipe">|</span> <span class="hl-cmd">bash</span> <span class="hl-flag">-s</span> <span class="hl-flag">--</span> <span class="hl-flag">nightly</span></code></pre>
+          </div>
+        </div>
+
+        <div class="snippet">
+          <div class="snippet-label">Nightly silent mode (auto use default options without asking)</div>
+          <div class="code-wrap">
+            <button class="copy-btn" data-copy="linux-nightly-silent" aria-label="Copy nightly silent command">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2"></rect>
+                <rect x="2" y="2" width="13" height="13" rx="2"></rect>
+              </svg>
+            </button>
+            <pre><code id="linux-nightly-silent"><span class="hl-cmd">curl</span> <span class="hl-flag">-fsSL</span> <span class="hl-url">https://arbin-com.github.io/mits11-release/install.sh</span> <span class="hl-pipe">|</span> <span class="hl-cmd">bash</span> <span class="hl-flag">-s</span> <span class="hl-flag">--</span> <span class="hl-flag">nightly</span> <span class="hl-flag">--silent</span></code></pre>
           </div>
         </div>
       </div>

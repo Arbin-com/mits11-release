@@ -3,11 +3,12 @@ set -euo pipefail
 
 usage() {
   cat <<'EOF'
-Usage: install.sh [stable|latest|alpha|VERSION] [--silent|--non-interactive]
+Usage: install.sh [stable|latest|alpha|nightly|VERSION] [--silent|--non-interactive]
 Examples:
   install.sh
   install.sh alpha
   install.sh 5.0.1
+  install.sh nightly
   install.sh --silent
   install.sh 5.0.1 --non-interactive
 EOF
@@ -36,7 +37,7 @@ for arg in "$@"; do
   esac
 done
 
-if [[ -n "$TARGET" ]] && [[ ! "$TARGET" =~ ^(stable|latest|alpha|[0-9]+\.[0-9]+\.[0-9]+([\-+][^[:space:]]+)?)$ ]]; then
+if [[ -n "$TARGET" ]] && [[ ! "$TARGET" =~ ^(stable|latest|alpha|nightly|[0-9]+\.[0-9]+\.[0-9]+([\-+][^[:space:]]+)?)$ ]]; then
   echo "Invalid target: $TARGET" >&2
   usage
   exit 1
@@ -143,6 +144,8 @@ if [[ "$target" == "stable" || "$target" == "latest" || -z "$target" ]]; then
   version="$(download_or_fail "$BASE_URL/stable")"
 elif [[ "$target" == "alpha" ]]; then
   version="$(download_or_fail "$BASE_URL/alpha")"
+elif [[ "$target" == "nightly" ]]; then
+  version="$(download_or_fail "$BASE_URL/nightly")"
 else
   version="$target"
 fi
