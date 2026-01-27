@@ -1,0 +1,26 @@
+{
+  "version": "6.0.0-dev.net10+build.20260127.1",
+  "channel": "nightly",
+  "platforms": {
+    "osx-x64": {
+      "url": "https://github.com/Arbin-com/MITS11-develop/releases/download/6.0.0-dev.net10+build.20260127.1/MITS11.6.0.0-dev.net10+build.20260127.1-osx-x64.zip",
+      "sha256": "8df2e6434ef5ff1c8b763ff4936778ca80f166a90a99b80d86c981611f85d89b"
+    },
+    "win-x64": {
+      "url": "https://github.com/Arbin-com/MITS11-develop/releases/download/6.0.0-dev.net10+build.20260127.1/MITS11.6.0.0-dev.net10+build.20260127.1-win-x64.zip",
+      "sha256": "bcee053d5f33335b0cde20fb8b003a266a3621290893b4b5e0165a6429e30f01"
+    },
+    "osx-arm64": {
+      "url": "https://github.com/Arbin-com/MITS11-develop/releases/download/6.0.0-dev.net10+build.20260127.1/MITS11.6.0.0-dev.net10+build.20260127.1-osx-arm64.zip",
+      "sha256": "f4b02970f9d1c3348e4ebd601d5a11ee17ea3bcf98e64587cfc9b5b514d6f921"
+    },
+    "linux-x64": {
+      "url": "https://github.com/Arbin-com/MITS11-develop/releases/download/6.0.0-dev.net10+build.20260127.1/MITS11.6.0.0-dev.net10+build.20260127.1-linux-x64.zip",
+      "sha256": "c857d59da46b3c1039663f3726b6ca2cf6b26c523f7fd5b87b7d5922eda3ef80"
+    },
+    "linux-arm64": {
+      "url": "https://github.com/Arbin-com/MITS11-develop/releases/download/6.0.0-dev.net10+build.20260127.1/MITS11.6.0.0-dev.net10+build.20260127.1-linux-arm64.zip",
+      "sha256": "d2d608aa477f0a1997b5f0c8db5dc6fa43cd25b2c3d99f6d64dcba6bf95db8d2"
+    }
+  }
+}
