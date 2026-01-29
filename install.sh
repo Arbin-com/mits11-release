@@ -180,36 +180,57 @@ fi
 
 keep_temp="${MITS11_KEEP_TEMP:-0}"
 tmp_dir="$(mktemp -d)"
+cache_dir="${MITS11_CACHE_DIR:-${TMPDIR:-/tmp}/mits11-cache}"
+mkdir -p "$cache_dir"
+zip_path="$cache_dir/mits11-${version}-${platform}.zip"
+extract_root="$tmp_dir/extract"
+install_success=0
 
 cleanup() {
-  if [ "$keep_temp" != "1" ] && [ -n "${tmp_dir:-}" ] && [ -d "$tmp_dir" ]; then
+  if [ "$keep_temp" = "1" ]; then
+    return
+  fi
+  if [ -n "${tmp_dir:-}" ] && [ -d "$tmp_dir" ]; then
     rm -rf "$tmp_dir"
+  fi
+  if [ "$install_success" = "1" ] && [ -n "${zip_path:-}" ]; then
+    rm -f "$zip_path"
   fi
 }
 trap cleanup EXIT
-zip_path="$tmp_dir/mits11-${version}-${platform}.zip"
-extract_root="$tmp_dir/extract"
-
-echo "Downloading MITS11 $version ($platform)..."
-download_or_fail "$url" "$zip_path"
 
 if [ "$os" = "darwin" ]; then
   if ! command -v shasum >/dev/null 2>&1; then
     echo "shasum is required but not installed" >&2
     exit 1
   fi
-  actual="$(shasum -a 256 "$zip_path" | cut -d' ' -f1)"
+  checksum_cmd() { shasum -a 256 "$1" | cut -d' ' -f1; }
 else
   if ! command -v sha256sum >/dev/null 2>&1; then
     echo "sha256sum is required but not installed" >&2
     exit 1
   fi
-  actual="$(sha256sum "$zip_path" | cut -d' ' -f1)"
+  checksum_cmd() { sha256sum "$1" | cut -d' ' -f1; }
 fi
 
-if [ "$actual" != "$checksum" ]; then
-  echo "Checksum verification failed" >&2
-  exit 1
+if [ -f "$zip_path" ]; then
+  actual="$(checksum_cmd "$zip_path")"
+  if [ "$actual" = "$checksum" ]; then
+    echo "Using cached package: $zip_path"
+  else
+    rm -f "$zip_path"
+  fi
+fi
+
+if [ ! -f "$zip_path" ]; then
+  echo "Downloading MITS11 $version ($platform)..."
+  download_or_fail "$url" "$zip_path"
+  actual="$(checksum_cmd "$zip_path")"
+  if [ "$actual" != "$checksum" ]; then
+    rm -f "$zip_path"
+    echo "Checksum verification failed" >&2
+    exit 1
+  fi
 fi
 
 mkdir -p "$extract_root"
@@ -233,4 +254,5 @@ else
   "$install_script" "${installer_args[@]}"
 fi
 
+install_success=1
 echo "Done."

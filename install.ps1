@@ -82,23 +82,38 @@ if ($checksum -notmatch '^[a-f0-9]{64}$') {
 }
 
 $tmpDir = Join-Path $env:TEMP ("mits11-" + [guid]::NewGuid().ToString("N"))
-$zipPath = Join-Path $tmpDir "mits11-$version-$platform.zip"
+$cacheDir = if ($env:MITS11_CACHE_DIR) { $env:MITS11_CACHE_DIR } else { Join-Path $env:TEMP "mits11-cache" }
+$zipPath = Join-Path $cacheDir "mits11-$version-$platform.zip"
 $extractRoot = Join-Path $tmpDir "extract"
 $keepTemp = $env:MITS11_KEEP_TEMP -eq "1"
+$installSuccess = $false
 
 try {
   New-Item -ItemType Directory -Path $tmpDir | Out-Null
+  New-Item -ItemType Directory -Path $cacheDir -Force | Out-Null
 
-  Write-Host "Downloading MITS11 $version ($platform)..."
-  try {
-    Invoke-WebRequest -Uri $url -OutFile $zipPath -UseBasicParsing
-  } catch {
-    Fail "Download failed"
+  if (Test-Path $zipPath) {
+    $actual = (Get-FileHash -Algorithm SHA256 -Path $zipPath).Hash.ToLower()
+    if ($actual -eq $checksum.ToLower()) {
+      Write-Host "Using cached package: $zipPath"
+    } else {
+      Remove-Item -Force $zipPath -ErrorAction SilentlyContinue
+    }
   }
 
-  $actual = (Get-FileHash -Algorithm SHA256 -Path $zipPath).Hash.ToLower()
-  if ($actual -ne $checksum.ToLower()) {
-    Fail "Checksum verification failed"
+  if (-not (Test-Path $zipPath)) {
+    Write-Host "Downloading MITS11 $version ($platform)..."
+    try {
+      Invoke-WebRequest -Uri $url -OutFile $zipPath -UseBasicParsing
+    } catch {
+      Fail "Download failed"
+    }
+
+    $actual = (Get-FileHash -Algorithm SHA256 -Path $zipPath).Hash.ToLower()
+    if ($actual -ne $checksum.ToLower()) {
+      Remove-Item -Force $zipPath -ErrorAction SilentlyContinue
+      Fail "Checksum verification failed"
+    }
   }
 
   New-Item -ItemType Directory -Path $extractRoot | Out-Null
@@ -119,13 +134,19 @@ try {
     & $installScript.FullName
   }
 
+  $installSuccess = $true
   Write-Host "Done."
 } finally {
-  if (-not $keepTemp -and (Test-Path $tmpDir)) {
-    try {
-      Remove-Item -Recurse -Force $tmpDir -ErrorAction Stop
-    } catch {
-      Write-Warning "Could not remove temp dir: $tmpDir. Try again after reboot."
+  if (-not $keepTemp) {
+    if (Test-Path $tmpDir) {
+      try {
+        Remove-Item -Recurse -Force $tmpDir -ErrorAction Stop
+      } catch {
+        Write-Warning "Could not remove temp dir: $tmpDir. Try again after reboot."
+      }
+    }
+    if ($installSuccess -and (Test-Path $zipPath)) {
+      Remove-Item -Force $zipPath -ErrorAction SilentlyContinue
     }
   }
 }
