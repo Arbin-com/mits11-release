@@ -1,0 +1,51 @@
+{
+  "version": "6.0.6",
+  "channel": "stable",
+  "platforms": {
+    "linux-arm64": {
+      "url": "https://github.com/Arbin-com/MITS11-stable/releases/download/6.0.6/MITS11.6.0.6-linux-arm64.zip",
+      "github_asset_api_url": "https://api.github.com/repos/Arbin-com/MITS11-stable/releases/assets/387711886",
+      "github_owner": "Arbin-com",
+      "github_repo": "MITS11-stable",
+      "github_tag": "6.0.6",
+      "github_asset": "MITS11.6.0.6-linux-arm64.zip",
+      "sha256": "4429c3257bc0979740c2b856ba1e567608c952da99be2fc295b84fe295ee7b54"
+    },
+    "osx-x64": {
+      "url": "https://github.com/Arbin-com/MITS11-stable/releases/download/6.0.6/MITS11.6.0.6-osx-x64.zip",
+      "github_asset_api_url": "https://api.github.com/repos/Arbin-com/MITS11-stable/releases/assets/387695090",
+      "github_owner": "Arbin-com",
+      "github_repo": "MITS11-stable",
+      "github_tag": "6.0.6",
+      "github_asset": "MITS11.6.0.6-osx-x64.zip",
+      "sha256": "2b80d8b34d812c90c18bba64004ebc01ccfc0d6e12f4801619f16e8c11863fbc"
+    },
+    "osx-arm64": {
+      "url": "https://github.com/Arbin-com/MITS11-stable/releases/download/6.0.6/MITS11.6.0.6-osx-arm64.zip",
+      "github_asset_api_url": "https://api.github.com/repos/Arbin-com/MITS11-stable/releases/assets/387697069",
+      "github_owner": "Arbin-com",
+      "github_repo": "MITS11-stable",
+      "github_tag": "6.0.6",
+      "github_asset": "MITS11.6.0.6-osx-arm64.zip",
+      "sha256": "06cfc81a0cba593b7b6c3818904824b14874eec1fa6e1d6ff4899fc091cabc92"
+    },
+    "win-x64": {
+      "url": "https://github.com/Arbin-com/MITS11-stable/releases/download/6.0.6/MITS11.6.0.6-win-x64.zip",
+      "github_asset_api_url": "https://api.github.com/repos/Arbin-com/MITS11-stable/releases/assets/387694983",
+      "github_owner": "Arbin-com",
+      "github_repo": "MITS11-stable",
+      "github_tag": "6.0.6",
+      "github_asset": "MITS11.6.0.6-win-x64.zip",
+      "sha256": "acae8a1dfd8e061ff2425b083e9ae3a22810d6881fd91c93474a316676e0e935"
+    },
+    "linux-x64": {
+      "url": "https://github.com/Arbin-com/MITS11-stable/releases/download/6.0.6/MITS11.6.0.6-linux-x64.zip",
+      "github_asset_api_url": "https://api.github.com/repos/Arbin-com/MITS11-stable/releases/assets/387730917",
+      "github_owner": "Arbin-com",
+      "github_repo": "MITS11-stable",
+      "github_tag": "6.0.6",
+      "github_asset": "MITS11.6.0.6-linux-x64.zip",
+      "sha256": "77d8cd8579093e6df1f3b076d700aca6d2effa4046895befaaf43747544cbcd3"
+    }
+  }
+}
