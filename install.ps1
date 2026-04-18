@@ -452,19 +452,36 @@ try {
   New-Item -ItemType Directory -Path $extractRoot | Out-Null
   Expand-Archive -Path $zipPath -DestinationPath $extractRoot -Force
 
-  $installScript = Get-ChildItem -Path $extractRoot -Recurse -Filter "install-das.ps1" | Select-Object -First 1
-  if (-not $installScript) {
-    Fail "Installer not found in package"
-  }
-
   Write-Host "Running installer..."
   if (-not (Test-Admin)) {
     Fail "Administrator privileges required. Re-run this script from an elevated PowerShell (Run as Administrator)."
   }
-  if ($Silent) {
-    & $installScript.FullName -Silent
+
+  $legacyInstallScript = Get-ChildItem -Path $extractRoot -Recurse -Filter "install-das.ps1" | Select-Object -First 1
+  if ($legacyInstallScript) {
+    if ($Silent) {
+      & $legacyInstallScript.FullName -Silent
+    } else {
+      & $legacyInstallScript.FullName
+    }
+    $installExitCode = $LASTEXITCODE
   } else {
-    & $installScript.FullName
+    $installerExe = Join-Path $extractRoot "installer.exe"
+    if (-not (Test-Path $installerExe)) {
+      Fail "Installer not found in package root: $installerExe"
+    }
+
+    $installerArgs = @()
+    if ($Silent) {
+      $installerArgs += "--silent"
+    }
+
+    & $installerExe @installerArgs
+    $installExitCode = $LASTEXITCODE
+  }
+
+  if ($installExitCode -ne 0) {
+    Fail "Installer failed with exit code $installExitCode"
   }
 
   $installSuccess = $true
