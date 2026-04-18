@@ -475,16 +475,12 @@ try {
     if ($Silent) {
       $installerArgs += "--silent"
     }
+    $installerArgs += "--no-pause-on-exit"
 
     # Run the installer from a neutral working directory so it does not keep the
     # extracted temp tree as its current directory and block cleanup on exit.
-    $installerProcess = Start-Process `
-      -FilePath $installerExe.FullName `
-      -ArgumentList $installerArgs `
-      -WorkingDirectory $env:TEMP `
-      -Wait `
-      -PassThru
-    $installExitCode = $installerProcess.ExitCode
+    & $installerExe.FullName @installerArgs
+    $installExitCode = $LASTEXITCODE
   }
 
   if ($installExitCode -ne 0) {
