@@ -466,9 +466,9 @@ try {
     }
     $installExitCode = $LASTEXITCODE
   } else {
-    $installerExe = Join-Path $extractRoot "installer.exe"
+    $installerExe = Get-ChildItem -Path $extractRoot -Recurse -File -Filter "installer.exe" | Select-Object -First 1
     if (-not (Test-Path $installerExe)) {
-      Fail "Installer not found in package root: $installerExe"
+      Fail "Installer not found in package: expected installer.exe anywhere under $extractRoot"
     }
 
     $installerArgs = @()
@@ -476,7 +476,7 @@ try {
       $installerArgs += "--silent"
     }
 
-    & $installerExe @installerArgs
+    & $installerExe.FullName @installerArgs
     $installExitCode = $LASTEXITCODE
   }
 
