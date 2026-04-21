@@ -11,6 +11,21 @@ function Fail([string]$Message) {
   exit 1
 }
 
+function Remove-TreeWithRetry([string]$Path, [int]$Attempts = 3, [int]$DelaySeconds = 1) {
+  for ($i = 1; $i -le $Attempts; $i++) {
+    try {
+      Remove-Item -Recurse -Force $Path -ErrorAction Stop
+      return $true
+    } catch {
+      if ($i -lt $Attempts) {
+        Start-Sleep -Seconds $DelaySeconds
+        continue
+      }
+    }
+  }
+  return $false
+}
+
 function Get-WebErrorDetail($ErrorRecord) {
   $response = $ErrorRecord.Exception.Response
   if (-not $response) {
@@ -492,9 +507,7 @@ try {
 } finally {
   if (-not $keepTemp) {
     if (Test-Path $tmpDir) {
-      try {
-        Remove-Item -Recurse -Force $tmpDir -ErrorAction Stop
-      } catch {
+      if (-not (Remove-TreeWithRetry -Path $tmpDir)) {
         Write-Warning "Could not remove temp dir: $tmpDir. Try again after reboot."
       }
     }
