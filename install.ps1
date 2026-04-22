@@ -423,7 +423,7 @@ if ($checksum -notmatch '^[a-f0-9]{64}$') {
 }
 
 $tmpDir = Join-Path $env:TEMP ("mits11-" + [guid]::NewGuid().ToString("N"))
-$cacheDir = if ($env:MITS11_CACHE_DIR) { $env:MITS11_CACHE_DIR } else { Join-Path $env:TEMP "mits11-cache" }
+$cacheDir = if ($env:MITS11_CACHE_DIR) { $env:MITS11_CACHE_DIR } else { Join-Path $script:ConfigDir "cache" }
 $zipPath = Join-Path $cacheDir "mits11-$version-$platform.zip"
 $extractRoot = Join-Path $tmpDir "extract"
 $keepTemp = $env:MITS11_KEEP_TEMP -eq "1"
@@ -482,7 +482,7 @@ try {
     $installExitCode = $LASTEXITCODE
   } else {
     $installerExe = Get-ChildItem -Path $extractRoot -Recurse -File -Filter "installer.exe" | Select-Object -First 1
-    if (-not (Test-Path $installerExe)) {
+    if (-not $installerExe) {
       Fail "Installer not found in package: expected installer.exe anywhere under $extractRoot"
     }
 
