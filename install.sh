@@ -771,10 +771,18 @@ installer_args=()
 if [ -n "$SILENT_FLAG" ]; then
   installer_args+=("$SILENT_FLAG")
 fi
-if [ -r /dev/tty ]; then
-  "$install_script" "${installer_args[@]}" </dev/tty
+if [ "${#installer_args[@]}" -gt 0 ]; then
+  if [ -r /dev/tty ]; then
+    "$install_script" "${installer_args[@]}" </dev/tty
+  else
+    "$install_script" "${installer_args[@]}"
+  fi
 else
-  "$install_script" "${installer_args[@]}"
+  if [ -r /dev/tty ]; then
+    "$install_script" </dev/tty
+  else
+    "$install_script"
+  fi
 fi
 
 install_success=1
