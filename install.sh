@@ -126,6 +126,37 @@ download_or_fail() {
   fi
 }
 
+download_with_progress() {
+  local url="$1"
+  local out="$2"
+
+  if [ "$DOWNLOADER" = "curl" ]; then
+    if [ -t 2 ]; then
+      curl --fail --location --show-error --progress-bar -o "$out" "$url"
+    else
+      curl -fsSL -o "$out" "$url"
+    fi
+  else
+    if [ -t 2 ]; then
+      wget --progress=bar:force:noscroll -O "$out" "$url"
+    else
+      wget -q -O "$out" "$url"
+    fi
+  fi
+}
+
+download_with_progress_or_fail() {
+  local url="$1"
+  local out="${2:-}"
+  if ! download_with_progress "$url" "$out"; then
+    echo "Failed to download $url" >&2
+    if [[ "$url" == https://github.com/*/releases/download/* || "$url" == https://api.github.com/repos/*/releases/* ]]; then
+      echo "This looks like a GitHub release download. If the repository is private, use --auth app or --auth pat, or set GH_TOKEN/GITHUB_TOKEN." >&2
+    fi
+    exit 1
+  fi
+}
+
 urlencode() {
   local value="$1"
   local encoded=""
@@ -549,19 +580,38 @@ download_github_asset() {
   resolve_github_auth
 
   if [ "$DOWNLOADER" = "curl" ]; then
-    curl -fsSL \
-      -H "Accept: application/octet-stream" \
-      -H "Authorization: Bearer $GITHUB_AUTH_TOKEN" \
-      -H "X-GitHub-Api-Version: 2022-11-28" \
-      -o "$out" \
-      "$url"
+    if [ -t 2 ]; then
+      curl --fail --location --show-error --progress-bar \
+        -H "Accept: application/octet-stream" \
+        -H "Authorization: Bearer $GITHUB_AUTH_TOKEN" \
+        -H "X-GitHub-Api-Version: 2022-11-28" \
+        -o "$out" \
+        "$url"
+    else
+      curl -fsSL \
+        -H "Accept: application/octet-stream" \
+        -H "Authorization: Bearer $GITHUB_AUTH_TOKEN" \
+        -H "X-GitHub-Api-Version: 2022-11-28" \
+        -o "$out" \
+        "$url"
+    fi
   else
-    wget -q \
-      --header="Accept: application/octet-stream" \
-      --header="Authorization: Bearer $GITHUB_AUTH_TOKEN" \
-      --header="X-GitHub-Api-Version: 2022-11-28" \
-      -O "$out" \
-      "$url"
+    if [ -t 2 ]; then
+      wget \
+        --progress=bar:force:noscroll \
+        --header="Accept: application/octet-stream" \
+        --header="Authorization: Bearer $GITHUB_AUTH_TOKEN" \
+        --header="X-GitHub-Api-Version: 2022-11-28" \
+        -O "$out" \
+        "$url"
+    else
+      wget -q \
+        --header="Accept: application/octet-stream" \
+        --header="Authorization: Bearer $GITHUB_AUTH_TOKEN" \
+        --header="X-GitHub-Api-Version: 2022-11-28" \
+        -O "$out" \
+        "$url"
+    fi
   fi
 }
 
@@ -746,7 +796,7 @@ if [ ! -f "$zip_path" ]; then
       exit 1
     fi
   else
-    download_or_fail "$url" "$zip_path"
+    download_with_progress_or_fail "$url" "$zip_path"
   fi
   actual="$(checksum_cmd "$zip_path")"
   if [ "$actual" != "$checksum" ]; then
