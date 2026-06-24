@@ -100,13 +100,13 @@ download() {
   local url="$1"
   local out="${2:-}"
   if [ "$DOWNLOADER" = "curl" ]; then
-    if [ -n "$out" ]; then
+    if [ -n "$out" ] && [ "$out" != "-" ]; then
       curl -fsSL -o "$out" "$url"
     else
       curl -fsSL "$url"
     fi
   else
-    if [ -n "$out" ]; then
+    if [ -n "$out" ] && [ "$out" != "-" ]; then
       wget -q -O "$out" "$url"
     else
       wget -q -O - "$url"
@@ -580,39 +580,94 @@ download_github_asset() {
   resolve_github_auth
 
   if [ "$DOWNLOADER" = "curl" ]; then
-    if [ -t 2 ]; then
-      curl --fail --location --show-error --progress-bar \
-        -H "Accept: application/octet-stream" \
-        -H "Authorization: Bearer $GITHUB_AUTH_TOKEN" \
-        -H "X-GitHub-Api-Version: 2022-11-28" \
-        -o "$out" \
-        "$url"
+    if [ -n "$out" ] && [ "$out" != "-" ]; then
+      if [ -t 2 ]; then
+        curl --fail --location --show-error --progress-bar \
+          -H "Accept: application/octet-stream" \
+          -H "Authorization: Bearer $GITHUB_AUTH_TOKEN" \
+          -H "X-GitHub-Api-Version: 2022-11-28" \
+          -o "$out" \
+          "$url"
+      else
+        curl -fsSL \
+          -H "Accept: application/octet-stream" \
+          -H "Authorization: Bearer $GITHUB_AUTH_TOKEN" \
+          -H "X-GitHub-Api-Version: 2022-11-28" \
+          -o "$out" \
+          "$url"
+      fi
     else
-      curl -fsSL \
-        -H "Accept: application/octet-stream" \
-        -H "Authorization: Bearer $GITHUB_AUTH_TOKEN" \
-        -H "X-GitHub-Api-Version: 2022-11-28" \
-        -o "$out" \
-        "$url"
+      if [ -t 2 ]; then
+        curl --fail --location --show-error --progress-bar \
+          -H "Accept: application/octet-stream" \
+          -H "Authorization: Bearer $GITHUB_AUTH_TOKEN" \
+          -H "X-GitHub-Api-Version: 2022-11-28" \
+          -o - \
+          "$url"
+      else
+        curl -fsSL \
+          -H "Accept: application/octet-stream" \
+          -H "Authorization: Bearer $GITHUB_AUTH_TOKEN" \
+          -H "X-GitHub-Api-Version: 2022-11-28" \
+          -o - \
+          "$url"
+      fi
     fi
   else
-    if [ -t 2 ]; then
-      wget \
-        --progress=bar:force:noscroll \
-        --header="Accept: application/octet-stream" \
-        --header="Authorization: Bearer $GITHUB_AUTH_TOKEN" \
-        --header="X-GitHub-Api-Version: 2022-11-28" \
-        -O "$out" \
-        "$url"
+    if [ -n "$out" ] && [ "$out" != "-" ]; then
+      if [ -t 2 ]; then
+        wget \
+          --progress=bar:force:noscroll \
+          --header="Accept: application/octet-stream" \
+          --header="Authorization: Bearer $GITHUB_AUTH_TOKEN" \
+          --header="X-GitHub-Api-Version: 2022-11-28" \
+          -O "$out" \
+          "$url"
+      else
+        wget -q \
+          --header="Accept: application/octet-stream" \
+          --header="Authorization: Bearer $GITHUB_AUTH_TOKEN" \
+          --header="X-GitHub-Api-Version: 2022-11-28" \
+          -O "$out" \
+          "$url"
+      fi
     else
-      wget -q \
-        --header="Accept: application/octet-stream" \
-        --header="Authorization: Bearer $GITHUB_AUTH_TOKEN" \
-        --header="X-GitHub-Api-Version: 2022-11-28" \
-        -O "$out" \
-        "$url"
+      if [ -t 2 ]; then
+        wget \
+          --progress=bar:force:noscroll \
+          --header="Accept: application/octet-stream" \
+          --header="Authorization: Bearer $GITHUB_AUTH_TOKEN" \
+          --header="X-GitHub-Api-Version: 2022-11-28" \
+          -O - \
+          "$url"
+      else
+        wget -q \
+          --header="Accept: application/octet-stream" \
+          --header="Authorization: Bearer $GITHUB_AUTH_TOKEN" \
+          --header="X-GitHub-Api-Version: 2022-11-28" \
+          -O - \
+          "$url"
+      fi
     fi
   fi
+}
+
+prompt_yes_no_default_yes() {
+  local prompt="$1"
+  local answer=""
+
+  if [ -r /dev/tty ]; then
+    printf '%s [Y/n] ' "$prompt" >/dev/tty
+    if IFS= read -r answer </dev/tty; then
+      case "$answer" in
+        n|N|no|NO|No)
+          return 1
+          ;;
+      esac
+    fi
+  fi
+
+  return 0
 }
 
 normalize_json() {
@@ -741,11 +796,53 @@ if [[ ! "$checksum" =~ ^[a-f0-9]{64}$ ]]; then
 fi
 
 keep_temp="${MITS11_KEEP_TEMP:-0}"
-tmp_dir="$(mktemp -d)"
-cache_dir="${MITS11_CACHE_DIR:-${TMPDIR:-/tmp}/mits11-cache}"
-mkdir -p "$cache_dir"
+
+default_cache_root="${TMPDIR:-/tmp}/mits11-cache"
+if [ "$os" = "linux" ] && [ "$arch" = "arm64" ]; then
+  default_cache_root="/usr/local/mits11-cache"
+fi
+
+cache_root="${MITS11_CACHE_DIR:-$default_cache_root}"
+use_sudo=0
+case "$cache_root" in
+  /usr/local|/usr/local/*)
+    if [ "$(id -u)" -ne 0 ]; then
+      if command -v sudo >/dev/null 2>&1; then
+        use_sudo=1
+      elif prompt_yes_no_default_yes "/usr/local is unavailable. Use /tmp instead?"; then
+        cache_root="${TMPDIR:-/tmp}/mits11-cache"
+      else
+        echo "Installer requires a writable cache root" >&2
+        exit 1
+      fi
+    fi
+    ;;
+esac
+
+cache_dir="$cache_root/$version/$platform"
 zip_path="$cache_dir/mits11-${version}-${platform}.zip"
+tmp_dir="$cache_dir/.extract-${version}-${platform}-$$"
 extract_root="$tmp_dir/extract"
+
+run_priv() {
+  if [ "$use_sudo" -eq 1 ]; then
+    sudo "$@"
+  else
+    "$@"
+  fi
+}
+
+write_stream_to_file() {
+  local out="$1"
+  if [ "$use_sudo" -eq 1 ]; then
+    sudo tee "$out" >/dev/null
+  else
+    cat >"$out"
+  fi
+}
+
+run_priv mkdir -p "$cache_dir"
+run_priv mkdir -p "$extract_root"
 install_success=0
 
 cleanup() {
@@ -753,10 +850,10 @@ cleanup() {
     return
   fi
   if [ -n "${tmp_dir:-}" ] && [ -d "$tmp_dir" ]; then
-    rm -rf "$tmp_dir"
+    run_priv rm -rf "$tmp_dir"
   fi
   if [ "$install_success" = "1" ] && [ -n "${zip_path:-}" ]; then
-    rm -f "$zip_path"
+    run_priv rm -f "$zip_path"
   fi
 }
 trap cleanup EXIT
@@ -780,7 +877,7 @@ if [ -f "$zip_path" ]; then
   if [ "$actual" = "$checksum" ]; then
     echo "Using cached package: $zip_path"
   else
-    rm -f "$zip_path"
+    run_priv rm -f "$zip_path"
   fi
 fi
 
@@ -790,24 +887,28 @@ if [ ! -f "$zip_path" ]; then
     github_asset_api_url="$(resolve_github_asset_api_url_from_metadata "$github_owner" "$github_repo" "$github_tag" "$github_asset")"
   fi
   if [ -n "$github_asset_api_url" ]; then
-    if ! download_github_asset "$github_asset_api_url" "$zip_path"; then
+    if ! download_github_asset "$github_asset_api_url" - | write_stream_to_file "$zip_path"; then
       echo "Failed to download ${github_owner:-GitHub}/${github_repo:-release} asset ${github_asset:-for $platform}" >&2
       echo "Auth mode: ${AUTH_KIND:-unknown}. If this is a private repository, re-run with --auth app or --auth pat, or refresh your cached GitHub App login." >&2
       exit 1
     fi
   else
-    download_with_progress_or_fail "$url" "$zip_path"
+    if ! download_with_progress "$url" - | write_stream_to_file "$zip_path"; then
+      echo "Failed to download $url" >&2
+      exit 1
+    fi
   fi
+  run_priv chmod 0644 "$zip_path"
   actual="$(checksum_cmd "$zip_path")"
   if [ "$actual" != "$checksum" ]; then
-    rm -f "$zip_path"
+    run_priv rm -f "$zip_path"
     echo "Checksum verification failed" >&2
     exit 1
   fi
 fi
 
-mkdir -p "$extract_root"
-unzip -q "$zip_path" -d "$extract_root"
+run_priv mkdir -p "$extract_root"
+run_priv unzip -q "$zip_path" -d "$extract_root"
 
 install_script="$(find "$extract_root" -type f -path "*/script/install.sh" | head -n 1)"
 if [ -z "$install_script" ]; then
@@ -815,7 +916,7 @@ if [ -z "$install_script" ]; then
   exit 1
 fi
 
-chmod +x "$install_script"
+run_priv chmod +x "$install_script"
 echo "Running installer..."
 installer_args=()
 if [ -n "$SILENT_FLAG" ]; then
@@ -823,15 +924,31 @@ if [ -n "$SILENT_FLAG" ]; then
 fi
 if [ "${#installer_args[@]}" -gt 0 ]; then
   if [ -r /dev/tty ]; then
-    "$install_script" "${installer_args[@]}" </dev/tty
+    if [ "$use_sudo" -eq 1 ]; then
+      sudo "$install_script" "${installer_args[@]}" </dev/tty
+    else
+      "$install_script" "${installer_args[@]}" </dev/tty
+    fi
   else
-    "$install_script" "${installer_args[@]}"
+    if [ "$use_sudo" -eq 1 ]; then
+      sudo "$install_script" "${installer_args[@]}"
+    else
+      "$install_script" "${installer_args[@]}"
+    fi
   fi
 else
   if [ -r /dev/tty ]; then
-    "$install_script" </dev/tty
+    if [ "$use_sudo" -eq 1 ]; then
+      sudo "$install_script" </dev/tty
+    else
+      "$install_script" </dev/tty
+    fi
   else
-    "$install_script"
+    if [ "$use_sudo" -eq 1 ]; then
+      sudo "$install_script"
+    else
+      "$install_script"
+    fi
   fi
 fi
 
