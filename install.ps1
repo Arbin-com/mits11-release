@@ -428,6 +428,7 @@ $zipPath = Join-Path $cacheDir "mits11-$version-$platform.zip"
 $extractRoot = Join-Path $tmpDir "extract"
 $keepTemp = $env:MITS11_KEEP_TEMP -eq "1"
 $installSuccess = $false
+$downloadVerified = $false
 
 try {
   New-Item -ItemType Directory -Path $tmpDir | Out-Null
@@ -437,6 +438,7 @@ try {
     $actual = (Get-FileHash -Algorithm SHA256 -Path $zipPath).Hash.ToLower()
     if ($actual -eq $checksum.ToLower()) {
       Write-Host "Using cached package: $zipPath"
+      $downloadVerified = $true
     } else {
       Remove-Item -Force $zipPath -ErrorAction SilentlyContinue
     }
@@ -462,6 +464,7 @@ try {
       Remove-Item -Force $zipPath -ErrorAction SilentlyContinue
       Fail "Checksum verification failed"
     }
+    $downloadVerified = $true
   }
 
   New-Item -ItemType Directory -Path $extractRoot | Out-Null
@@ -512,7 +515,7 @@ try {
         Write-Warning "Could not remove temp dir: $tmpDir. Try again after reboot."
       }
     }
-    if ($installSuccess -and (Test-Path $zipPath)) {
+    if ($installSuccess -and $downloadVerified -and (Test-Path $zipPath)) {
       Remove-Item -Force $zipPath -ErrorAction SilentlyContinue
     }
   }
