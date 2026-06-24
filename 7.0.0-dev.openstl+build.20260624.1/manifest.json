@@ -1,0 +1,51 @@
+{
+  "version": "7.0.0-dev.openstl+build.20260624.1",
+  "channel": "nightly",
+  "platforms": {
+    "linux-x64": {
+      "url": "https://github.com/Arbin-com/MITS11-develop/releases/download/7.0.0-dev.openstl+build.20260624.1/MITS11.7.0.0-dev.openstl+build.20260624.1-linux-x64.zip",
+      "github_asset_api_url": "https://api.github.com/repos/Arbin-com/MITS11-develop/releases/assets/456523962",
+      "github_owner": "Arbin-com",
+      "github_repo": "MITS11-develop",
+      "github_tag": "7.0.0-dev.openstl+build.20260624.1",
+      "github_asset": "MITS11.7.0.0-dev.openstl+build.20260624.1-linux-x64.zip",
+      "sha256": "d7a7af26d8f47b34fde9e5a156cb99d8ba1a02e2b8bbbf3764b456ccf8690acc"
+    },
+    "osx-arm64": {
+      "url": "https://github.com/Arbin-com/MITS11-develop/releases/download/7.0.0-dev.openstl+build.20260624.1/MITS11.7.0.0-dev.openstl+build.20260624.1-osx-arm64.zip",
+      "github_asset_api_url": "https://api.github.com/repos/Arbin-com/MITS11-develop/releases/assets/456514554",
+      "github_owner": "Arbin-com",
+      "github_repo": "MITS11-develop",
+      "github_tag": "7.0.0-dev.openstl+build.20260624.1",
+      "github_asset": "MITS11.7.0.0-dev.openstl+build.20260624.1-osx-arm64.zip",
+      "sha256": "b5a45142bf9cb814399818499d67c74b86541ce9036c2e68c29dbebc985f511f"
+    },
+    "osx-x64": {
+      "url": "https://github.com/Arbin-com/MITS11-develop/releases/download/7.0.0-dev.openstl+build.20260624.1/MITS11.7.0.0-dev.openstl+build.20260624.1-osx-x64.zip",
+      "github_asset_api_url": "https://api.github.com/repos/Arbin-com/MITS11-develop/releases/assets/456513958",
+      "github_owner": "Arbin-com",
+      "github_repo": "MITS11-develop",
+      "github_tag": "7.0.0-dev.openstl+build.20260624.1",
+      "github_asset": "MITS11.7.0.0-dev.openstl+build.20260624.1-osx-x64.zip",
+      "sha256": "f9c50ee5b9f5c6d1f4315c82a93217cfe77c77d073238f5e857e979d61f54945"
+    },
+    "win-x64": {
+      "url": "https://github.com/Arbin-com/MITS11-develop/releases/download/7.0.0-dev.openstl+build.20260624.1/MITS11.7.0.0-dev.openstl+build.20260624.1-win-x64.zip",
+      "github_asset_api_url": "https://api.github.com/repos/Arbin-com/MITS11-develop/releases/assets/456509785",
+      "github_owner": "Arbin-com",
+      "github_repo": "MITS11-develop",
+      "github_tag": "7.0.0-dev.openstl+build.20260624.1",
+      "github_asset": "MITS11.7.0.0-dev.openstl+build.20260624.1-win-x64.zip",
+      "sha256": "c1c6a8a731e08cea2f3cd71371019e280fa27bda7e45682dab16a836207a25af"
+    },
+    "linux-arm64": {
+      "url": "https://github.com/Arbin-com/MITS11-develop/releases/download/7.0.0-dev.openstl+build.20260624.1/MITS11.7.0.0-dev.openstl+build.20260624.1-linux-arm64.zip",
+      "github_asset_api_url": "https://api.github.com/repos/Arbin-com/MITS11-develop/releases/assets/456519402",
+      "github_owner": "Arbin-com",
+      "github_repo": "MITS11-develop",
+      "github_tag": "7.0.0-dev.openstl+build.20260624.1",
+      "github_asset": "MITS11.7.0.0-dev.openstl+build.20260624.1-linux-arm64.zip",
+      "sha256": "3df0062ea3396e5d4daf6b72d38d6252e81f46218963e3ad0545509ff998d666"
+    }
+  }
+}
