@@ -673,6 +673,24 @@ prompt_yes_no_default_yes() {
   return 0
 }
 
+prompt_yes_no_default_no() {
+  local prompt="$1"
+  local answer=""
+
+  if [ -r /dev/tty ] && [ -z "$SILENT_FLAG" ]; then
+    printf '%s [y/N] ' "$prompt" >/dev/tty
+    if IFS= read -r answer </dev/tty; then
+      case "$answer" in
+        y|Y|yes|YES|Yes)
+          return 0
+          ;;
+      esac
+    fi
+  fi
+
+  return 1
+}
+
 normalize_json() {
   echo "$1" | tr -d '\n\r\t' | sed 's/[[:space:]]\+/ /g'
 }
@@ -861,26 +879,49 @@ cleanup() {
 }
 trap cleanup EXIT
 
-if [ "$os" = "darwin" ]; then
-  if ! command -v shasum >/dev/null 2>&1; then
-    echo "shasum is required but not installed" >&2
-    exit 1
+SKIP_CHECKSUM_VERIFICATION=0
+
+resolve_checksum_command() {
+  local checksum_tool=""
+
+  if [ "$os" = "darwin" ]; then
+    checksum_tool="shasum"
+    if command -v shasum >/dev/null 2>&1; then
+      checksum_cmd() { shasum -a 256 "$1" | cut -d' ' -f1; }
+      return 0
+    fi
+  else
+    checksum_tool="sha256sum"
+    if command -v sha256sum >/dev/null 2>&1; then
+      checksum_cmd() { sha256sum "$1" | cut -d' ' -f1; }
+      return 0
+    fi
   fi
-  checksum_cmd() { shasum -a 256 "$1" | cut -d' ' -f1; }
-else
-  if ! command -v sha256sum >/dev/null 2>&1; then
-    echo "sha256sum is required but not installed" >&2
-    exit 1
+
+  echo "$checksum_tool is not installed, so the downloaded package cannot be verified." >&2
+  echo "Continuing without checksum verification is unsafe." >&2
+  if prompt_yes_no_default_no "Force continue without checksum verification?"; then
+    SKIP_CHECKSUM_VERIFICATION=1
+    return 0
   fi
-  checksum_cmd() { sha256sum "$1" | cut -d' ' -f1; }
-fi
+
+  echo "Installation aborted." >&2
+  exit 1
+}
+
+resolve_checksum_command
 
 if [ -f "$zip_path" ]; then
-  actual="$(checksum_cmd "$zip_path")"
-  if [ "$actual" = "$checksum" ]; then
-    echo "Using cached package: $zip_path"
+  if [ "$SKIP_CHECKSUM_VERIFICATION" = "1" ]; then
+    echo "Using cached package without checksum verification: $zip_path"
   else
-    run_priv rm -f "$zip_path"
+    echo "Verifying cached package checksum..."
+    actual="$(checksum_cmd "$zip_path")"
+    if [ "$actual" = "$checksum" ]; then
+      echo "Using cached package: $zip_path"
+    else
+      run_priv rm -f "$zip_path"
+    fi
   fi
 fi
 
@@ -902,11 +943,16 @@ if [ ! -f "$zip_path" ]; then
     fi
   fi
   run_priv chmod 0644 "$zip_path"
-  actual="$(checksum_cmd "$zip_path")"
-  if [ "$actual" != "$checksum" ]; then
-    run_priv rm -f "$zip_path"
-    echo "Checksum verification failed" >&2
-    exit 1
+  if [ "$SKIP_CHECKSUM_VERIFICATION" = "1" ]; then
+    echo "Skipping checksum verification."
+  else
+    echo "Verifying downloaded package checksum..."
+    actual="$(checksum_cmd "$zip_path")"
+    if [ "$actual" != "$checksum" ]; then
+      run_priv rm -f "$zip_path"
+      echo "Checksum verification failed" >&2
+      exit 1
+    fi
   fi
 fi
 
