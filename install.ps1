@@ -422,16 +422,16 @@ if ($checksum -notmatch '^[a-f0-9]{64}$') {
   Fail "Invalid checksum in manifest for $platform"
 }
 
-$tmpDir = Join-Path $env:TEMP ("mits11-" + [guid]::NewGuid().ToString("N"))
 $cacheDir = if ($env:MITS11_CACHE_DIR) { $env:MITS11_CACHE_DIR } else { Join-Path $script:ConfigDir "cache" }
 $zipPath = Join-Path $cacheDir "mits11-$version-$platform.zip"
-$extractRoot = Join-Path $tmpDir "extract"
+$extractName = "{0}-{1}" -f (Get-Date -Format 'yyyyMMddHHmmss'), $PID
+$tmpDir = Join-Path $cacheDir $extractName
+$extractRoot = $tmpDir
 $keepTemp = $env:MITS11_KEEP_TEMP -eq "1"
 $installSuccess = $false
 $downloadVerified = $false
 
 try {
-  New-Item -ItemType Directory -Path $tmpDir | Out-Null
   New-Item -ItemType Directory -Path $cacheDir -Force | Out-Null
 
   if (Test-Path $zipPath) {
@@ -467,6 +467,9 @@ try {
     $downloadVerified = $true
   }
 
+  if (Test-Path $tmpDir) {
+    Remove-TreeWithRetry -Path $tmpDir | Out-Null
+  }
   New-Item -ItemType Directory -Path $extractRoot | Out-Null
   Expand-Archive -Path $zipPath -DestinationPath $extractRoot -Force
 

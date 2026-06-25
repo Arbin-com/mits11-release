@@ -840,10 +840,13 @@ case "$cache_root" in
     ;;
 esac
 
-cache_dir="$cache_root/$version/$platform"
-zip_path="$cache_dir/mits11-${version}-${platform}.zip"
-tmp_dir="$cache_dir/.extract-${version}-${platform}-$$"
-extract_root="$tmp_dir/extract"
+zip_name="mits11-${version}-${platform}.zip"
+timestamp="$(date +%Y%m%d%H%M%S)"
+extract_name="${timestamp}-$$"
+
+zip_path="$cache_root/$zip_name"
+tmp_dir="$cache_root/$extract_name"
+extract_root="$tmp_dir"
 
 run_priv() {
   if [ "$use_sudo" -eq 1 ]; then
@@ -862,7 +865,7 @@ write_stream_to_file() {
   fi
 }
 
-run_priv mkdir -p "$cache_dir"
+run_priv mkdir -p "$cache_root"
 run_priv mkdir -p "$extract_root"
 install_success=0
 
@@ -956,6 +959,9 @@ if [ ! -f "$zip_path" ]; then
   fi
 fi
 
+if [ -d "$tmp_dir" ]; then
+  run_priv rm -rf "$tmp_dir"
+fi
 run_priv mkdir -p "$extract_root"
 run_priv unzip -q "$zip_path" -d "$extract_root"
 
