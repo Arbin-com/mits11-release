@@ -535,11 +535,14 @@ resolve_app_token() {
 
 choose_auth_mode_interactive() {
   local selection
-  echo "Authentication required."
-  echo "1) GitHub browser login (recommended)"
-  echo "2) Personal access token"
+  cat >/dev/tty <<'EOF'
+Authentication required.
+Select authentication method:
+1) GitHub browser login (recommended)
+2) Personal access token
+EOF
   while true; do
-    printf "Select [1/2]: " >/dev/tty
+    printf "Select authentication method [1/2]: " >/dev/tty
     IFS= read -r selection </dev/tty
     case "$selection" in
       1) AUTH_MODE="app"; return 0 ;;
