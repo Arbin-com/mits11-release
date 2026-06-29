@@ -1,0 +1,51 @@
+{
+  "version": "7.0.0-dev.charger+build.20260629.1",
+  "channel": "nightly",
+  "platforms": {
+    "linux-x64": {
+      "url": "https://github.com/Arbin-com/MITS11-develop/releases/download/7.0.0-dev.charger+build.20260629.1/MITS11.7.0.0-dev.charger+build.20260629.1-linux-x64.zip",
+      "github_asset_api_url": "https://api.github.com/repos/Arbin-com/MITS11-develop/releases/assets/460723654",
+      "github_owner": "Arbin-com",
+      "github_repo": "MITS11-develop",
+      "github_tag": "7.0.0-dev.charger+build.20260629.1",
+      "github_asset": "MITS11.7.0.0-dev.charger+build.20260629.1-linux-x64.zip",
+      "sha256": "a492f214c8245a75ebe40d558f44e4ff58b79c78931dfb5c7297409f9787831b"
+    },
+    "osx-arm64": {
+      "url": "https://github.com/Arbin-com/MITS11-develop/releases/download/7.0.0-dev.charger+build.20260629.1/MITS11.7.0.0-dev.charger+build.20260629.1-osx-arm64.zip",
+      "github_asset_api_url": "https://api.github.com/repos/Arbin-com/MITS11-develop/releases/assets/460720536",
+      "github_owner": "Arbin-com",
+      "github_repo": "MITS11-develop",
+      "github_tag": "7.0.0-dev.charger+build.20260629.1",
+      "github_asset": "MITS11.7.0.0-dev.charger+build.20260629.1-osx-arm64.zip",
+      "sha256": "a01867e7c5ce113a7f5e55e98fa2a910f91f293eebfd2259bb72f4e0fe6c5109"
+    },
+    "osx-x64": {
+      "url": "https://github.com/Arbin-com/MITS11-develop/releases/download/7.0.0-dev.charger+build.20260629.1/MITS11.7.0.0-dev.charger+build.20260629.1-osx-x64.zip",
+      "github_asset_api_url": "https://api.github.com/repos/Arbin-com/MITS11-develop/releases/assets/460719480",
+      "github_owner": "Arbin-com",
+      "github_repo": "MITS11-develop",
+      "github_tag": "7.0.0-dev.charger+build.20260629.1",
+      "github_asset": "MITS11.7.0.0-dev.charger+build.20260629.1-osx-x64.zip",
+      "sha256": "be08c164e2539d05b3dcb23e6992e6a1b8a8187d787ab6670510c91c8c17a113"
+    },
+    "win-x64": {
+      "url": "https://github.com/Arbin-com/MITS11-develop/releases/download/7.0.0-dev.charger+build.20260629.1/MITS11.7.0.0-dev.charger+build.20260629.1-win-x64.zip",
+      "github_asset_api_url": "https://api.github.com/repos/Arbin-com/MITS11-develop/releases/assets/460716402",
+      "github_owner": "Arbin-com",
+      "github_repo": "MITS11-develop",
+      "github_tag": "7.0.0-dev.charger+build.20260629.1",
+      "github_asset": "MITS11.7.0.0-dev.charger+build.20260629.1-win-x64.zip",
+      "sha256": "47ef0ca6d5fa177239d17c395a860c0b4887fa3e7dc3d04b8393ae0af3dbdf6b"
+    },
+    "linux-arm64": {
+      "url": "https://github.com/Arbin-com/MITS11-develop/releases/download/7.0.0-dev.charger+build.20260629.1/MITS11.7.0.0-dev.charger+build.20260629.1-linux-arm64.zip",
+      "github_asset_api_url": "https://api.github.com/repos/Arbin-com/MITS11-develop/releases/assets/460722586",
+      "github_owner": "Arbin-com",
+      "github_repo": "MITS11-develop",
+      "github_tag": "7.0.0-dev.charger+build.20260629.1",
+      "github_asset": "MITS11.7.0.0-dev.charger+build.20260629.1-linux-arm64.zip",
+      "sha256": "10be82f515b3fedda3ff33efe07c0f4e6923fb6008b9cc34222b1ea6299f5fa7"
+    }
+  }
+}
