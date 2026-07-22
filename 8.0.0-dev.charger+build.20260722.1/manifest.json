@@ -1,0 +1,15 @@
+{
+  "version": "8.0.0-dev.charger+build.20260722.1",
+  "channel": "nightly",
+  "platforms": {
+    "linux-arm64": {
+      "url": "https://github.com/Arbin-com/MITS11-develop/releases/download/8.0.0-dev.charger+build.20260722.1/MITS11.8.0.0-dev.charger+build.20260722.1-linux-arm64.zip",
+      "github_asset_api_url": "https://api.github.com/repos/Arbin-com/MITS11-develop/releases/assets/485623864",
+      "github_owner": "Arbin-com",
+      "github_repo": "MITS11-develop",
+      "github_tag": "8.0.0-dev.charger+build.20260722.1",
+      "github_asset": "MITS11.8.0.0-dev.charger+build.20260722.1-linux-arm64.zip",
+      "sha256": "b5a43291d6463fcced938841bf184f65bc7e266ca683b8d9d9e85fd393641289"
+    }
+  }
+}
