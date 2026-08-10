@@ -1,0 +1,51 @@
+{
+  "version": "8.0.0-dev.ai+build-mac+linux.20260810.2",
+  "channel": "nightly",
+  "platforms": {
+    "linux-x64": {
+      "url": "https://github.com/Arbin-com/MITS11-develop/releases/download/8.0.0-dev.ai+build-mac+linux.20260810.2/MITS11.8.0.0-dev.ai+build-mac+linux.20260810.2-linux-x64.zip",
+      "github_asset_api_url": "https://api.github.com/repos/Arbin-com/MITS11-develop/releases/assets/508613684",
+      "github_owner": "Arbin-com",
+      "github_repo": "MITS11-develop",
+      "github_tag": "8.0.0-dev.ai+build-mac+linux.20260810.2",
+      "github_asset": "MITS11.8.0.0-dev.ai+build-mac+linux.20260810.2-linux-x64.zip",
+      "sha256": "e93578fdb45fc4aa4dae3c20c9038c94ebeabcb7b9a79c0e9433aeb547b60382"
+    },
+    "osx-x64": {
+      "url": "https://github.com/Arbin-com/MITS11-develop/releases/download/8.0.0-dev.ai+build-mac+linux.20260810.2/MITS11.8.0.0-dev.ai+build-mac+linux.20260810.2-osx-x64.zip",
+      "github_asset_api_url": "https://api.github.com/repos/Arbin-com/MITS11-develop/releases/assets/508614028",
+      "github_owner": "Arbin-com",
+      "github_repo": "MITS11-develop",
+      "github_tag": "8.0.0-dev.ai+build-mac+linux.20260810.2",
+      "github_asset": "MITS11.8.0.0-dev.ai+build-mac+linux.20260810.2-osx-x64.zip",
+      "sha256": "61cc7706c6585b07432ed12c966eb8b78ddca26d1ab7d22d60685028e0a23422"
+    },
+    "win-x64": {
+      "url": "https://github.com/Arbin-com/MITS11-develop/releases/download/8.0.0-dev.ai+build-mac+linux.20260810.2/MITS11.8.0.0-dev.ai+build-mac+linux.20260810.2-win-x64.zip",
+      "github_asset_api_url": "https://api.github.com/repos/Arbin-com/MITS11-develop/releases/assets/508601670",
+      "github_owner": "Arbin-com",
+      "github_repo": "MITS11-develop",
+      "github_tag": "8.0.0-dev.ai+build-mac+linux.20260810.2",
+      "github_asset": "MITS11.8.0.0-dev.ai+build-mac+linux.20260810.2-win-x64.zip",
+      "sha256": "71dafe8cca17ce0bfbc251c9b87d28dbcb57799ea3b8026dfeddbb1a523de846"
+    },
+    "linux-arm64": {
+      "url": "https://github.com/Arbin-com/MITS11-develop/releases/download/8.0.0-dev.ai+build-mac+linux.20260810.2/MITS11.8.0.0-dev.ai+build-mac+linux.20260810.2-linux-arm64.zip",
+      "github_asset_api_url": "https://api.github.com/repos/Arbin-com/MITS11-develop/releases/assets/508610759",
+      "github_owner": "Arbin-com",
+      "github_repo": "MITS11-develop",
+      "github_tag": "8.0.0-dev.ai+build-mac+linux.20260810.2",
+      "github_asset": "MITS11.8.0.0-dev.ai+build-mac+linux.20260810.2-linux-arm64.zip",
+      "sha256": "98a11234856ccfdc47b5859e94415937a25785e793272029d388f22197590522"
+    },
+    "osx-arm64": {
+      "url": "https://github.com/Arbin-com/MITS11-develop/releases/download/8.0.0-dev.ai+build-mac+linux.20260810.2/MITS11.8.0.0-dev.ai+build-mac+linux.20260810.2-osx-arm64.zip",
+      "github_asset_api_url": "https://api.github.com/repos/Arbin-com/MITS11-develop/releases/assets/508614849",
+      "github_owner": "Arbin-com",
+      "github_repo": "MITS11-develop",
+      "github_tag": "8.0.0-dev.ai+build-mac+linux.20260810.2",
+      "github_asset": "MITS11.8.0.0-dev.ai+build-mac+linux.20260810.2-osx-arm64.zip",
+      "sha256": "bf33382ea69ee70ad40c316f6a519b3da7c79c22c3b6f292ff57b743d0b0999e"
+    }
+  }
+}
