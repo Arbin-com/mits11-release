@@ -1,0 +1,51 @@
+{
+  "version": "8.0.0-alpha+build.20260819.1",
+  "channel": "alpha",
+  "platforms": {
+    "win-x64": {
+      "url": "https://github.com/Arbin-com/MITS11-develop/releases/download/8.0.0-alpha+build.20260819.1/MITS11.8.0.0-alpha+build.20260819.1-win-x64.zip",
+      "github_asset_api_url": "https://api.github.com/repos/Arbin-com/MITS11-develop/releases/assets/520699398",
+      "github_owner": "Arbin-com",
+      "github_repo": "MITS11-develop",
+      "github_tag": "8.0.0-alpha+build.20260819.1",
+      "github_asset": "MITS11.8.0.0-alpha+build.20260819.1-win-x64.zip",
+      "sha256": "d147d960bfb431be606cd04bbf8a0efaaae61f2cb804b5d5b182712142d42bcf"
+    },
+    "linux-arm64": {
+      "url": "https://github.com/Arbin-com/MITS11-develop/releases/download/8.0.0-alpha+build.20260819.1/MITS11.8.0.0-alpha+build.20260819.1-linux-arm64.zip",
+      "github_asset_api_url": "https://api.github.com/repos/Arbin-com/MITS11-develop/releases/assets/520718582",
+      "github_owner": "Arbin-com",
+      "github_repo": "MITS11-develop",
+      "github_tag": "8.0.0-alpha+build.20260819.1",
+      "github_asset": "MITS11.8.0.0-alpha+build.20260819.1-linux-arm64.zip",
+      "sha256": "7c133b2ebde2cee5b536ec0e9a53499857b76dc74c91513cdea00d78f6538f6e"
+    },
+    "osx-x64": {
+      "url": "https://github.com/Arbin-com/MITS11-develop/releases/download/8.0.0-alpha+build.20260819.1/MITS11.8.0.0-alpha+build.20260819.1-osx-x64.zip",
+      "github_asset_api_url": "https://api.github.com/repos/Arbin-com/MITS11-develop/releases/assets/520708356",
+      "github_owner": "Arbin-com",
+      "github_repo": "MITS11-develop",
+      "github_tag": "8.0.0-alpha+build.20260819.1",
+      "github_asset": "MITS11.8.0.0-alpha+build.20260819.1-osx-x64.zip",
+      "sha256": "ba894b65014e4d5b30917ca7644fab233ef0464bd4b10e8a96d19f7f35c50cc3"
+    },
+    "osx-arm64": {
+      "url": "https://github.com/Arbin-com/MITS11-develop/releases/download/8.0.0-alpha+build.20260819.1/MITS11.8.0.0-alpha+build.20260819.1-osx-arm64.zip",
+      "github_asset_api_url": "https://api.github.com/repos/Arbin-com/MITS11-develop/releases/assets/520715611",
+      "github_owner": "Arbin-com",
+      "github_repo": "MITS11-develop",
+      "github_tag": "8.0.0-alpha+build.20260819.1",
+      "github_asset": "MITS11.8.0.0-alpha+build.20260819.1-osx-arm64.zip",
+      "sha256": "da7ba798c7739a70dbf167d52d7d416d870668185a35c70c75c95b947cfa993b"
+    },
+    "linux-x64": {
+      "url": "https://github.com/Arbin-com/MITS11-develop/releases/download/8.0.0-alpha+build.20260819.1/MITS11.8.0.0-alpha+build.20260819.1-linux-x64.zip",
+      "github_asset_api_url": "https://api.github.com/repos/Arbin-com/MITS11-develop/releases/assets/520725632",
+      "github_owner": "Arbin-com",
+      "github_repo": "MITS11-develop",
+      "github_tag": "8.0.0-alpha+build.20260819.1",
+      "github_asset": "MITS11.8.0.0-alpha+build.20260819.1-linux-x64.zip",
+      "sha256": "fe61bf9587f97c67d65899de9fe9767ab273d694eb71eea03901c6f2024f3828"
+    }
+  }
+}
