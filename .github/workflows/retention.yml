@@ -1,0 +1,119 @@
+name: Retention
+
+on:
+  schedule:
+    - cron: '0 3 * * 1' # weekly, Monday 03:00 UTC
+  workflow_dispatch: {}
+
+env:
+  DEVELOP_REPO: Arbin-com/MITS11-develop
+  # Flip to 'false' once a dry-run cycle's log has been reviewed.
+  DRY_RUN: 'true'
+  DEV_FLOOR: 3
+  DEV_CEILING_DAYS: 7
+  ALPHA_FLOOR: 14
+  ALPHA_CEILING_DAYS: 60
+
+jobs:
+  prune:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure git identity
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Prune old MITS11-develop releases
+        env:
+          # Fine-grained PAT scoped to contents:write on Arbin-com/MITS11-develop only.
+          # This repo's own GITHUB_TOKEN cannot reach across repos, so `gh api` calls
+          # against $DEVELOP_REPO use this instead. Committing/pushing manifest
+          # deletions in *this* repo still goes through the checkout action's own
+          # GITHUB_TOKEN, set up automatically above.
+          GH_TOKEN: ${{ secrets.DEVELOP_REPO_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          PROTECTED_VERSIONS="$(cat stable alpha nightly | sort -u)"
+          is_protected() {
+            printf '%s\n' "$PROTECTED_VERSIONS" | grep -qxF "$1"
+          }
+
+          NOW_EPOCH=$(date -u +%s)
+
+          RELEASES=$(gh api "repos/$DEVELOP_REPO/releases" --paginate \
+            -q '.[] | {tag: .tag_name, id: .id, created_at: .created_at, size: ([.assets[].size] | add // 0)}')
+
+          # Classify every release into a group key ("alpha" or "dev:<branch>"); anything
+          # else (stable/release/patch tags, or an unrecognized shape) is left alone.
+          CLASSIFIED=$(echo "$RELEASES" | jq -c '
+            . + (
+              if (.tag | test("-alpha\\+build\\.")) then {class: "alpha", group: "alpha"}
+              elif (.tag | test("-dev\\.[^+]+\\+build\\.")) then
+                {class: "dev", group: ("dev:" + (.tag | capture("-dev\\.(?<branch>[^+]+)\\+build\\.").branch))}
+              else
+                {class: "skip", group: null}
+              end
+            )
+          ')
+
+          echo "$CLASSIFIED" | jq -s 'group_by(.group) | map(select(.[0].group != null))' | \
+          jq -c '.[]' | while read -r group_json; do
+            GROUP_NAME=$(echo "$group_json" | jq -r '.[0].group')
+            CLASS=$(echo "$group_json" | jq -r '.[0].class')
+            if [ "$CLASS" = "alpha" ]; then
+              FLOOR=$ALPHA_FLOOR; CEILING_DAYS=$ALPHA_CEILING_DAYS
+            else
+              FLOOR=$DEV_FLOOR; CEILING_DAYS=$DEV_CEILING_DAYS
+            fi
+
+            # newest first
+            SORTED=$(echo "$group_json" | jq -c 'sort_by(.created_at) | reverse')
+            COUNT=$(echo "$SORTED" | jq 'length')
+
+            for i in $(seq 0 $((COUNT - 1))); do
+              ITEM=$(echo "$SORTED" | jq -c ".[$i]")
+              TAG=$(echo "$ITEM" | jq -r '.tag')
+              ID=$(echo "$ITEM" | jq -r '.id')
+              CREATED=$(echo "$ITEM" | jq -r '.created_at')
+              SIZE=$(echo "$ITEM" | jq -r '.size')
+
+              if is_protected "$TAG"; then
+                echo "KEEP  (pointer)  $TAG"
+                continue
+              fi
+              if [ "$i" -lt "$FLOOR" ]; then
+                echo "KEEP  (floor $((i + 1))/$FLOOR, $GROUP_NAME)  $TAG"
+                continue
+              fi
+
+              CREATED_EPOCH=$(date -u -d "$CREATED" +%s)
+              AGE_DAYS=$(( (NOW_EPOCH - CREATED_EPOCH) / 86400 ))
+              if [ "$AGE_DAYS" -le "$CEILING_DAYS" ]; then
+                echo "KEEP  (age ${AGE_DAYS}d <= ${CEILING_DAYS}d ceiling)  $TAG"
+                continue
+              fi
+
+              echo "DELETE  (age ${AGE_DAYS}d, group $GROUP_NAME, $((SIZE / 1024 / 1024))MB)  $TAG"
+              if [ "$DRY_RUN" = "true" ]; then
+                continue
+              fi
+
+              if gh api -X DELETE "repos/$DEVELOP_REPO/releases/$ID" --silent; then
+                if [ -d "$TAG" ]; then
+                  git rm -rq "$TAG"
+                  git commit -q -m "chore: prune manifest for deleted release $TAG"
+                fi
+              else
+                echo "::error::Failed to delete release $TAG (id $ID) — leaving its manifest in place"
+              fi
+            done
+          done
+
+          if [ "$DRY_RUN" != "true" ]; then
+            git push
+          fi
