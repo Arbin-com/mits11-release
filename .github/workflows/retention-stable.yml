@@ -143,6 +143,11 @@ jobs:
 
             echo "DELETE  (past floor $FLOOR, group $GROUP, $((SIZE / 1024 / 1024))MB)  $TAG"
             if gh api -X DELETE "repos/$STABLE_REPO/releases/$ID" --silent; then
+              # Deleting a release does not delete its underlying git tag -
+              # without this, dangling tags with no release pile up forever.
+              ENC_TAG=$(jq -rn --arg t "$TAG" '$t | @uri')
+              gh api -X DELETE "repos/$STABLE_REPO/git/refs/tags/$ENC_TAG" --silent || \
+                echo "::warning::Release $TAG deleted but its tag ref could not be removed"
               if [ -d "$TAG" ]; then
                 git rm -rq "$TAG"
                 git commit -q -m "chore: prune manifest for deleted release $TAG"

@@ -51,9 +51,14 @@ just not existing — worse than doing nothing.
 So deletion always happens in this order, per version:
 
 1. Delete the GitHub release + all assets in `MITS11-develop`.
-2. Only once that succeeds, delete the `<version>/` folder here and commit.
+2. Delete the release's underlying git tag ref there too — deleting a
+   release does **not** delete its tag, so without this step dangling tags
+   with no release pile up forever. (A failure here is logged as a warning,
+   not fatal — the release itself is already gone either way.)
+3. Only once step 1 succeeds, delete the `<version>/` folder here and
+   commit.
 
-If step 1 fails, step 2 is skipped for that version — never delete the
+If step 1 fails, steps 2-3 are skipped for that version — never delete the
 manifest for a release that's still live.
 
 Old-version reinstall via `install.ps1`/`install.sh <version>` is expected to
