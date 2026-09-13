@@ -2,6 +2,15 @@
   "version": "8.0.0-alpha+build.20260913.1",
   "channel": "alpha",
   "platforms": {
+    "linux-x64": {
+      "url": "https://github.com/Arbin-com/MITS11-develop/releases/download/8.0.0-alpha+build.20260913.1/MITS11.8.0.0-alpha+build.20260913.1-linux-x64.zip",
+      "github_asset_api_url": "https://api.github.com/repos/Arbin-com/MITS11-develop/releases/assets/561017268",
+      "github_owner": "Arbin-com",
+      "github_repo": "MITS11-develop",
+      "github_tag": "8.0.0-alpha+build.20260913.1",
+      "github_asset": "MITS11.8.0.0-alpha+build.20260913.1-linux-x64.zip",
+      "sha256": "36c82173a7714bf6b2daa8282d79ac9e8be60c03dcac0308b790d4de3d125814"
+    },
     "win-x64": {
       "url": "https://github.com/Arbin-com/MITS11-develop/releases/download/8.0.0-alpha+build.20260913.1/MITS11.8.0.0-alpha+build.20260913.1-win-x64.zip",
       "github_asset_api_url": "https://api.github.com/repos/Arbin-com/MITS11-develop/releases/assets/560940435",
