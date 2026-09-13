@@ -8,7 +8,7 @@ on:
 env:
   DEVELOP_REPO: Arbin-com/MITS11-develop
   # Flip to 'false' once a dry-run cycle's log has been reviewed.
-  DRY_RUN: 'true'
+  DRY_RUN: 'false'
   DEV_FLOOR: 3
   DEV_CEILING_DAYS: 7
   ALPHA_FLOOR: 14
