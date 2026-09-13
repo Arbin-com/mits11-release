@@ -45,6 +45,15 @@ jobs:
           set -euo pipefail
 
           PROTECTED_VERSIONS="$(cat stable alpha nightly | sort -u)"
+          # GitHub's own "Latest release" (whatever /releases/latest resolves to -
+          # newest non-prerelease, non-draft, or whatever was explicitly marked
+          # via make_latest) is never a delete candidate, on top of the channel
+          # pointer files above. 404s (e.g. no non-prerelease release exists yet)
+          # are fine - just means there's nothing extra to protect here.
+          LATEST_TAG=$(gh api "repos/$DEVELOP_REPO/releases/latest" -q '.tag_name' 2>/dev/null || true)
+          if [ -n "$LATEST_TAG" ]; then
+            PROTECTED_VERSIONS="$(printf '%s\n%s\n' "$PROTECTED_VERSIONS" "$LATEST_TAG" | sort -u)"
+          fi
           is_protected() {
             printf '%s\n' "$PROTECTED_VERSIONS" | grep -qxF "$1"
           }
