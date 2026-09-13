@@ -8,7 +8,7 @@ on:
 env:
   STABLE_REPO: Arbin-com/MITS11-stable
   # Flip to 'false' once a dry-run cycle's log has been reviewed.
-  DRY_RUN: 'true'
+  DRY_RUN: 'false'
   # A major.minor line keeps this many of its newest releases, no matter
   # their age, if it's the current line (highest major.minor) or has shipped
   # a release within ACTIVE_DAYS.
