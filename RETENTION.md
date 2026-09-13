@@ -1,8 +1,8 @@
-# Release retention policy
+# Release retention policy (develop)
 
-Scope: `Arbin-com/MITS11-develop` GitHub Releases only. `Arbin-com/MITS11-stable`
-(and its manifests here) are shipped customer-facing versions and are kept
-indefinitely — out of scope for this policy.
+Scope: `Arbin-com/MITS11-develop` GitHub Releases only (dev/nightly/alpha
+prerelease builds). `Arbin-com/MITS11-stable` (shipped customer versions) has
+its own, differently-shaped policy — see [`STABLE_RETENTION.md`](STABLE_RETENTION.md).
 
 ## Why
 

@@ -1,0 +1,149 @@
+name: Retention (stable)
+
+on:
+  schedule:
+    - cron: '0 4 * * 1' # weekly, Monday 04:00 UTC (offset from the develop retention run)
+  workflow_dispatch: {}
+
+env:
+  STABLE_REPO: Arbin-com/MITS11-stable
+  # Flip to 'false' once a dry-run cycle's log has been reviewed.
+  DRY_RUN: 'true'
+  # A major.minor line keeps this many of its newest releases, no matter
+  # their age, if it's the current line (highest major.minor) or has shipped
+  # a release within ACTIVE_DAYS.
+  ACTIVE_FLOOR: 20
+  ACTIVE_DAYS: 180
+  # Every other (inactive/EOL) line keeps only this many of its newest
+  # releases.
+  STALE_FLOOR: 5
+  # Caps actual deletions per run so the first cleanup trickles out over
+  # several runs instead of all at once (see .github/workflows/retention.yml
+  # for the same pattern on MITS11-develop).
+  MAX_DELETIONS_PER_RUN: 50
+
+jobs:
+  prune:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure git identity
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Prune old MITS11-stable releases
+        env:
+          # Fine-grained PAT scoped to contents:write on Arbin-com/MITS11-stable
+          # only. This repo's own GITHUB_TOKEN cannot reach across repos, so
+          # `gh api` calls against $STABLE_REPO use this instead. Committing/
+          # pushing manifest deletions in *this* repo still goes through the
+          # checkout action's own GITHUB_TOKEN, set up automatically above.
+          GH_TOKEN: ${{ secrets.STABLE_REPO_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          PROTECTED_VERSIONS="$(cat stable alpha nightly | sort -u)"
+          is_protected() {
+            printf '%s\n' "$PROTECTED_VERSIONS" | grep -qxF "$1"
+          }
+
+          NOW_EPOCH=$(date -u +%s)
+
+          RELEASES=$(gh api "repos/$STABLE_REPO/releases" --paginate \
+            -q '.[] | {tag: .tag_name, id: .id, created_at: .created_at, size: ([.assets[].size] | add // 0)}')
+
+          # GA tags only: x.y.z, x.y.z-release, x.y.z-patch (same shapes
+          # setup.yml's is_ga_tag() treats as stable/GA). Anything else is
+          # left untouched by this policy.
+          GA_ONLY=$(echo "$RELEASES" | jq -c '
+            select(
+              (.tag | test("^[0-9]+\\.[0-9]+\\.[0-9]+$")) or
+              (.tag | test("^[0-9]+\\.[0-9]+\\.[0-9]+-(release|patch)$"))
+            )
+          ')
+
+          # Group by major.minor line. A line's floor is ACTIVE_FLOOR if it's
+          # the current line (highest major.minor) or its newest release is
+          # within ACTIVE_DAYS; otherwise STALE_FLOOR. Beyond the floor, a
+          # release is a delete candidate - no separate age ceiling, the
+          # floor number already encodes how much history that line's status
+          # warrants.
+          DECISIONS=$(echo "$GA_ONLY" | jq -s \
+            --argjson now "$NOW_EPOCH" \
+            --argjson activeDays "$ACTIVE_DAYS" \
+            --argjson activeFloor "$ACTIVE_FLOOR" \
+            --argjson staleFloor "$STALE_FLOOR" '
+            map(. + (.tag | capture("^(?<maj>[0-9]+)\\.(?<min>[0-9]+)\\.")))
+            | map(. + {group: (.maj + "." + .min), majNum: (.maj | tonumber), minNum: (.min | tonumber)})
+            | group_by(.group)
+            | (. as $groups
+               | ($groups | map([.[0].majNum, .[0].minNum]) | max) as $currentKey
+               | $groups
+               | map(
+                   (sort_by(.created_at) | reverse) as $sorted
+                   | ($sorted[0].created_at | fromdateiso8601) as $newestEpoch
+                   | ((([.[0].majNum, .[0].minNum]) == $currentKey)
+                      or (($now - $newestEpoch) <= ($activeDays * 86400))) as $isActive
+                   | ($sorted | to_entries | map(
+                       .value + {
+                         idx: .key,
+                         floor: (if $isActive then $activeFloor else $staleFloor end),
+                         isActive: $isActive
+                       }
+                     ))
+                 )
+              )
+            | flatten
+          ')
+
+          DELETE_COUNT=0
+
+          echo "$DECISIONS" | jq -c '.[]' | while read -r ITEM; do
+            TAG=$(echo "$ITEM" | jq -r '.tag')
+            ID=$(echo "$ITEM" | jq -r '.id')
+            SIZE=$(echo "$ITEM" | jq -r '.size')
+            GROUP=$(echo "$ITEM" | jq -r '.group')
+            IDX=$(echo "$ITEM" | jq -r '.idx')
+            FLOOR=$(echo "$ITEM" | jq -r '.floor')
+            IS_ACTIVE=$(echo "$ITEM" | jq -r '.isActive')
+
+            if is_protected "$TAG"; then
+              echo "KEEP  (pointer)  $TAG"
+              continue
+            fi
+            if [ "$IDX" -lt "$FLOOR" ]; then
+              STATUS="stale"
+              [ "$IS_ACTIVE" = "true" ] && STATUS="active"
+              echo "KEEP  (floor $((IDX + 1))/$FLOOR, $GROUP, $STATUS)  $TAG"
+              continue
+            fi
+
+            if [ "$DRY_RUN" = "true" ]; then
+              echo "DELETE  (past floor $FLOOR, group $GROUP, $((SIZE / 1024 / 1024))MB)  $TAG"
+              continue
+            fi
+
+            if [ "$DELETE_COUNT" -ge "$MAX_DELETIONS_PER_RUN" ]; then
+              echo "SKIP  (cap $MAX_DELETIONS_PER_RUN/run reached, group $GROUP)  $TAG"
+              continue
+            fi
+
+            echo "DELETE  (past floor $FLOOR, group $GROUP, $((SIZE / 1024 / 1024))MB)  $TAG"
+            if gh api -X DELETE "repos/$STABLE_REPO/releases/$ID" --silent; then
+              if [ -d "$TAG" ]; then
+                git rm -rq "$TAG"
+                git commit -q -m "chore: prune manifest for deleted release $TAG"
+              fi
+              DELETE_COUNT=$((DELETE_COUNT + 1))
+            else
+              echo "::error::Failed to delete release $TAG (id $ID) — leaving its manifest in place"
+            fi
+          done
+
+          if [ "$DRY_RUN" != "true" ]; then
+            git push
+          fi
