@@ -71,3 +71,9 @@ First scheduled runs are **dry-run**: logs exactly what it would delete
 (tag, class, age, size) without deleting anything or touching this repo.
 Flip `DRY_RUN` to `false` in the workflow once a cycle's output has been
 reviewed.
+
+Actual deletions are capped at `MAX_DELETIONS_PER_RUN` (50) per run. The
+first live run has a large backlog (everything past its ceiling since this
+policy didn't exist before) — the cap spreads that cleanup over several
+runs instead of deleting hundreds of releases at once. Anything past the
+cap is logged as `SKIP (cap reached)` and picked up on the next run.

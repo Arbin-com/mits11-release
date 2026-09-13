@@ -13,6 +13,12 @@ env:
   DEV_CEILING_DAYS: 7
   ALPHA_FLOOR: 14
   ALPHA_CEILING_DAYS: 60
+  # Caps actual deletions per run so the first cleanup (hundreds of releases
+  # already past their ceiling) trickles out over several runs instead of
+  # all at once. Every eligible release still gets logged each run either
+  # way (as DELETE or, once the cap is hit, SKIPPED) - this only throttles
+  # the mutating calls.
+  MAX_DELETIONS_PER_RUN: 50
 
 jobs:
   prune:
@@ -61,6 +67,8 @@ jobs:
             )
           ')
 
+          DELETE_COUNT=0
+
           echo "$CLASSIFIED" | jq -s 'group_by(.group) | map(select(.[0].group != null))' | \
           jq -c '.[]' | while read -r group_json; do
             GROUP_NAME=$(echo "$group_json" | jq -r '.[0].group')
@@ -98,16 +106,23 @@ jobs:
                 continue
               fi
 
-              echo "DELETE  (age ${AGE_DAYS}d, group $GROUP_NAME, $((SIZE / 1024 / 1024))MB)  $TAG"
               if [ "$DRY_RUN" = "true" ]; then
+                echo "DELETE  (age ${AGE_DAYS}d, group $GROUP_NAME, $((SIZE / 1024 / 1024))MB)  $TAG"
                 continue
               fi
 
+              if [ "$DELETE_COUNT" -ge "$MAX_DELETIONS_PER_RUN" ]; then
+                echo "SKIP  (cap $MAX_DELETIONS_PER_RUN/run reached, age ${AGE_DAYS}d, group $GROUP_NAME)  $TAG"
+                continue
+              fi
+
+              echo "DELETE  (age ${AGE_DAYS}d, group $GROUP_NAME, $((SIZE / 1024 / 1024))MB)  $TAG"
               if gh api -X DELETE "repos/$DEVELOP_REPO/releases/$ID" --silent; then
                 if [ -d "$TAG" ]; then
                   git rm -rq "$TAG"
                   git commit -q -m "chore: prune manifest for deleted release $TAG"
                 fi
+                DELETE_COUNT=$((DELETE_COUNT + 1))
               else
                 echo "::error::Failed to delete release $TAG (id $ID) — leaving its manifest in place"
               fi
