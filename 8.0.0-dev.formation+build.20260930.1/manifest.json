@@ -1,0 +1,51 @@
+{
+  "version": "8.0.0-dev.formation+build.20260930.1",
+  "channel": "nightly",
+  "platforms": {
+    "osx-x64": {
+      "url": "https://github.com/Arbin-com/MITS11-develop/releases/download/8.0.0-dev.formation+build.20260930.1/MITS11.8.0.0-dev.formation+build.20260930.1-osx-x64.zip",
+      "github_asset_api_url": "https://api.github.com/repos/Arbin-com/MITS11-develop/releases/assets/600436122",
+      "github_owner": "Arbin-com",
+      "github_repo": "MITS11-develop",
+      "github_tag": "8.0.0-dev.formation+build.20260930.1",
+      "github_asset": "MITS11.8.0.0-dev.formation+build.20260930.1-osx-x64.zip",
+      "sha256": "00bf18fc223e5d8f270c598231e491f38731f9ea6a3b650b17a599411ef0698a"
+    },
+    "linux-x64": {
+      "url": "https://github.com/Arbin-com/MITS11-develop/releases/download/8.0.0-dev.formation+build.20260930.1/MITS11.8.0.0-dev.formation+build.20260930.1-linux-x64.zip",
+      "github_asset_api_url": "https://api.github.com/repos/Arbin-com/MITS11-develop/releases/assets/600430904",
+      "github_owner": "Arbin-com",
+      "github_repo": "MITS11-develop",
+      "github_tag": "8.0.0-dev.formation+build.20260930.1",
+      "github_asset": "MITS11.8.0.0-dev.formation+build.20260930.1-linux-x64.zip",
+      "sha256": "4a490b440477f249086bed85cebc082b51fa5ddb8ef6de8521c7dde8ee81ac0a"
+    },
+    "linux-arm64": {
+      "url": "https://github.com/Arbin-com/MITS11-develop/releases/download/8.0.0-dev.formation+build.20260930.1/MITS11.8.0.0-dev.formation+build.20260930.1-linux-arm64.zip",
+      "github_asset_api_url": "https://api.github.com/repos/Arbin-com/MITS11-develop/releases/assets/600427798",
+      "github_owner": "Arbin-com",
+      "github_repo": "MITS11-develop",
+      "github_tag": "8.0.0-dev.formation+build.20260930.1",
+      "github_asset": "MITS11.8.0.0-dev.formation+build.20260930.1-linux-arm64.zip",
+      "sha256": "b4c6ff7d7cb270182b9e5bd9f69d886ac307079d9bde1825bae4ed9c2f00fa48"
+    },
+    "osx-arm64": {
+      "url": "https://github.com/Arbin-com/MITS11-develop/releases/download/8.0.0-dev.formation+build.20260930.1/MITS11.8.0.0-dev.formation+build.20260930.1-osx-arm64.zip",
+      "github_asset_api_url": "https://api.github.com/repos/Arbin-com/MITS11-develop/releases/assets/600438395",
+      "github_owner": "Arbin-com",
+      "github_repo": "MITS11-develop",
+      "github_tag": "8.0.0-dev.formation+build.20260930.1",
+      "github_asset": "MITS11.8.0.0-dev.formation+build.20260930.1-osx-arm64.zip",
+      "sha256": "85b6ce216665061377f636348c7ca35b8b79b3d3d1ba648d0e13e3c9d3c552fc"
+    },
+    "win-x64": {
+      "url": "https://github.com/Arbin-com/MITS11-develop/releases/download/8.0.0-dev.formation+build.20260930.1/MITS11.8.0.0-dev.formation+build.20260930.1-win-x64.zip",
+      "github_asset_api_url": "https://api.github.com/repos/Arbin-com/MITS11-develop/releases/assets/600404085",
+      "github_owner": "Arbin-com",
+      "github_repo": "MITS11-develop",
+      "github_tag": "8.0.0-dev.formation+build.20260930.1",
+      "github_asset": "MITS11.8.0.0-dev.formation+build.20260930.1-win-x64.zip",
+      "sha256": "dba44b0c4ffec4c28a52a4032fd28f9b3814a62effb9018f8afab706ece5fe8a"
+    }
+  }
+}
