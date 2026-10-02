@@ -1,0 +1,51 @@
+{
+  "version": "9.0.0-dev+build+multi-tab+tauri-v2.20261002.2",
+  "channel": "nightly",
+  "platforms": {
+    "osx-x64": {
+      "url": "https://github.com/Arbin-com/MITS11-develop/releases/download/9.0.0-dev+build+multi-tab+tauri-v2.20261002.2/MITS11.9.0.0-dev+build+multi-tab+tauri-v2.20261002.2-osx-x64.zip",
+      "github_asset_api_url": "https://api.github.com/repos/Arbin-com/MITS11-develop/releases/assets/605062956",
+      "github_owner": "Arbin-com",
+      "github_repo": "MITS11-develop",
+      "github_tag": "9.0.0-dev+build+multi-tab+tauri-v2.20261002.2",
+      "github_asset": "MITS11.9.0.0-dev+build+multi-tab+tauri-v2.20261002.2-osx-x64.zip",
+      "sha256": "c86abcb39aa4e9978364bfa073d4b86e5aa051dbdb0017179b7ff5cf99650121"
+    },
+    "linux-x64": {
+      "url": "https://github.com/Arbin-com/MITS11-develop/releases/download/9.0.0-dev+build+multi-tab+tauri-v2.20261002.2/MITS11.9.0.0-dev+build+multi-tab+tauri-v2.20261002.2-linux-x64.zip",
+      "github_asset_api_url": "https://api.github.com/repos/Arbin-com/MITS11-develop/releases/assets/605063052",
+      "github_owner": "Arbin-com",
+      "github_repo": "MITS11-develop",
+      "github_tag": "9.0.0-dev+build+multi-tab+tauri-v2.20261002.2",
+      "github_asset": "MITS11.9.0.0-dev+build+multi-tab+tauri-v2.20261002.2-linux-x64.zip",
+      "sha256": "2c2c1376107caface6918fde746263ce6650010deb6c301d61bff8293cf5ea4f"
+    },
+    "linux-arm64": {
+      "url": "https://github.com/Arbin-com/MITS11-develop/releases/download/9.0.0-dev+build+multi-tab+tauri-v2.20261002.2/MITS11.9.0.0-dev+build+multi-tab+tauri-v2.20261002.2-linux-arm64.zip",
+      "github_asset_api_url": "https://api.github.com/repos/Arbin-com/MITS11-develop/releases/assets/605057808",
+      "github_owner": "Arbin-com",
+      "github_repo": "MITS11-develop",
+      "github_tag": "9.0.0-dev+build+multi-tab+tauri-v2.20261002.2",
+      "github_asset": "MITS11.9.0.0-dev+build+multi-tab+tauri-v2.20261002.2-linux-arm64.zip",
+      "sha256": "b740659ce3fb5f496e619c37dff8ba9769d445282b1f2e9e7a934b2ceb876e05"
+    },
+    "osx-arm64": {
+      "url": "https://github.com/Arbin-com/MITS11-develop/releases/download/9.0.0-dev+build+multi-tab+tauri-v2.20261002.2/MITS11.9.0.0-dev+build+multi-tab+tauri-v2.20261002.2-osx-arm64.zip",
+      "github_asset_api_url": "https://api.github.com/repos/Arbin-com/MITS11-develop/releases/assets/605064901",
+      "github_owner": "Arbin-com",
+      "github_repo": "MITS11-develop",
+      "github_tag": "9.0.0-dev+build+multi-tab+tauri-v2.20261002.2",
+      "github_asset": "MITS11.9.0.0-dev+build+multi-tab+tauri-v2.20261002.2-osx-arm64.zip",
+      "sha256": "29c1d3bb4f0ad1ba4236c91e345ca05ae7087590528eda0644ef4a6df4603818"
+    },
+    "win-x64": {
+      "url": "https://github.com/Arbin-com/MITS11-develop/releases/download/9.0.0-dev+build+multi-tab+tauri-v2.20261002.2/MITS11.9.0.0-dev+build+multi-tab+tauri-v2.20261002.2-win-x64.zip",
+      "github_asset_api_url": "https://api.github.com/repos/Arbin-com/MITS11-develop/releases/assets/605037985",
+      "github_owner": "Arbin-com",
+      "github_repo": "MITS11-develop",
+      "github_tag": "9.0.0-dev+build+multi-tab+tauri-v2.20261002.2",
+      "github_asset": "MITS11.9.0.0-dev+build+multi-tab+tauri-v2.20261002.2-win-x64.zip",
+      "sha256": "b178457ff21bc78e3c8b13a1d6e87cd06c726c9b6bf968c52cf49fa212d97eda"
+    }
+  }
+}
