@@ -1,0 +1,42 @@
+{
+  "version": "8.0.3",
+  "channel": "stable",
+  "platforms": {
+    "osx-x64": {
+      "url": "https://github.com/Arbin-com/MITS11-stable/releases/download/8.0.3/MITS11.8.0.3-osx-x64.zip",
+      "github_asset_api_url": "https://api.github.com/repos/Arbin-com/MITS11-stable/releases/assets/611860963",
+      "github_owner": "Arbin-com",
+      "github_repo": "MITS11-stable",
+      "github_tag": "8.0.3",
+      "github_asset": "MITS11.8.0.3-osx-x64.zip",
+      "sha256": "eb3f38b029233eda3ac5b331e89513d622e1d68b8fdcb1072647ab1268deac55"
+    },
+    "linux-arm64": {
+      "url": "https://github.com/Arbin-com/MITS11-stable/releases/download/8.0.3/MITS11.8.0.3-linux-arm64.zip",
+      "github_asset_api_url": "https://api.github.com/repos/Arbin-com/MITS11-stable/releases/assets/611853842",
+      "github_owner": "Arbin-com",
+      "github_repo": "MITS11-stable",
+      "github_tag": "8.0.3",
+      "github_asset": "MITS11.8.0.3-linux-arm64.zip",
+      "sha256": "9e93d3dff79e0dd4a5dcaa956f81063b4ced693d5fdf5f16d981b3d3360c04a2"
+    },
+    "osx-arm64": {
+      "url": "https://github.com/Arbin-com/MITS11-stable/releases/download/8.0.3/MITS11.8.0.3-osx-arm64.zip",
+      "github_asset_api_url": "https://api.github.com/repos/Arbin-com/MITS11-stable/releases/assets/611863348",
+      "github_owner": "Arbin-com",
+      "github_repo": "MITS11-stable",
+      "github_tag": "8.0.3",
+      "github_asset": "MITS11.8.0.3-osx-arm64.zip",
+      "sha256": "6d6d067024ac3ce4e0018aa993a98458fbe6aa84fdc0a33291a72a222fa6e4fe"
+    },
+    "win-x64": {
+      "url": "https://github.com/Arbin-com/MITS11-stable/releases/download/8.0.3/MITS11.8.0.3-win-x64.zip",
+      "github_asset_api_url": "https://api.github.com/repos/Arbin-com/MITS11-stable/releases/assets/611833318",
+      "github_owner": "Arbin-com",
+      "github_repo": "MITS11-stable",
+      "github_tag": "8.0.3",
+      "github_asset": "MITS11.8.0.3-win-x64.zip",
+      "sha256": "630eb42b1535d833345a7179fd429219b4a6448e07792dd32958565a219e02d5"
+    }
+  }
+}
