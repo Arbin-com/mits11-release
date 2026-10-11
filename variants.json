@@ -1,0 +1,9 @@
+{
+  "variants": [
+    {
+      "name": "mp257",
+      "description": "MP257 board",
+      "deviceTreeCompatiblePrefix": "st,stm32mp25"
+    }
+  ]
+}

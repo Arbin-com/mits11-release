@@ -44,7 +44,16 @@ jobs:
         run: |
           set -euo pipefail
 
-          PROTECTED_VERSIONS="$(cat stable alpha nightly | sort -u)"
+          # Named variants (variants.json, see VARIANTS.md) keep their own pointer
+          # files under <variant>/, so those are protected too.
+          VARIANTS_JSON=$(jq -c '[.variants[].name]' variants.json)
+          POINTER_FILES="stable alpha nightly"
+          for VARIANT in $(echo "$VARIANTS_JSON" | jq -r '.[]'); do
+            for CHANNEL in stable alpha nightly; do
+              [ -f "$VARIANT/$CHANNEL" ] && POINTER_FILES="$POINTER_FILES $VARIANT/$CHANNEL"
+            done
+          done
+          PROTECTED_VERSIONS="$(cat $POINTER_FILES | sort -u)"
           # GitHub's own "Latest release" (whatever /releases/latest resolves to -
           # newest non-prerelease, non-draft, or whatever was explicitly marked
           # via make_latest) is never a delete candidate, on top of the channel
@@ -71,11 +80,20 @@ jobs:
 
           # Classify every release into a group key ("alpha" or "dev:<branch>"); anything
           # else (stable/release/patch tags, or an unrecognized shape) is left alone.
-          CLASSIFIED=$(echo "$RELEASES" | jq -c '
-            . + (
-              if (.tag | test("-alpha\\+build\\.")) then {class: "alpha", group: "alpha"}
-              elif (.tag | test("-dev\\.[^+]+\\+build\\.")) then
-                {class: "dev", group: ("dev:" + (.tag | capture("-dev\\.(?<branch>[^+]+)\\+build\\.").branch))}
+          # A named variant's tag carries the variant as its first build identifier
+          # (x.y.z-alpha+mp257.build.<stamp>): it is classified as if the variant
+          # were absent, its group is prefixed with "<variant>:" so variants never
+          # share a floor, and its manifest lives in <variant>/<tag>.
+          CLASSIFIED=$(echo "$RELEASES" | jq -c --argjson variants "$VARIANTS_JSON" '
+            ([.tag | capture("\\+(?<v>[a-z0-9-]+)\\.build\\.")] | .[0].v // null) as $candidate
+            | (if $candidate != null and ($variants | index($candidate)) != null then $candidate else null end) as $variant
+            | (if $variant then (.tag | sub("\\+" + $variant + "\\."; "+")) else .tag end) as $shape
+            | (if $variant then $variant + ":" else "" end) as $prefix
+            | . + {dir: (if $variant then $variant + "/" + .tag else .tag end)}
+            | . + (
+              if ($shape | test("-alpha\\+build\\.")) then {class: "alpha", group: ($prefix + "alpha")}
+              elif ($shape | test("-dev\\.[^+]+\\+build\\.")) then
+                {class: "dev", group: ($prefix + "dev:" + ($shape | capture("-dev\\.(?<branch>[^+]+)\\+build\\.").branch))}
               else
                 {class: "skip", group: null}
               end
@@ -101,6 +119,7 @@ jobs:
             for i in $(seq 0 $((COUNT - 1))); do
               ITEM=$(echo "$SORTED" | jq -c ".[$i]")
               TAG=$(echo "$ITEM" | jq -r '.tag')
+              DIR=$(echo "$ITEM" | jq -r '.dir')
               ID=$(echo "$ITEM" | jq -r '.id')
               CREATED=$(echo "$ITEM" | jq -r '.created_at')
               SIZE=$(echo "$ITEM" | jq -r '.size')
@@ -138,8 +157,8 @@ jobs:
                 ENC_TAG=$(jq -rn --arg t "$TAG" '$t | @uri')
                 gh api -X DELETE "repos/$DEVELOP_REPO/git/refs/tags/$ENC_TAG" --silent || \
                   echo "::warning::Release $TAG deleted but its tag ref could not be removed"
-                if [ -d "$TAG" ]; then
-                  git rm -rq "$TAG"
+                if [ -d "$DIR" ]; then
+                  git rm -rq "$DIR"
                   git commit -q -m "chore: prune manifest for deleted release $TAG"
                 fi
                 DELETE_COUNT=$((DELETE_COUNT + 1))

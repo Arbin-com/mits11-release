@@ -46,7 +46,16 @@ jobs:
         run: |
           set -euo pipefail
 
-          PROTECTED_VERSIONS="$(cat stable alpha nightly | sort -u)"
+          # Named variants (variants.json, see VARIANTS.md) keep their own pointer
+          # files under <variant>/, so those are protected too.
+          VARIANTS_JSON=$(jq -c '[.variants[].name]' variants.json)
+          POINTER_FILES="stable alpha nightly"
+          for VARIANT in $(echo "$VARIANTS_JSON" | jq -r '.[]'); do
+            for CHANNEL in stable alpha nightly; do
+              [ -f "$VARIANT/$CHANNEL" ] && POINTER_FILES="$POINTER_FILES $VARIANT/$CHANNEL"
+            done
+          done
+          PROTECTED_VERSIONS="$(cat $POINTER_FILES | sort -u)"
           # GitHub's own "Latest release" (whatever /releases/latest resolves to -
           # newest non-prerelease, non-draft, or whatever was explicitly marked
           # via make_latest) is never a delete candidate, on top of the channel
@@ -72,36 +81,52 @@ jobs:
             -q '.[] | {tag: .tag_name, id: .id, created_at: .created_at, size: ([.assets[].size] | add // 0)}')
 
           # GA tags only: x.y.z, x.y.z-release, x.y.z-patch (same shapes
-          # setup.yml's is_ga_tag() treats as stable/GA). Anything else is
-          # left untouched by this policy.
-          GA_ONLY=$(echo "$RELEASES" | jq -c '
-            select(
-              (.tag | test("^[0-9]+\\.[0-9]+\\.[0-9]+$")) or
-              (.tag | test("^[0-9]+\\.[0-9]+\\.[0-9]+-(release|patch)$"))
-            )
+          # setup.yml's is_ga_tag() treats as stable/GA). A named variant's GA
+          # tag adds +<variant> (x.y.z+mp257); its manifest lives in
+          # <variant>/<tag>. Anything else is left untouched by this policy.
+          GA_ONLY=$(echo "$RELEASES" | jq -c --argjson variants "$VARIANTS_JSON" '
+            ([.tag | capture("\\+(?<v>[a-z0-9-]+)$")] | .[0].v // null) as $candidate
+            | (if $candidate != null and ($variants | index($candidate)) != null then $candidate else null end) as $variant
+            | (if $variant then (.tag | sub("\\+" + $variant + "$"; "")) else .tag end) as $shape
+            | select(
+                ($shape | test("^[0-9]+\\.[0-9]+\\.[0-9]+$")) or
+                ($shape | test("^[0-9]+\\.[0-9]+\\.[0-9]+-(release|patch)$"))
+              )
+            | . + {
+                variant: ($variant // ""),
+                dir: (if $variant then $variant + "/" + .tag else .tag end)
+              }
           ')
 
-          # Group by major.minor line. A line's floor is ACTIVE_FLOOR if it's
-          # the current line (highest major.minor) or its newest release is
-          # within ACTIVE_DAYS; otherwise STALE_FLOOR. Beyond the floor, a
-          # release is a delete candidate - no separate age ceiling, the
-          # floor number already encodes how much history that line's status
-          # warrants.
+          # Group by major.minor line, per variant ("9.0" for the default
+          # variant, "mp257:9.0" for a named one). A line's floor is
+          # ACTIVE_FLOOR if it's its variant's current line (highest
+          # major.minor) or its newest release is within ACTIVE_DAYS;
+          # otherwise STALE_FLOOR. Beyond the floor, a release is a delete
+          # candidate - no separate age ceiling, the floor number already
+          # encodes how much history that line's status warrants.
           DECISIONS=$(echo "$GA_ONLY" | jq -s \
             --argjson now "$NOW_EPOCH" \
             --argjson activeDays "$ACTIVE_DAYS" \
             --argjson activeFloor "$ACTIVE_FLOOR" \
             --argjson staleFloor "$STALE_FLOOR" '
             map(. + (.tag | capture("^(?<maj>[0-9]+)\\.(?<min>[0-9]+)\\.")))
-            | map(. + {group: (.maj + "." + .min), majNum: (.maj | tonumber), minNum: (.min | tonumber)})
+            | map(. + {
+                group: ((if .variant != "" then .variant + ":" else "" end) + .maj + "." + .min),
+                majNum: (.maj | tonumber),
+                minNum: (.min | tonumber)
+              })
             | group_by(.group)
             | (. as $groups
-               | ($groups | map([.[0].majNum, .[0].minNum]) | max) as $currentKey
+               | ($groups
+                  | group_by(.[0].variant)
+                  | map({key: .[0][0].variant, value: (map([.[0].majNum, .[0].minNum]) | max)})
+                  | from_entries) as $currentKeys
                | $groups
                | map(
                    (sort_by(.created_at) | reverse) as $sorted
                    | ($sorted[0].created_at | fromdateiso8601) as $newestEpoch
-                   | ((([.[0].majNum, .[0].minNum]) == $currentKey)
+                   | ((([.[0].majNum, .[0].minNum]) == $currentKeys[.[0].variant])
                       or (($now - $newestEpoch) <= ($activeDays * 86400))) as $isActive
                    | ($sorted | to_entries | map(
                        .value + {
@@ -119,6 +144,7 @@ jobs:
 
           echo "$DECISIONS" | jq -c '.[]' | while read -r ITEM; do
             TAG=$(echo "$ITEM" | jq -r '.tag')
+            DIR=$(echo "$ITEM" | jq -r '.dir')
             ID=$(echo "$ITEM" | jq -r '.id')
             SIZE=$(echo "$ITEM" | jq -r '.size')
             GROUP=$(echo "$ITEM" | jq -r '.group')
@@ -154,8 +180,8 @@ jobs:
               ENC_TAG=$(jq -rn --arg t "$TAG" '$t | @uri')
               gh api -X DELETE "repos/$STABLE_REPO/git/refs/tags/$ENC_TAG" --silent || \
                 echo "::warning::Release $TAG deleted but its tag ref could not be removed"
-              if [ -d "$TAG" ]; then
-                git rm -rq "$TAG"
+              if [ -d "$DIR" ]; then
+                git rm -rq "$DIR"
                 git commit -q -m "chore: prune manifest for deleted release $TAG"
               fi
               DELETE_COUNT=$((DELETE_COUNT + 1))
