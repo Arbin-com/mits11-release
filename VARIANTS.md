@@ -37,19 +37,25 @@ Version numbers: a variant uses the major.minor of the `develop` it was last
 synced from, with its own patch counter. `9.0.3+mp257` is not the same code as
 `9.0.3`.
 
-GitHub "Latest" is only ever set on default-variant releases.
+GitHub "Latest" is only ever set on default-variant releases. The pipeline
+publishes every release as a prerelease, so promotion is by hand: a
+default-variant release can be marked as the latest release. To show another
+variant's release as a full release, untick "Set as a pre-release" and also
+untick "Set as the latest release" (`make_latest=false` through the API), or
+it replaces the host release as Latest in the repo.
 
 ## Fields in `variants.json`
 
 | Field | Meaning |
 |---|---|
-| `name` | The variant key: tag marker, folder name and `--variant` value. Lowercase letters, digits and `-`. |
+| `name` | The variant key: tag marker, folder name and `--variant` value. Lowercase letters, digits and `-`, starting with a letter or digit. `default` (the host build) and `build` (host prerelease tags use `+build.<stamp>`) are reserved. |
 | `description` | Human name, used in release titles and on the page. |
 | `deviceTreeCompatiblePrefix` | Optional. When `install.sh` runs without `--variant` on a device whose device tree compatible string starts with this, it stops and asks for `--variant <name>`, so the device never gets the default variant's build by mistake. |
 
 ## Add a variant
 
-1. Add an entry to [`variants.json`](variants.json).
+1. Add an entry to [`variants.json`](variants.json). The `Validate variants`
+   workflow checks the file on every PR that touches it.
 2. Add a tab for it in [`index.html`](index.html): its install commands, plus
    where to get anything that comes before them (for `mp257`, the golden image).
 3. In MITS11, on the variant's branches, set `releaseVariant` in

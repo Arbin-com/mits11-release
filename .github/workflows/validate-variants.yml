@@ -1,0 +1,42 @@
+name: Validate variants
+
+# variants.json is read by every MITS11 tag build (Setup), install.sh and the
+# retention workflows, so a bad entry breaks all of them. See VARIANTS.md.
+on:
+  pull_request:
+    paths:
+      - variants.json
+  push:
+    branches: [main]
+    paths:
+      - variants.json
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check variants.json
+        run: |
+          set -euo pipefail
+          ERRORS=$(jq -r '
+            if (.variants | type) != "array" then "variants must be an array"
+            else
+              (.variants | to_entries[] | .key as $i | .value
+                | (if (.name | type) != "string" or (.name | test("^[a-z0-9][a-z0-9-]*$") | not)
+                     then "variants[\($i)]: name must match ^[a-z0-9][a-z0-9-]*$" else empty end),
+                  (if .name == "default" or .name == "build"
+                     then "variants[\($i)]: name \(.name) is reserved" else empty end),
+                  (if (.description | type) != "string" or .description == ""
+                     then "variants[\($i)]: description is required" else empty end),
+                  (if has("deviceTreeCompatiblePrefix") and (.deviceTreeCompatiblePrefix | type) != "string"
+                     then "variants[\($i)]: deviceTreeCompatiblePrefix must be a string" else empty end)),
+              ([.variants[].name] | group_by(.)[] | select(length > 1) | "duplicate name: \(.[0])")
+            end
+          ' variants.json)
+          if [ -n "$ERRORS" ]; then
+            echo "$ERRORS" | while IFS= read -r line; do echo "::error file=variants.json::$line"; done
+            exit 1
+          fi
+          echo "variants.json OK"
