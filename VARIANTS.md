@@ -51,13 +51,16 @@ newest version in it:
 
 Each version's `manifest.json` records `channel` (where the pipeline
 published it) and `published` (when, UTC). Promotion adds `promoted`
-(`at`, `by`, `run`) and never changes `channel`.
+(`at`, `by`, `run`, and `note` when given) and never changes `channel`.
 
 ## Promotion
 
 When a candidate passes its QA smoke test, run the **Promote to stable**
 workflow (Actions tab, `promote-stable.yml`) with the variant (`default` or
-a name from `variants.json`) and the version. It:
+a name from `variants.json`), the version, and a note saying which QA
+result approved it (shown on the page). In MITS11, the `release-promote`
+agent skill does this for you, with checks first. Only people with write
+access to this repo can run it. It:
 
 1. checks the version is a published release build of that variant;
 2. takes its GitHub release in `MITS11-stable` off prerelease, and for the

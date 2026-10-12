@@ -18,6 +18,10 @@ on:
       version:
         description: 'Release version to promote, e.g. 8.0.5 or 9.0.0+mp257'
         required: true
+      note:
+        description: 'Why it is stable, e.g. QA smoke test MITS-1234 passed (shown on the page)'
+        required: false
+        default: ''
 
 concurrency:
   group: release-index-promote
@@ -46,6 +50,7 @@ jobs:
           GH_TOKEN: ${{ secrets.STABLE_REPO_TOKEN }}
           VARIANT: ${{ inputs.variant }}
           VERSION: ${{ inputs.version }}
+          NOTE: ${{ inputs.note }}
         run: |
           set -euo pipefail
           VERSION="$(printf '%s' "$VERSION" | tr -d '[:space:]')"
@@ -103,8 +108,9 @@ jobs:
           echo "$VERSION" > "$DIR/stable"
           NOW="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
           RUN_URL="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
-          jq --arg at "$NOW" --arg by "$GITHUB_ACTOR" --arg run "$RUN_URL" \
-            '.promoted = {at: $at, by: $by, run: $run}' "$MANIFEST" > "$MANIFEST.tmp"
+          jq --arg at "$NOW" --arg by "$GITHUB_ACTOR" --arg run "$RUN_URL" --arg note "$NOTE" \
+            '.promoted = ({at: $at, by: $by, run: $run} + (if $note == "" then {} else {note: $note} end))' \
+            "$MANIFEST" > "$MANIFEST.tmp"
           mv "$MANIFEST.tmp" "$MANIFEST"
 
           git add "$DIR/stable" "$MANIFEST"
