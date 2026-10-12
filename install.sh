@@ -3,10 +3,14 @@ set -euo pipefail
 
 usage() {
   cat <<'EOF'
-Usage: install.sh [stable|latest|alpha|nightly|VERSION] [--auth auto|app|pat] [--silent|--non-interactive] [--no-browser-open]
+Usage: install.sh [stable|latest|alpha|nightly|VERSION] [--variant NAME] [--auth auto|app|pat] [--silent|--non-interactive] [--no-browser-open]
+Variants are listed in https://arbin-com.github.io/mits11-release/variants.json.
+Without --variant, the default (host) variant is installed.
 Examples:
   install.sh
   install.sh alpha
+  install.sh --variant mp257
+  install.sh alpha --variant mp257
   install.sh 5.0.1
   install.sh nightly
   install.sh --silent
@@ -17,6 +21,7 @@ EOF
 }
 
 TARGET=""
+VARIANT=""
 SILENT_FLAG=""
 AUTH_MODE="auto"
 NO_BROWSER_OPEN=0
@@ -49,6 +54,20 @@ while [ $# -gt 0 ]; do
     ;;
   --no-browser-open)
     NO_BROWSER_OPEN=1
+    ;;
+  --variant)
+    if [ $# -lt 2 ]; then
+      echo "--variant requires a name" >&2
+      usage
+      exit 1
+    fi
+    if [[ ! "$2" =~ ^[a-z0-9][a-z0-9-]*$ ]]; then
+      echo "Invalid variant: $2" >&2
+      usage
+      exit 1
+    fi
+    VARIANT="$2"
+    shift
     ;;
   *)
     if [ -z "$TARGET" ]; then
@@ -695,6 +714,31 @@ normalize_json() {
   echo "$1" | tr -d '\n\r\t' | sed 's/[[:space:]]\+/ /g'
 }
 
+# Prints "name<TAB>deviceTreeCompatiblePrefix" for each entry of variants.json.
+list_variants() {
+  local json
+  json="$(normalize_json "$1")"
+  local entry name prefix
+  while [[ $json =~ \{([^{}]*\"name\"[^{}]*)\} ]]; do
+    entry="${BASH_REMATCH[0]}"
+    json="${json/"$entry"/}"
+    name="$(json_get_string "$entry" name || true)"
+    prefix="$(json_get_string "$entry" deviceTreeCompatiblePrefix || true)"
+    if [ -n "$name" ]; then
+      printf '%s\t%s\n' "$name" "$prefix"
+    fi
+  done
+}
+
+# True when a device tree compatible string starts with the given prefix.
+device_tree_matches() {
+  local prefix="$1"
+  if [ -z "$prefix" ] || [ ! -r /proc/device-tree/compatible ]; then
+    return 1
+  fi
+  tr '\0' '\n' </proc/device-tree/compatible | awk -v p="$prefix" 'index($0, p) == 1 { found = 1 } END { exit !found }'
+}
+
 get_manifest_values() {
   local json="$1"
   local platform="$2"
@@ -763,15 +807,40 @@ esac
 
 platform="${os}-${arch}"
 
+# A named variant has its own pointers and manifests under $BASE_URL/<variant>/;
+# the default variant lives at the root. See VARIANTS.md.
+index_url="$BASE_URL"
+variants_list=""
+if [ -n "$VARIANT" ]; then
+  variants_list="$(list_variants "$(download_or_fail "$BASE_URL/variants.json")")"
+elif [ -r /proc/device-tree/compatible ]; then
+  variants_list="$(list_variants "$(download "$BASE_URL/variants.json" 2>/dev/null || true)")"
+fi
+
+if [ -n "$VARIANT" ]; then
+  if ! printf '%s\n' "$variants_list" | awk -F '\t' -v v="$VARIANT" '$1 == v { found = 1 } END { exit !found }'; then
+    echo "Unknown variant: $VARIANT. Known variants: $(printf '%s\n' "$variants_list" | cut -f1 | tr '\n' ' ')" >&2
+    exit 1
+  fi
+  index_url="$BASE_URL/$VARIANT"
+else
+  while IFS=$'\t' read -r variant_name variant_prefix; do
+    if [ -n "$variant_name" ] && device_tree_matches "$variant_prefix"; then
+      echo "This device matches the $variant_name variant. Re-run with --variant $variant_name." >&2
+      exit 1
+    fi
+  done <<<"$variants_list"
+fi
+
 target="${TARGET:-stable}"
 version=""
 
 if [[ "$target" == "stable" || "$target" == "latest" || -z "$target" ]]; then
-  version="$(download_or_fail "$BASE_URL/stable")"
+  version="$(download_or_fail "$index_url/stable")"
 elif [[ "$target" == "alpha" ]]; then
-  version="$(download_or_fail "$BASE_URL/alpha")"
+  version="$(download_or_fail "$index_url/alpha")"
 elif [[ "$target" == "nightly" ]]; then
-  version="$(download_or_fail "$BASE_URL/nightly")"
+  version="$(download_or_fail "$index_url/nightly")"
 else
   version="$target"
 fi
@@ -782,7 +851,7 @@ if [ -z "$version" ]; then
   exit 1
 fi
 
-manifest_url="$BASE_URL/$version/manifest.json"
+manifest_url="$index_url/$version/manifest.json"
 manifest_json="$(download_or_fail "$manifest_url")"
 
 if [ "$HAS_JQ" = true ]; then

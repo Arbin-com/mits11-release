@@ -46,8 +46,18 @@ gets decided; layering an age check on top would only add complexity
 without protecting anything the floor doesn't already protect.
 
 **Hard exception:** a release is never deleted if its version is the
-current value of `stable`, `alpha`, or `nightly` in this repo, regardless
-of floor position.
+current value of `stable`, `alpha`, or `nightly` in this repo, or of a
+variant's `<variant>/stable|alpha|nightly`, regardless of floor position.
+
+## Variants
+
+A named variant (listed in [`variants.json`](variants.json), see
+[`VARIANTS.md`](VARIANTS.md)) marks its GA tags with `+<variant>`:
+`9.0.0+mp257`. Its lines are separate groups (`mp257:9.0`) with the same
+floors, and "current line" is judged within the variant, so a variant's
+releases never count against the default variant's floor or the reverse. Its
+manifest folder is `<variant>/<version>/`. A `+<suffix>` that is not a listed
+variant is not a GA tag and is left untouched.
 
 ## Manifest lockstep
 

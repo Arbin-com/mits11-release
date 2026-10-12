@@ -38,8 +38,19 @@ ceiling stops a burst day from blowing past the floor and still piling up
 history.
 
 **Hard exception:** a release is never deleted if its version is the current
-value of `stable`, `alpha`, or `nightly` in this repo, regardless of age or
-count.
+value of `stable`, `alpha`, or `nightly` in this repo, or of a variant's
+`<variant>/stable|alpha|nightly`, regardless of age or count.
+
+## Variants
+
+A named variant (listed in [`variants.json`](variants.json), see
+[`VARIANTS.md`](VARIANTS.md)) puts its name first in the build metadata:
+`<version>-alpha+mp257.build.<stamp>`, `<version>-dev.<branch>+mp257.build.<stamp>`.
+It is classified as if the variant were absent, in its own groups
+(`mp257:alpha`, `mp257:dev:<branch>`) with the same floor and ceiling, so a
+variant's builds never push out the default variant's and the reverse. Its
+manifest folder is `<variant>/<version>/`. A tag whose first build identifier
+is not a listed variant is classified as the default variant.
 
 ## Manifest lockstep
 

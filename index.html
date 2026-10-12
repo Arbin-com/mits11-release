@@ -149,6 +149,10 @@
       font-size: 15px;
     }
 
+    .section-title a {
+      color: var(--accent);
+    }
+
     .snippet {
       background: var(--panel);
       border: 1px solid var(--border);
@@ -250,6 +254,7 @@
       <div class="tabs" role="tablist">
         <button class="tab active" role="tab" aria-selected="true" data-tab="windows">Windows</button>
         <button class="tab" role="tab" aria-selected="false" data-tab="linux-mac">Linux/MacOS</button>
+        <button class="tab" role="tab" aria-selected="false" data-tab="mp257">MP257 board</button>
       </div>
 
       <div class="panel active" role="tabpanel" data-panel="windows">
@@ -412,6 +417,62 @@
               </svg>
             </button>
             <pre><code id="linux-nightly-silent"><span class="hl-cmd">curl</span> <span class="hl-flag">-fsSL</span> <span class="hl-url">https://arbin-com.github.io/mits11-release/install.sh</span> <span class="hl-pipe">|</span> <span class="hl-cmd">bash</span> <span class="hl-flag">-s</span> <span class="hl-flag">--</span> <span class="hl-flag">nightly</span> <span class="hl-flag">--silent</span></code></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel" role="tabpanel" data-panel="mp257">
+        <div class="section-title">MP257 board, after flashing the <a href="https://github.com/Arbin-com/MITS11-mp257-release/releases">golden image</a></div>
+
+        <div class="snippet">
+          <div class="snippet-label">Latest stable</div>
+          <div class="code-wrap">
+            <button class="copy-btn" data-copy="mp257-stable" aria-label="Copy stable command">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2"></rect>
+                <rect x="2" y="2" width="13" height="13" rx="2"></rect>
+              </svg>
+            </button>
+            <pre><code id="mp257-stable"><span class="hl-cmd">curl</span> <span class="hl-flag">-fsSL</span> <span class="hl-url">https://arbin-com.github.io/mits11-release/install.sh</span> <span class="hl-pipe">|</span> <span class="hl-cmd">bash</span> <span class="hl-flag">-s</span> <span class="hl-flag">--</span> <span class="hl-flag">--variant</span> <span class="hl-flag">mp257</span></code></pre>
+          </div>
+        </div>
+
+        <div class="snippet">
+          <div class="snippet-label">Latest alpha</div>
+          <div class="code-wrap">
+            <button class="copy-btn" data-copy="mp257-alpha" aria-label="Copy alpha command">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2"></rect>
+                <rect x="2" y="2" width="13" height="13" rx="2"></rect>
+              </svg>
+            </button>
+            <pre><code id="mp257-alpha"><span class="hl-cmd">curl</span> <span class="hl-flag">-fsSL</span> <span class="hl-url">https://arbin-com.github.io/mits11-release/install.sh</span> <span class="hl-pipe">|</span> <span class="hl-cmd">bash</span> <span class="hl-flag">-s</span> <span class="hl-flag">--</span> <span class="hl-flag">alpha</span> <span class="hl-flag">--variant</span> <span class="hl-flag">mp257</span></code></pre>
+          </div>
+        </div>
+
+        <div class="snippet">
+          <div class="snippet-label">Specific version</div>
+          <div class="code-wrap">
+            <button class="copy-btn" data-copy="mp257-version" aria-label="Copy version command">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2"></rect>
+                <rect x="2" y="2" width="13" height="13" rx="2"></rect>
+              </svg>
+            </button>
+            <pre><code id="mp257-version"><span class="hl-cmd">curl</span> <span class="hl-flag">-fsSL</span> <span class="hl-url">https://arbin-com.github.io/mits11-release/install.sh</span> <span class="hl-pipe">|</span> <span class="hl-cmd">bash</span> <span class="hl-flag">-s</span> <span class="hl-flag">--</span> <span class="hl-flag">9.0.0+mp257</span> <span class="hl-flag">--variant</span> <span class="hl-flag">mp257</span></code></pre>
+          </div>
+        </div>
+
+        <div class="snippet">
+          <div class="snippet-label">Latest nightly</div>
+          <div class="code-wrap">
+            <button class="copy-btn" data-copy="mp257-nightly" aria-label="Copy nightly command">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2"></rect>
+                <rect x="2" y="2" width="13" height="13" rx="2"></rect>
+              </svg>
+            </button>
+            <pre><code id="mp257-nightly"><span class="hl-cmd">curl</span> <span class="hl-flag">-fsSL</span> <span class="hl-url">https://arbin-com.github.io/mits11-release/install.sh</span> <span class="hl-pipe">|</span> <span class="hl-cmd">bash</span> <span class="hl-flag">-s</span> <span class="hl-flag">--</span> <span class="hl-flag">nightly</span> <span class="hl-flag">--variant</span> <span class="hl-flag">mp257</span></code></pre>
           </div>
         </div>
       </div>
