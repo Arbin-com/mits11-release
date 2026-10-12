@@ -586,7 +586,10 @@
         head += '<span class="version">' + esc(build.version) + '</span><span class="channel-hint">' + esc(CHANNELS[channel]) + "</span></div>";
         var meta = [];
         var manifest = build.manifest || {};
-        if (manifest.promoted && manifest.promoted.at) meta.push("<span>Approved " + esc(formatDate(manifest.promoted.at)) + "</span>");
+        if (manifest.promoted && manifest.promoted.at) {
+          meta.push("<span>Approved " + esc(formatDate(manifest.promoted.at)) +
+            (manifest.promoted.note ? ": " + esc(manifest.promoted.note) : "") + "</span>");
+        }
         if (manifest.published) meta.push("<span>Published " + esc(formatDate(manifest.published)) + "</span>");
         var links = releaseLinks(variant, build);
         if (links) meta.push(links);
