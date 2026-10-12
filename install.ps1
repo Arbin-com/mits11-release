@@ -80,8 +80,8 @@ if (-not (Test-Admin)) {
   Fail "Administrator privileges required. Re-run this script from an elevated PowerShell (Run as Administrator)."
 }
 
-if ($Target -and ($Target -notmatch '^(stable|latest|alpha|nightly|[0-9]+\.[0-9]+\.[0-9]+([\-+][^\s]+)?)$')) {
-  Fail "Usage: install.ps1 [stable|latest|alpha|nightly|VERSION] [-Auth auto|app|pat] [-Silent] [-NoBrowserOpen]"
+if ($Target -and ($Target -notmatch '^(stable|latest|candidate|alpha|nightly|[0-9]+\.[0-9]+\.[0-9]+([\-+][^\s]+)?)$')) {
+  Fail "Usage: install.ps1 [stable|latest|candidate|alpha|nightly|VERSION] [-Auth auto|app|pat] [-Silent] [-NoBrowserOpen]. stable (or latest) is the release QA approved; candidate is the newest release build, still waiting for QA."
 }
 
 $baseUrl = "https://arbin-com.github.io/mits11-release"
@@ -366,15 +366,11 @@ function Download-GitHubAsset([string]$Url, [string]$OutFile) {
   }
 }
 
-$target = if ($Target) { $Target } else { "stable" }
+$target = if ($Target -and $Target -ne "latest") { $Target } else { "stable" }
 $version = ""
 
-if ($target -eq "stable" -or $target -eq "latest") {
-  $version = (Get-Text "$baseUrl/stable").Trim()
-} elseif ($target -eq "alpha") {
-  $version = (Get-Text "$baseUrl/alpha").Trim()
-} elseif ($target -eq "nightly") {
-  $version = (Get-Text "$baseUrl/nightly").Trim()
+if ($target -match '^(stable|candidate|alpha|nightly)$') {
+  $version = (Get-Text "$baseUrl/$target").Trim()
 } else {
   $version = $target
 }

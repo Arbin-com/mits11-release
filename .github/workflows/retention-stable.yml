@@ -49,13 +49,13 @@ jobs:
           # Named variants (variants.json, see VARIANTS.md) keep their own pointer
           # files under <variant>/, so those are protected too.
           VARIANTS_JSON=$(jq -c '[.variants[].name]' variants.json)
-          POINTER_FILES="stable alpha nightly"
-          for VARIANT in $(echo "$VARIANTS_JSON" | jq -r '.[]'); do
-            for CHANNEL in stable alpha nightly; do
-              [ -f "$VARIANT/$CHANNEL" ] && POINTER_FILES="$POINTER_FILES $VARIANT/$CHANNEL"
+          POINTER_FILES=""
+          for DIR in . $(echo "$VARIANTS_JSON" | jq -r '.[]'); do
+            for CHANNEL in stable candidate alpha nightly; do
+              [ -f "$DIR/$CHANNEL" ] && POINTER_FILES="$POINTER_FILES $DIR/$CHANNEL"
             done
           done
-          PROTECTED_VERSIONS="$(cat $POINTER_FILES | sort -u)"
+          PROTECTED_VERSIONS="$(cat /dev/null $POINTER_FILES | sort -u)"
           # GitHub's own "Latest release" (whatever /releases/latest resolves to -
           # newest non-prerelease, non-draft, or whatever was explicitly marked
           # via make_latest) is never a delete candidate, on top of the channel
@@ -78,7 +78,7 @@ jobs:
           NOW_EPOCH=$(date -u +%s)
 
           RELEASES=$(gh api "repos/$STABLE_REPO/releases" --paginate \
-            -q '.[] | {tag: .tag_name, id: .id, created_at: .created_at, size: ([.assets[].size] | add // 0)}')
+            -q '.[] | {tag: .tag_name, id: .id, created_at: .created_at, prerelease: .prerelease, size: ([.assets[].size] | add // 0)}')
 
           # GA tags only: x.y.z, x.y.z-release, x.y.z-patch (same shapes
           # setup.yml's is_ga_tag() treats as stable/GA). A named variant's GA
@@ -151,9 +151,17 @@ jobs:
             IDX=$(echo "$ITEM" | jq -r '.idx')
             FLOOR=$(echo "$ITEM" | jq -r '.floor')
             IS_ACTIVE=$(echo "$ITEM" | jq -r '.isActive')
+            PRERELEASE=$(echo "$ITEM" | jq -r '.prerelease')
 
             if is_protected "$TAG"; then
               echo "KEEP  (pointer)  $TAG"
+              continue
+            fi
+            # A release that isn't a prerelease was promoted at some point
+            # (promote-stable.yml, or by hand before it existed): it stays as
+            # a rollback target.
+            if [ "$PRERELEASE" = "false" ]; then
+              echo "KEEP  (promoted)  $TAG"
               continue
             fi
             if [ "$IDX" -lt "$FLOOR" ]; then

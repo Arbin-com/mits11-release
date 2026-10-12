@@ -38,8 +38,9 @@ ceiling stops a burst day from blowing past the floor and still piling up
 history.
 
 **Hard exception:** a release is never deleted if its version is the current
-value of `stable`, `alpha`, or `nightly` in this repo, or of a variant's
-`<variant>/stable|alpha|nightly`, regardless of age or count.
+value of `stable`, `candidate`, `alpha`, or `nightly` in this repo, or of a
+variant's `<variant>/stable|candidate|alpha|nightly`, regardless of age or
+count.
 
 ## Variants
 

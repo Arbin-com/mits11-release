@@ -47,13 +47,13 @@ jobs:
           # Named variants (variants.json, see VARIANTS.md) keep their own pointer
           # files under <variant>/, so those are protected too.
           VARIANTS_JSON=$(jq -c '[.variants[].name]' variants.json)
-          POINTER_FILES="stable alpha nightly"
-          for VARIANT in $(echo "$VARIANTS_JSON" | jq -r '.[]'); do
-            for CHANNEL in stable alpha nightly; do
-              [ -f "$VARIANT/$CHANNEL" ] && POINTER_FILES="$POINTER_FILES $VARIANT/$CHANNEL"
+          POINTER_FILES=""
+          for DIR in . $(echo "$VARIANTS_JSON" | jq -r '.[]'); do
+            for CHANNEL in stable candidate alpha nightly; do
+              [ -f "$DIR/$CHANNEL" ] && POINTER_FILES="$POINTER_FILES $DIR/$CHANNEL"
             done
           done
-          PROTECTED_VERSIONS="$(cat $POINTER_FILES | sort -u)"
+          PROTECTED_VERSIONS="$(cat /dev/null $POINTER_FILES | sort -u)"
           # GitHub's own "Latest release" (whatever /releases/latest resolves to -
           # newest non-prerelease, non-draft, or whatever was explicitly marked
           # via make_latest) is never a delete candidate, on top of the channel

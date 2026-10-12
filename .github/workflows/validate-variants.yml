@@ -31,7 +31,16 @@ jobs:
                   (if (.description | type) != "string" or .description == ""
                      then "variants[\($i)]: description is required" else empty end),
                   (if has("deviceTreeCompatiblePrefix") and (.deviceTreeCompatiblePrefix | type) != "string"
-                     then "variants[\($i)]: deviceTreeCompatiblePrefix must be a string" else empty end)),
+                     then "variants[\($i)]: deviceTreeCompatiblePrefix must be a string" else empty end),
+                  (if has("installNote") and ((.installNote | type) != "string" or .installNote == "")
+                     then "variants[\($i)]: installNote must be a non-empty string" else empty end),
+                  (if has("installNoteUrl") and ((.installNoteUrl | type) != "string" or (.installNoteUrl | test("^https://") | not))
+                     then "variants[\($i)]: installNoteUrl must be an https:// URL" else empty end),
+                  (if has("installNoteUrl") and (has("installNote") | not)
+                     then "variants[\($i)]: installNoteUrl needs installNote" else empty end),
+                  # install.sh reads this file without jq, one flat object per variant.
+                  (to_entries[] | select((.value | type) == "object" or (.value | type) == "array")
+                     | "variants[\($i)]: \(.key) must not be an object or array")),
               ([.variants[].name] | group_by(.)[] | select(length > 1) | "duplicate name: \(.[0])")
             end
           ' variants.json)

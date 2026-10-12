@@ -3,12 +3,15 @@ set -euo pipefail
 
 usage() {
   cat <<'EOF'
-Usage: install.sh [stable|latest|alpha|nightly|VERSION] [--variant NAME] [--auth auto|app|pat] [--silent|--non-interactive] [--no-browser-open]
+Usage: install.sh [stable|latest|candidate|alpha|nightly|VERSION] [--variant NAME] [--auth auto|app|pat] [--silent|--non-interactive] [--no-browser-open]
 Variants are listed in https://arbin-com.github.io/mits11-release/variants.json.
 Without --variant, the default (host) variant is installed.
+stable (or latest) is the release QA approved; candidate is the newest release
+build, still waiting for QA.
 Examples:
   install.sh
   install.sh alpha
+  install.sh candidate
   install.sh --variant mp257
   install.sh alpha --variant mp257
   install.sh 5.0.1
@@ -82,7 +85,7 @@ while [ $# -gt 0 ]; do
   shift
 done
 
-if [[ -n "$TARGET" ]] && [[ ! "$TARGET" =~ ^(stable|latest|alpha|nightly|[0-9]+\.[0-9]+\.[0-9]+([\-+][^[:space:]]+)?)$ ]]; then
+if [[ -n "$TARGET" ]] && [[ ! "$TARGET" =~ ^(stable|latest|candidate|alpha|nightly|[0-9]+\.[0-9]+\.[0-9]+([\-+][^[:space:]]+)?)$ ]]; then
   echo "Invalid target: $TARGET" >&2
   usage
   exit 1
@@ -835,12 +838,17 @@ fi
 target="${TARGET:-stable}"
 version=""
 
-if [[ "$target" == "stable" || "$target" == "latest" || -z "$target" ]]; then
-  version="$(download_or_fail "$index_url/stable")"
-elif [[ "$target" == "alpha" ]]; then
-  version="$(download_or_fail "$index_url/alpha")"
-elif [[ "$target" == "nightly" ]]; then
-  version="$(download_or_fail "$index_url/nightly")"
+if [[ "$target" == "latest" || -z "$target" ]]; then
+  target="stable"
+fi
+
+if [[ "$target" =~ ^(stable|candidate|alpha|nightly)$ ]]; then
+  # A channel's pointer is missing until its first release (a new variant has
+  # no stable release until one is promoted).
+  if ! version="$(download "$index_url/$target")"; then
+    echo "No $target release${VARIANT:+ of the $VARIANT variant} yet. Try another channel (stable, candidate, alpha, nightly) or a version." >&2
+    exit 1
+  fi
 else
   version="$target"
 fi
