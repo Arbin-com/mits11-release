@@ -3,7 +3,9 @@
     {
       "name": "mp257",
       "description": "MP257 board",
-      "deviceTreeCompatiblePrefix": "st,stm32mp25"
+      "deviceTreeCompatiblePrefix": "st,stm32mp25",
+      "installNote": "Flash the board's golden image first.",
+      "installNoteUrl": "https://github.com/Arbin-com/MITS11-mp257-release"
     }
   ]
 }

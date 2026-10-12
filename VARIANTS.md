@@ -22,7 +22,7 @@ to be linux-arm64 too.
 | Prerelease tag | `9.0.0-alpha+build.<stamp>`, `9.0.0-dev.<branch>+build.<stamp>` | `9.0.0-alpha+mp257.build.<stamp>`, `9.0.0-dev.<branch>+mp257.build.<stamp>` |
 | GitHub release | `MITS11-stable` (GA), `MITS11-develop` (prerelease) | same repos, title ends with `(<description>)` |
 | Release record | `<maj>/<min>/<tag>.md` | `<variant>/<maj>/<min>/<tag>.md` |
-| Pointers | `stable`, `alpha`, `nightly` | `<variant>/stable`, `<variant>/alpha`, `<variant>/nightly` |
+| Pointers | `stable`, `candidate`, `alpha`, `nightly` | `<variant>/stable`, `<variant>/candidate`, `<variant>/alpha`, `<variant>/nightly` |
 | Manifest | `<tag>/manifest.json` | `<variant>/<tag>/manifest.json` |
 | Install | `install.sh` | `install.sh --variant <variant>` |
 | Retention groups | `alpha`, `dev:<branch>`, `9.0` | `<variant>:alpha`, `<variant>:dev:<branch>`, `<variant>:9.0` |
@@ -37,12 +37,41 @@ Version numbers: a variant uses the major.minor of the `develop` it was last
 synced from, with its own patch counter. `9.0.3+mp257` is not the same code as
 `9.0.3`.
 
-GitHub "Latest" is only ever set on default-variant releases. The pipeline
-publishes every release as a prerelease, so promotion is by hand: a
-default-variant release can be marked as the latest release. To show another
-variant's release as a full release, untick "Set as a pre-release" and also
-untick "Set as the latest release" (`make_latest=false` through the API), or
-it replaces the host release as Latest in the repo.
+## Release channels
+
+Each variant has four release channels, each a pointer file holding the
+newest version in it:
+
+| Channel | What it holds | Written by |
+|---|---|---|
+| `stable` | The release QA approved. What `install.sh`/`install.ps1` install by default (`latest` is an alias). | Promotion only |
+| `candidate` | The newest release (GA) build, waiting for QA. | The MITS11 pipeline, on a GA tag |
+| `alpha` | The newest alpha/beta/rc/pre/preview build. | The pipeline |
+| `nightly` | The newest prerelease build of any kind. | The pipeline |
+
+Each version's `manifest.json` records `channel` (where the pipeline
+published it) and `published` (when, UTC). Promotion adds `promoted`
+(`at`, `by`, `run`) and never changes `channel`.
+
+## Promotion
+
+When a candidate passes its QA smoke test, run the **Promote to stable**
+workflow (Actions tab, `promote-stable.yml`) with the variant (`default` or
+a name from `variants.json`) and the version. It:
+
+1. checks the version is a published release build of that variant;
+2. takes its GitHub release in `MITS11-stable` off prerelease, and for the
+   default variant also marks it Latest;
+3. moves `<variant>/stable` (or `stable`) to it and adds `promoted` to its
+   manifest.
+
+Promoting an older version rolls stable back; the run summary says so.
+
+GitHub "Latest" is only ever set on default-variant releases, so a named
+variant's promoted release is a full release without being Latest. When
+editing a release by hand, keep it that way: untick "Set as the latest
+release" (`make_latest=false` through the API) on a named variant's
+release, or it replaces the host release as Latest in the repo.
 
 ## Fields in `variants.json`
 
@@ -51,19 +80,27 @@ it replaces the host release as Latest in the repo.
 | `name` | The variant key: tag marker, folder name and `--variant` value. Lowercase letters, digits and `-`, starting with a letter or digit. `default` (the host build) and `build` (host prerelease tags use `+build.<stamp>`) are reserved. |
 | `description` | Human name, used in release titles and on the page. |
 | `deviceTreeCompatiblePrefix` | Optional. When `install.sh` runs without `--variant` on a device whose device tree compatible string starts with this, it stops and asks for `--variant <name>`, so the device never gets the default variant's build by mistake. |
+| `installNote` | Optional. One sentence shown at the top of the variant's tab on the page: what to do before installing. |
+| `installNoteUrl` | Optional, needs `installNote`. An `https://` link shown after the note. |
+
+Every field is a string: `install.sh` reads this file without `jq`, so an
+entry must not contain nested objects or arrays. The `Validate variants`
+workflow enforces that.
 
 ## Add a variant
 
-1. Add an entry to [`variants.json`](variants.json). The `Validate variants`
-   workflow checks the file on every PR that touches it.
-2. Add a tab for it in [`index.html`](index.html): its install commands, plus
-   where to get anything that comes before them (for `mp257`, the golden image).
-3. In MITS11, on the variant's branches, set `releaseVariant` in
+1. Add an entry to [`variants.json`](variants.json), with an `installNote`
+   if something comes before installing (for `mp257`, the golden image). The
+   `Validate variants` workflow checks the file on every PR that touches it.
+   The page builds the variant's tab from this entry.
+2. In MITS11, on the variant's branches, set `releaseVariant` in
    `.cicd/build-mits11-package.yml` to the variant's name. The pipeline refuses
    a tag whose variant doesn't match the branch's, and a variant not listed in
    `variants.json`.
-4. Tag with the variant marker (see the table above).
+3. Tag with the variant marker (see the table above).
+4. After QA passes the variant's first release build, promote it (see
+   Promotion). Until then its `stable` channel is empty.
 
-Nothing else changes: `install.sh` and the retention workflows read
-`variants.json`, and the first release of the variant creates its
-`<variant>/` folder here.
+Nothing else changes: the page, `install.sh`, the promote workflow and the
+retention workflows read `variants.json`, and the first release of the
+variant creates its `<variant>/` folder here.

@@ -45,9 +45,15 @@ floor number is where "how much history does this line's status warrant"
 gets decided; layering an age check on top would only add complexity
 without protecting anything the floor doesn't already protect.
 
-**Hard exception:** a release is never deleted if its version is the
-current value of `stable`, `alpha`, or `nightly` in this repo, or of a
-variant's `<variant>/stable|alpha|nightly`, regardless of floor position.
+**Hard exceptions**, regardless of floor position:
+
+- A release is never deleted if its version is the current value of
+  `stable`, `candidate`, `alpha`, or `nightly` in this repo, or of a
+  variant's `<variant>/stable|candidate|alpha|nightly`.
+- A release that is not marked prerelease is never deleted. Only promotion
+  (`promote-stable.yml`, or by hand before it existed) takes a release off
+  prerelease, so these are every release QA ever approved: the rollback
+  targets. There are a few a month.
 
 ## Variants
 

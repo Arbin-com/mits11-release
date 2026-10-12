@@ -1,0 +1,130 @@
+name: Promote to stable
+
+# Promotion: after a candidate release passes its QA smoke test, make it the
+# variant's stable release. Moves the variant's `stable` pointer (what
+# install.sh/install.ps1 install by default), records the promotion in the
+# version's manifest, and takes the GitHub release in MITS11-stable off
+# prerelease (default variant: also marks it Latest). Promoting an older
+# version is how a stable release is rolled back. See VARIANTS.md.
+run-name: Promote ${{ inputs.version }} (${{ inputs.variant }})
+
+on:
+  workflow_dispatch:
+    inputs:
+      variant:
+        description: 'Variant: default, or a name from variants.json'
+        required: true
+        default: default
+      version:
+        description: 'Release version to promote, e.g. 8.0.5 or 9.0.0+mp257'
+        required: true
+
+concurrency:
+  group: release-index-promote
+  cancel-in-progress: false
+
+env:
+  STABLE_REPO: Arbin-com/MITS11-stable
+
+jobs:
+  promote:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure git identity
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Promote
+        env:
+          # Same fine-grained PAT as retention-stable.yml: contents:write on
+          # MITS11-stable only. Pushing to this repo uses the checkout's token.
+          GH_TOKEN: ${{ secrets.STABLE_REPO_TOKEN }}
+          VARIANT: ${{ inputs.variant }}
+          VERSION: ${{ inputs.version }}
+        run: |
+          set -euo pipefail
+          VERSION="$(printf '%s' "$VERSION" | tr -d '[:space:]')"
+
+          if [ "$VARIANT" = "default" ]; then
+            DIR="."
+          elif jq -e --arg v "$VARIANT" '[.variants[].name] | index($v) != null' variants.json >/dev/null; then
+            DIR="$VARIANT"
+          else
+            echo "::error::Unknown variant '$VARIANT'. Use default or a name from variants.json."
+            exit 1
+          fi
+
+          # Only a release (GA) tag of this variant can be stable:
+          # x.y.z[-release|-patch], plus +<variant> for a named variant.
+          CORE="${VERSION%%+*}"
+          BUILD_META=""
+          [[ "$VERSION" == *+* ]] && BUILD_META="${VERSION#*+}"
+          if [[ ! "$CORE" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-release|-patch)?$ ]]; then
+            echo "::error::$VERSION is not a release version (x.y.z). Only release builds can be promoted to stable."
+            exit 1
+          fi
+          if [ "$VARIANT" = "default" ]; then
+            if jq -e --arg v "${BUILD_META%%.*}" '[.variants[].name] | index($v) != null' variants.json >/dev/null; then
+              echo "::error::$VERSION belongs to the ${BUILD_META%%.*} variant. Run again with variant ${BUILD_META%%.*}."
+              exit 1
+            fi
+          elif [ "$BUILD_META" != "$VARIANT" ]; then
+            echo "::error::Release versions of the $VARIANT variant end with +$VARIANT, for example ${CORE}+$VARIANT."
+            exit 1
+          fi
+
+          MANIFEST="$DIR/$VERSION/manifest.json"
+          if [ ! -f "$MANIFEST" ]; then
+            echo "::error::$MANIFEST not found: $VERSION was never published for the $VARIANT variant, or retention removed it."
+            exit 1
+          fi
+
+          ENC_TAG=$(jq -rn --arg t "$VERSION" '$t | @uri')
+          if ! RELEASE=$(gh api "repos/$STABLE_REPO/releases/tags/$ENC_TAG" 2>/dev/null); then
+            echo "::error::No GitHub release $VERSION in $STABLE_REPO."
+            exit 1
+          fi
+          RELEASE_ID=$(echo "$RELEASE" | jq -r '.id')
+
+          # Latest is only ever a default-variant release (VARIANTS.md).
+          MAKE_LATEST=false
+          [ "$VARIANT" = "default" ] && MAKE_LATEST=true
+          gh api -X PATCH "repos/$STABLE_REPO/releases/$RELEASE_ID" \
+            -F prerelease=false -f make_latest="$MAKE_LATEST" --silent
+
+          PREVIOUS=""
+          [ -f "$DIR/stable" ] && PREVIOUS="$(tr -d '[:space:]' < "$DIR/stable")"
+
+          echo "$VERSION" > "$DIR/stable"
+          NOW="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          RUN_URL="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+          jq --arg at "$NOW" --arg by "$GITHUB_ACTOR" --arg run "$RUN_URL" \
+            '.promoted = {at: $at, by: $by, run: $run}' "$MANIFEST" > "$MANIFEST.tmp"
+          mv "$MANIFEST.tmp" "$MANIFEST"
+
+          git add "$DIR/stable" "$MANIFEST"
+          git commit -q -m "Promote $VERSION to stable ($VARIANT)"
+          # The release pipeline pushes here too; rebase onto it and retry.
+          for attempt in 1 2 3 4 5; do
+            if git push -q; then break; fi
+            [ "$attempt" = 5 ] && { echo "::error::Push failed after 5 attempts."; exit 1; }
+            sleep $((attempt * 5))
+            git pull -q --rebase
+          done
+
+          if [ -z "$PREVIOUS" ]; then
+            SUMMARY="First stable release of the $VARIANT variant: $VERSION."
+          elif [ "$PREVIOUS" = "$VERSION" ]; then
+            SUMMARY="$VERSION was already stable for the $VARIANT variant; promotion recorded again."
+          elif [ "$(printf '%s\n%s\n' "${PREVIOUS%%+*}" "$CORE" | sort -V | tail -n 1)" = "${PREVIOUS%%+*}" ]; then
+            SUMMARY="Rolled back the $VARIANT variant's stable release from $PREVIOUS to $VERSION."
+          else
+            SUMMARY="Promoted $VERSION to stable for the $VARIANT variant (was $PREVIOUS)."
+          fi
+          echo "$SUMMARY"
+          echo "$SUMMARY" >> "$GITHUB_STEP_SUMMARY"

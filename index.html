@@ -8,8 +8,8 @@
   <style>
     :root {
       --bg: #0d1117;
-      --bg-soft: #0d1117;
       --panel: #161b22;
+      --card: #0d1117;
       --border: #30363d;
       --text: #c9d1d9;
       --muted: #8b949e;
@@ -17,6 +17,10 @@
       --accent-soft: rgba(47, 129, 247, 0.18);
       --code: #0d1117;
       --shadow: rgba(0, 0, 0, 0.35);
+      --stable: #3fb950;
+      --candidate: #a371f7;
+      --alpha: #d29922;
+      --nightly: #8b949e;
       --hl-cmd: #79c0ff;
       --hl-url: #a5d6ff;
       --hl-flag: #ff7b72;
@@ -25,8 +29,8 @@
 
     [data-theme="light"] {
       --bg: #ffffff;
-      --bg-soft: #ffffff;
       --panel: #f6f8fa;
+      --card: #ffffff;
       --border: #d0d7de;
       --text: #1f2328;
       --muted: #57606a;
@@ -34,6 +38,10 @@
       --accent-soft: rgba(9, 105, 218, 0.12);
       --code: #f6f8fa;
       --shadow: rgba(20, 24, 30, 0.12);
+      --stable: #1a7f37;
+      --candidate: #8250df;
+      --alpha: #9a6700;
+      --nightly: #57606a;
       --hl-cmd: #0550ae;
       --hl-url: #0a3069;
       --hl-flag: #cf222e;
@@ -47,6 +55,9 @@
       color: var(--text);
       background: var(--bg);
     }
+
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
 
     .wrap {
       max-width: 1120px;
@@ -103,6 +114,7 @@
 
     .tabs {
       display: flex;
+      flex-wrap: wrap;
       gap: 18px;
       border-bottom: 1px solid var(--border);
       margin-top: 10px;
@@ -114,15 +126,14 @@
       background: none;
       border: none;
       color: var(--muted);
+      font: inherit;
       font-size: 14px;
       padding: 6px 0;
       cursor: pointer;
       position: relative;
     }
 
-    .tab.active {
-      color: var(--accent);
-    }
+    .tab.active { color: var(--accent); }
 
     .tab.active::after {
       content: "";
@@ -135,48 +146,99 @@
       border-radius: 999px;
     }
 
+    .tab:focus-visible, .copy-btn:focus-visible, summary:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
     .panel {
       display: none;
       padding-top: 18px;
     }
 
     .panel.active {
-      display: block;
+      display: grid;
+      gap: 14px;
     }
 
-    .section-title {
-      margin: 0 0 12px;
-      font-size: 15px;
+    /* Grid children default to their content's width; let long commands
+       scroll inside their own box instead of widening the page. */
+    .panel > *, .card > *, .stack > *, .more > * { min-width: 0; }
+
+    .note {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
     }
 
-    .section-title a {
-      color: var(--accent);
-    }
-
-    .snippet {
-      background: var(--panel);
+    .card {
+      background: var(--card);
       border: 1px solid var(--border);
       border-radius: 14px;
-      padding: 14px 16px 16px;
-      margin-bottom: 14px;
+      padding: 16px;
+      display: grid;
+      gap: 12px;
+      min-width: 0;
       box-shadow: 0 10px 24px var(--shadow);
     }
 
-    .snippet-label {
+    .card.primary { border-color: var(--stable); }
+
+    .card-head {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 6px 12px;
+    }
+
+    .badge {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+      padding: 2px 9px;
+      border-radius: 999px;
+      border: 1px solid currentColor;
+      white-space: nowrap;
+    }
+
+    .badge.stable { color: var(--stable); }
+    .badge.candidate { color: var(--candidate); }
+    .badge.alpha { color: var(--alpha); }
+    .badge.nightly { color: var(--nightly); }
+
+    .version {
+      font-family: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+      font-size: 16px;
+      font-weight: 600;
+      word-break: break-all;
+    }
+
+    .channel-hint { color: var(--muted); font-size: 13px; }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px 16px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .empty { margin: 0; color: var(--muted); font-size: 14px; }
+
+    .label {
       color: var(--muted);
       font-size: 11px;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
       text-transform: uppercase;
       letter-spacing: 0.6px;
     }
 
-    .code-wrap {
-      position: relative;
-    }
+    .code-wrap { position: relative; }
 
     pre {
       margin: 0;
-      padding: 14px 46px 14px 14px;
+      padding: 12px 46px 12px 14px;
       border-radius: 10px;
       background: var(--code);
       border: 1px solid var(--border);
@@ -194,7 +256,7 @@
     .copy-btn {
       position: absolute;
       top: 50%;
-      right: 12px;
+      right: 10px;
       transform: translateY(-50%);
       width: 30px;
       height: 30px;
@@ -221,6 +283,49 @@
       background: transparent;
     }
 
+    .downloads {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .downloads a {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 5px 10px;
+      font-size: 13px;
+      color: var(--text);
+    }
+
+    .downloads a:hover {
+      border-color: var(--accent);
+      text-decoration: none;
+    }
+
+    details.group {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px 16px;
+    }
+
+    details.group > summary {
+      cursor: pointer;
+      color: var(--muted);
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    details.group[open] > summary { margin-bottom: 12px; }
+    details.group > .stack { display: grid; gap: 14px; }
+
+    .more { display: grid; gap: 12px; }
+
+    .status {
+      color: var(--muted);
+      font-size: 14px;
+      padding: 18px 0 4px;
+    }
+
     .footer {
       margin-top: 22px;
       color: var(--muted);
@@ -231,6 +336,11 @@
       .title { font-size: 28px; }
       .tabs { gap: 12px; font-size: 13px; }
       .topbar { flex-direction: column; align-items: flex-start; }
+      .hero { padding: 16px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .copy-btn { transition: none; }
     }
   </style>
 </head>
@@ -239,7 +349,7 @@
     <div class="topbar">
       <div>
         <h1 class="title">MITS11 installation</h1>
-        <p class="subtitle">One-line install. Default is latest stable version. Use alpha, nightly, or a version to override.</p>
+        <p class="subtitle">One-line install of the newest release QA approved (stable). Pick your target, then a release channel.</p>
       </div>
       <label>
         <select class="theme-select" id="themeSelect" aria-label="Theme">
@@ -251,231 +361,15 @@
     </div>
 
     <div class="hero">
-      <div class="tabs" role="tablist">
-        <button class="tab active" role="tab" aria-selected="true" data-tab="windows">Windows</button>
-        <button class="tab" role="tab" aria-selected="false" data-tab="linux-mac">Linux/MacOS</button>
-        <button class="tab" role="tab" aria-selected="false" data-tab="mp257">MP257 board</button>
+      <div class="tabs" role="tablist" id="tabs"></div>
+      <div id="panels">
+        <p class="status" id="status">Loading releases…</p>
       </div>
-
-      <div class="panel active" role="tabpanel" data-panel="windows">
-        <div class="section-title">PowerShell 5+</div>
-
-        <div class="snippet">
-          <div class="snippet-label">Latest stable</div>
-          <div class="code-wrap">
-            <button class="copy-btn" data-copy="win-stable" aria-label="Copy stable command">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="9" y="9" width="13" height="13" rx="2"></rect>
-                <rect x="2" y="2" width="13" height="13" rx="2"></rect>
-              </svg>
-            </button>
-            <pre><code id="win-stable"><span class="hl-cmd">Set-ExecutionPolicy</span> <span class="hl-flag">Bypass</span> <span class="hl-flag">-Scope</span> <span class="hl-flag">Process</span> <span class="hl-flag">-Force</span>; <span class="hl-cmd">irm</span> <span class="hl-url">https://arbin-com.github.io/mits11-release/install.ps1</span> <span class="hl-pipe">|</span> <span class="hl-cmd">iex</span></code></pre>
-          </div>
-        </div>
-
-        <div class="snippet">
-          <div class="snippet-label">Latest alpha</div>
-          <div class="code-wrap">
-            <button class="copy-btn" data-copy="win-alpha" aria-label="Copy alpha command">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="9" y="9" width="13" height="13" rx="2"></rect>
-                <rect x="2" y="2" width="13" height="13" rx="2"></rect>
-              </svg>
-            </button>
-            <pre><code id="win-alpha"><span class="hl-cmd">Set-ExecutionPolicy</span> <span class="hl-flag">Bypass</span> <span class="hl-flag">-Scope</span> <span class="hl-flag">Process</span> <span class="hl-flag">-Force</span>; <span class="hl-cmd">&amp;</span> (<span class="hl-cmd">[ScriptBlock]</span>::<span class="hl-cmd">Create</span>((<span class="hl-cmd">irm</span> <span class="hl-url">https://arbin-com.github.io/mits11-release/install.ps1</span>))) <span class="hl-flag">alpha</span></code></pre>
-          </div>
-        </div>
-
-        <div class="snippet">
-          <div class="snippet-label">Specific version</div>
-          <div class="code-wrap">
-            <button class="copy-btn" data-copy="win-version" aria-label="Copy version command">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="9" y="9" width="13" height="13" rx="2"></rect>
-                <rect x="2" y="2" width="13" height="13" rx="2"></rect>
-              </svg>
-            </button>
-            <pre><code id="win-version"><span class="hl-cmd">Set-ExecutionPolicy</span> <span class="hl-flag">Bypass</span> <span class="hl-flag">-Scope</span> <span class="hl-flag">Process</span> <span class="hl-flag">-Force</span>; <span class="hl-cmd">&amp;</span> (<span class="hl-cmd">[ScriptBlock]</span>::<span class="hl-cmd">Create</span>((<span class="hl-cmd">irm</span> <span class="hl-url">https://arbin-com.github.io/mits11-release/install.ps1</span>))) <span class="hl-flag">5.0.1</span></code></pre>
-          </div>
-        </div>
-
-        <div class="snippet">
-          <div class="snippet-label">Silent mode (auto use default options without asking)</div>
-          <div class="code-wrap">
-            <button class="copy-btn" data-copy="win-silent" aria-label="Copy silent command">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="9" y="9" width="13" height="13" rx="2"></rect>
-                <rect x="2" y="2" width="13" height="13" rx="2"></rect>
-              </svg>
-            </button>
-            <pre><code id="win-silent"><span class="hl-cmd">Set-ExecutionPolicy</span> <span class="hl-flag">Bypass</span> <span class="hl-flag">-Scope</span> <span class="hl-flag">Process</span> <span class="hl-flag">-Force</span>; <span class="hl-cmd">&amp;</span> (<span class="hl-cmd">[ScriptBlock]</span>::<span class="hl-cmd">Create</span>((<span class="hl-cmd">irm</span> <span class="hl-url">https://arbin-com.github.io/mits11-release/install.ps1</span>))) <span class="hl-flag">alpha</span> <span class="hl-flag">-Silent</span></code></pre>
-          </div>
-        </div>
-
-        <div class="snippet">
-          <div class="snippet-label">Latest nightly</div>
-          <div class="code-wrap">
-            <button class="copy-btn" data-copy="win-nightly" aria-label="Copy nightly command">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="9" y="9" width="13" height="13" rx="2"></rect>
-                <rect x="2" y="2" width="13" height="13" rx="2"></rect>
-              </svg>
-            </button>
-            <pre><code id="win-nightly"><span class="hl-cmd">Set-ExecutionPolicy</span> <span class="hl-flag">Bypass</span> <span class="hl-flag">-Scope</span> <span class="hl-flag">Process</span> <span class="hl-flag">-Force</span>; <span class="hl-cmd">&amp;</span> (<span class="hl-cmd">[ScriptBlock]</span>::<span class="hl-cmd">Create</span>((<span class="hl-cmd">irm</span> <span class="hl-url">https://arbin-com.github.io/mits11-release/install.ps1</span>))) <span class="hl-flag">nightly</span></code></pre>
-          </div>
-        </div>
-
-        <div class="snippet">
-          <div class="snippet-label">Nightly silent mode (auto use default options without asking)</div>
-          <div class="code-wrap">
-            <button class="copy-btn" data-copy="win-nightly-silent" aria-label="Copy nightly silent command">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="9" y="9" width="13" height="13" rx="2"></rect>
-                <rect x="2" y="2" width="13" height="13" rx="2"></rect>
-              </svg>
-            </button>
-            <pre><code id="win-nightly-silent"><span class="hl-cmd">Set-ExecutionPolicy</span> <span class="hl-flag">Bypass</span> <span class="hl-flag">-Scope</span> <span class="hl-flag">Process</span> <span class="hl-flag">-Force</span>; <span class="hl-cmd">&amp;</span> (<span class="hl-cmd">[ScriptBlock]</span>::<span class="hl-cmd">Create</span>((<span class="hl-cmd">irm</span> <span class="hl-url">https://arbin-com.github.io/mits11-release/install.ps1</span>))) <span class="hl-flag">nightly</span> <span class="hl-flag">-Silent</span></code></pre>
-          </div>
-        </div>
-      </div>
-
-      <div class="panel" role="tabpanel" data-panel="linux-mac">
-        <div class="section-title">Debian-based Linux distros or OSX 13+</div>
-
-        <div class="snippet">
-          <div class="snippet-label">Latest stable</div>
-          <div class="code-wrap">
-            <button class="copy-btn" data-copy="linux-stable" aria-label="Copy stable command">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="9" y="9" width="13" height="13" rx="2"></rect>
-                <rect x="2" y="2" width="13" height="13" rx="2"></rect>
-              </svg>
-            </button>
-            <pre><code id="linux-stable"><span class="hl-cmd">curl</span> <span class="hl-flag">-fsSL</span> <span class="hl-url">https://arbin-com.github.io/mits11-release/install.sh</span> <span class="hl-pipe">|</span> <span class="hl-cmd">bash</span></code></pre>
-          </div>
-        </div>
-
-        <div class="snippet">
-          <div class="snippet-label">Latest alpha</div>
-          <div class="code-wrap">
-            <button class="copy-btn" data-copy="linux-alpha" aria-label="Copy alpha command">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="9" y="9" width="13" height="13" rx="2"></rect>
-                <rect x="2" y="2" width="13" height="13" rx="2"></rect>
-              </svg>
-            </button>
-            <pre><code id="linux-alpha"><span class="hl-cmd">curl</span> <span class="hl-flag">-fsSL</span> <span class="hl-url">https://arbin-com.github.io/mits11-release/install.sh</span> <span class="hl-pipe">|</span> <span class="hl-cmd">bash</span> <span class="hl-flag">-s</span> <span class="hl-flag">--</span> <span class="hl-flag">alpha</span></code></pre>
-          </div>
-        </div>
-
-        <div class="snippet">
-          <div class="snippet-label">Specific version</div>
-          <div class="code-wrap">
-            <button class="copy-btn" data-copy="linux-version" aria-label="Copy version command">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="9" y="9" width="13" height="13" rx="2"></rect>
-                <rect x="2" y="2" width="13" height="13" rx="2"></rect>
-              </svg>
-            </button>
-            <pre><code id="linux-version"><span class="hl-cmd">curl</span> <span class="hl-flag">-fsSL</span> <span class="hl-url">https://arbin-com.github.io/mits11-release/install.sh</span> <span class="hl-pipe">|</span> <span class="hl-cmd">bash</span> <span class="hl-flag">-s</span> <span class="hl-flag">--</span> <span class="hl-flag">5.0.1</span></code></pre>
-          </div>
-        </div>
-
-        <div class="snippet">
-          <div class="snippet-label">Silent mode (auto use default options without asking)</div>
-          <div class="code-wrap">
-            <button class="copy-btn" data-copy="linux-silent" aria-label="Copy silent command">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="9" y="9" width="13" height="13" rx="2"></rect>
-                <rect x="2" y="2" width="13" height="13" rx="2"></rect>
-              </svg>
-            </button>
-            <pre><code id="linux-silent"><span class="hl-cmd">curl</span> <span class="hl-flag">-fsSL</span> <span class="hl-url">https://arbin-com.github.io/mits11-release/install.sh</span> <span class="hl-pipe">|</span> <span class="hl-cmd">bash</span> <span class="hl-flag">-s</span> <span class="hl-flag">--</span> <span class="hl-flag">alpha</span> <span class="hl-flag">--silent</span></code></pre>
-          </div>
-        </div>
-
-        <div class="snippet">
-          <div class="snippet-label">Latest nightly</div>
-          <div class="code-wrap">
-            <button class="copy-btn" data-copy="linux-nightly" aria-label="Copy nightly command">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="9" y="9" width="13" height="13" rx="2"></rect>
-                <rect x="2" y="2" width="13" height="13" rx="2"></rect>
-              </svg>
-            </button>
-            <pre><code id="linux-nightly"><span class="hl-cmd">curl</span> <span class="hl-flag">-fsSL</span> <span class="hl-url">https://arbin-com.github.io/mits11-release/install.sh</span> <span class="hl-pipe">|</span> <span class="hl-cmd">bash</span> <span class="hl-flag">-s</span> <span class="hl-flag">--</span> <span class="hl-flag">nightly</span></code></pre>
-          </div>
-        </div>
-
-        <div class="snippet">
-          <div class="snippet-label">Nightly silent mode (auto use default options without asking)</div>
-          <div class="code-wrap">
-            <button class="copy-btn" data-copy="linux-nightly-silent" aria-label="Copy nightly silent command">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="9" y="9" width="13" height="13" rx="2"></rect>
-                <rect x="2" y="2" width="13" height="13" rx="2"></rect>
-              </svg>
-            </button>
-            <pre><code id="linux-nightly-silent"><span class="hl-cmd">curl</span> <span class="hl-flag">-fsSL</span> <span class="hl-url">https://arbin-com.github.io/mits11-release/install.sh</span> <span class="hl-pipe">|</span> <span class="hl-cmd">bash</span> <span class="hl-flag">-s</span> <span class="hl-flag">--</span> <span class="hl-flag">nightly</span> <span class="hl-flag">--silent</span></code></pre>
-          </div>
-        </div>
-      </div>
-
-      <div class="panel" role="tabpanel" data-panel="mp257">
-        <div class="section-title">MP257 board, after flashing the <a href="https://github.com/Arbin-com/MITS11-mp257-release/releases">golden image</a></div>
-
-        <div class="snippet">
-          <div class="snippet-label">Latest stable</div>
-          <div class="code-wrap">
-            <button class="copy-btn" data-copy="mp257-stable" aria-label="Copy stable command">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="9" y="9" width="13" height="13" rx="2"></rect>
-                <rect x="2" y="2" width="13" height="13" rx="2"></rect>
-              </svg>
-            </button>
-            <pre><code id="mp257-stable"><span class="hl-cmd">curl</span> <span class="hl-flag">-fsSL</span> <span class="hl-url">https://arbin-com.github.io/mits11-release/install.sh</span> <span class="hl-pipe">|</span> <span class="hl-cmd">bash</span> <span class="hl-flag">-s</span> <span class="hl-flag">--</span> <span class="hl-flag">--variant</span> <span class="hl-flag">mp257</span></code></pre>
-          </div>
-        </div>
-
-        <div class="snippet">
-          <div class="snippet-label">Latest alpha</div>
-          <div class="code-wrap">
-            <button class="copy-btn" data-copy="mp257-alpha" aria-label="Copy alpha command">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="9" y="9" width="13" height="13" rx="2"></rect>
-                <rect x="2" y="2" width="13" height="13" rx="2"></rect>
-              </svg>
-            </button>
-            <pre><code id="mp257-alpha"><span class="hl-cmd">curl</span> <span class="hl-flag">-fsSL</span> <span class="hl-url">https://arbin-com.github.io/mits11-release/install.sh</span> <span class="hl-pipe">|</span> <span class="hl-cmd">bash</span> <span class="hl-flag">-s</span> <span class="hl-flag">--</span> <span class="hl-flag">alpha</span> <span class="hl-flag">--variant</span> <span class="hl-flag">mp257</span></code></pre>
-          </div>
-        </div>
-
-        <div class="snippet">
-          <div class="snippet-label">Specific version</div>
-          <div class="code-wrap">
-            <button class="copy-btn" data-copy="mp257-version" aria-label="Copy version command">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="9" y="9" width="13" height="13" rx="2"></rect>
-                <rect x="2" y="2" width="13" height="13" rx="2"></rect>
-              </svg>
-            </button>
-            <pre><code id="mp257-version"><span class="hl-cmd">curl</span> <span class="hl-flag">-fsSL</span> <span class="hl-url">https://arbin-com.github.io/mits11-release/install.sh</span> <span class="hl-pipe">|</span> <span class="hl-cmd">bash</span> <span class="hl-flag">-s</span> <span class="hl-flag">--</span> <span class="hl-flag">9.0.0+mp257</span> <span class="hl-flag">--variant</span> <span class="hl-flag">mp257</span></code></pre>
-          </div>
-        </div>
-
-        <div class="snippet">
-          <div class="snippet-label">Latest nightly</div>
-          <div class="code-wrap">
-            <button class="copy-btn" data-copy="mp257-nightly" aria-label="Copy nightly command">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="9" y="9" width="13" height="13" rx="2"></rect>
-                <rect x="2" y="2" width="13" height="13" rx="2"></rect>
-              </svg>
-            </button>
-            <pre><code id="mp257-nightly"><span class="hl-cmd">curl</span> <span class="hl-flag">-fsSL</span> <span class="hl-url">https://arbin-com.github.io/mits11-release/install.sh</span> <span class="hl-pipe">|</span> <span class="hl-cmd">bash</span> <span class="hl-flag">-s</span> <span class="hl-flag">--</span> <span class="hl-flag">nightly</span> <span class="hl-flag">--variant</span> <span class="hl-flag">mp257</span></code></pre>
-          </div>
-        </div>
-      </div>
+      <noscript>
+        <p class="note">This page needs JavaScript to show the newest releases. Without it, install the stable release on Windows with
+          <code>irm https://arbin-com.github.io/mits11-release/install.ps1 | iex</code>, or on Linux and macOS with
+          <code>curl -fsSL https://arbin-com.github.io/mits11-release/install.sh | bash</code>.</p>
+      </noscript>
     </div>
 
     <div class="footer">Need proxy exceptions? Allow access to GitHub Releases and arbin-com.github.io.</div>
@@ -532,27 +426,257 @@
         try { localStorage.setItem("mits11-theme", mode); } catch (err) { }
         applyTheme(mode);
       });
+    })();
 
-      document.querySelectorAll(".tab").forEach(function (tab) {
-        tab.addEventListener("click", function () {
-          var target = tab.getAttribute("data-tab");
-          document.querySelectorAll(".tab").forEach(function (btn) {
-            btn.classList.toggle("active", btn === tab);
-            btn.setAttribute("aria-selected", btn === tab ? "true" : "false");
-          });
-          document.querySelectorAll(".panel").forEach(function (panel) {
-            panel.classList.toggle("active", panel.getAttribute("data-panel") === target);
-          });
+    // Release index: one tab per release variant (the default plus each entry
+    // of variants.json), each showing the newest build of every release
+    // channel, read live from the pointer files and manifests next to this
+    // page. See VARIANTS.md.
+    (function () {
+      var BASE = "https://arbin-com.github.io/mits11-release";
+      var DEFAULT_VARIANT = { name: "default", description: "Windows · Linux · macOS" };
+      var CHANNELS = {
+        stable: "Approved by QA. Use this one.",
+        candidate: "Newest release build, waiting for QA.",
+        alpha: "Preview of the next release.",
+        nightly: "Engineering builds."
+      };
+      var PLATFORM_LABELS = {
+        "win-x64": "Windows x64",
+        "linux-x64": "Linux x64",
+        "linux-arm64": "Linux arm64",
+        "osx-x64": "macOS Intel",
+        "osx-arm64": "macOS Apple silicon"
+      };
+      var COPY_ICON = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"></rect><rect x="2" y="2" width="13" height="13" rx="2"></rect></svg>';
+
+      var tabsEl = document.getElementById("tabs");
+      var panelsEl = document.getElementById("panels");
+      var stamp = Date.now();
+
+      function esc(value) {
+        return String(value).replace(/[&<>"']/g, function (c) {
+          return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
         });
+      }
+
+      // Pages caches files for about 10 minutes; the stamp asks for fresh copies.
+      function fetchText(url) {
+        return fetch(url + "?t=" + stamp, { cache: "no-store" }).then(function (r) {
+          if (!r.ok) throw new Error(r.status + " " + url);
+          return r.text();
+        });
+      }
+
+      // Data is read relative to the page, so a local copy or a fork shows its own index.
+      function variantDir(variant) {
+        return variant.name === "default" ? "." : "./" + variant.name;
+      }
+
+      function loadChannel(variant, channel) {
+        return fetchText(variantDir(variant) + "/" + channel)
+          .then(function (text) {
+            var version = text.trim();
+            if (!version) return null;
+            return fetchText(variantDir(variant) + "/" + encodeURIComponent(version) + "/manifest.json")
+              .then(function (text) { return { version: version, manifest: JSON.parse(text) }; })
+              .catch(function () { return { version: version, manifest: null }; });
+          })
+          .catch(function () { return null; });
+      }
+
+      function loadVariant(variant) {
+        var names = Object.keys(CHANNELS);
+        return Promise.all(names.map(function (c) { return loadChannel(variant, c); })).then(function (builds) {
+          var channels = {};
+          names.forEach(function (c, i) { channels[c] = builds[i]; });
+          return { variant: variant, channels: channels };
+        });
+      }
+
+      // Commands, highlighted the way they were on the hand-written page.
+      function span(cls, text) { return '<span class="hl-' + cls + '">' + esc(text) + "</span>"; }
+      function psCommand(args) {
+        var head = span("cmd", "Set-ExecutionPolicy") + " " + span("flag", "Bypass") + " " + span("flag", "-Scope") + " " +
+          span("flag", "Process") + " " + span("flag", "-Force") + "; ";
+        if (!args.length) {
+          return head + span("cmd", "irm") + " " + span("url", BASE + "/install.ps1") + " " + span("pipe", "|") + " " + span("cmd", "iex");
+        }
+        return head + span("cmd", "&") + " (" + span("cmd", "[ScriptBlock]") + "::" + span("cmd", "Create") + "((" +
+          span("cmd", "irm") + " " + span("url", BASE + "/install.ps1") + "))) " + args.map(function (a) { return span("flag", a); }).join(" ");
+      }
+      function shCommand(args) {
+        var html = span("cmd", "curl") + " " + span("flag", "-fsSL") + " " + span("url", BASE + "/install.sh") + " " +
+          span("pipe", "|") + " " + span("cmd", "bash");
+        if (args.length) html += " " + span("flag", "-s") + " " + span("flag", "--") + " " + args.map(function (a) { return span("flag", a); }).join(" ");
+        return html;
+      }
+      function codeBlock(label, html) {
+        return '<div><div class="label">' + esc(label) + '</div><div class="code-wrap">' +
+          '<button class="copy-btn" type="button" aria-label="Copy command">' + COPY_ICON + "</button>" +
+          "<pre><code>" + html + "</code></pre></div></div>";
+      }
+
+      // Which install scripts apply: from the build's platforms, or the
+      // variant's usual ones when its manifest could not be read.
+      function scriptsFor(variant, build) {
+        var platforms = build && build.manifest ? Object.keys(build.manifest.platforms || {}) : [];
+        if (!platforms.length) return { ps: variant.name === "default", sh: true };
+        return {
+          ps: platforms.some(function (p) { return p.indexOf("win-") === 0; }),
+          sh: platforms.some(function (p) { return p.indexOf("linux-") === 0 || p.indexOf("osx-") === 0; })
+        };
+      }
+
+      function commandBlocks(variant, build, args, labelSuffix) {
+        var scripts = scriptsFor(variant, build);
+        var shArgs = args.slice();
+        if (variant.name !== "default") shArgs.push("--variant", variant.name);
+        var out = "";
+        if (scripts.ps) out += codeBlock("Windows (PowerShell 5+)" + labelSuffix, psCommand(args));
+        if (scripts.sh) {
+          var shLabel = variant.name === "default" ? "Linux (Debian-based) or macOS 13+" : variant.description;
+          out += codeBlock(shLabel + labelSuffix, shCommand(shArgs));
+        }
+        return out;
+      }
+
+      function formatDate(iso) {
+        var date = new Date(iso);
+        if (isNaN(date.getTime())) return "";
+        var text = date.toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" });
+        var days = Math.round((date.getTime() - Date.now()) / 86400000);
+        if (window.Intl && Intl.RelativeTimeFormat) {
+          text += " (" + new Intl.RelativeTimeFormat(undefined, { numeric: "auto" }).format(days, "day") + ")";
+        }
+        return text;
+      }
+
+      function releaseLinks(variant, build) {
+        var manifest = build.manifest;
+        var platforms = manifest ? Object.keys(manifest.platforms || {}) : [];
+        var first = platforms.length ? manifest.platforms[platforms[0]] : null;
+        if (!first || !first.github_repo) return "";
+        var owner = first.github_owner || "Arbin-com";
+        var repoUrl = "https://github.com/" + owner + "/" + first.github_repo;
+        var parts = build.version.split(".");
+        var line = parts[0] + "." + parts[1];
+        var recordDir = (variant.name === "default" ? "" : variant.name + "/") + parts[0] + "/" + parts[1];
+        return '<a href="' + esc(repoUrl + "/releases/tag/" + encodeURIComponent(build.version)) + '">Release notes</a>' +
+          '<a href="' + esc(repoUrl + "/tree/main/" + recordDir) + '">All ' + esc(line) + " releases</a>";
+      }
+
+      function downloads(build) {
+        var platforms = build.manifest ? build.manifest.platforms || {} : {};
+        var keys = Object.keys(platforms).sort();
+        if (!keys.length) return "";
+        return '<div><div class="label">Download the package</div><div class="downloads">' + keys.map(function (p) {
+          return '<a href="' + esc(platforms[p].url) + '">' + esc(PLATFORM_LABELS[p] || p) + "</a>";
+        }).join("") + "</div></div>";
+      }
+
+      function card(variant, channel, build, primary) {
+        var head = '<div class="card-head"><span class="badge ' + channel + '">' + channel + "</span>";
+        if (!build) {
+          var hint = channel === "stable"
+            ? "No release of this variant has been approved by QA yet. Use alpha until the first one is."
+            : "No " + channel + " build yet.";
+          return '<div class="card">' + head + '</div><p class="empty">' + esc(hint) + "</p></div>";
+        }
+        head += '<span class="version">' + esc(build.version) + '</span><span class="channel-hint">' + esc(CHANNELS[channel]) + "</span></div>";
+        var meta = [];
+        var manifest = build.manifest || {};
+        if (manifest.promoted && manifest.promoted.at) meta.push("<span>Approved " + esc(formatDate(manifest.promoted.at)) + "</span>");
+        if (manifest.published) meta.push("<span>Published " + esc(formatDate(manifest.published)) + "</span>");
+        var links = releaseLinks(variant, build);
+        if (links) meta.push(links);
+        var args = channel === "stable" ? [] : [channel];
+        return '<div class="card' + (primary ? " primary" : "") + '">' + head +
+          (meta.length ? '<div class="meta">' + meta.join("") + "</div>" : "") +
+          commandBlocks(variant, build, args, "") + downloads(build) + "</div>";
+      }
+
+      function moreCommands(entry) {
+        var variant = entry.variant;
+        var channels = entry.channels;
+        var example = channels.stable || channels.candidate || channels.alpha || channels.nightly;
+        var blocks = "";
+        var scripts = scriptsFor(variant, example);
+        var variantArgs = variant.name === "default" ? [] : ["--variant", variant.name];
+        if (example) {
+          if (scripts.ps) blocks += codeBlock("Specific version, Windows", psCommand([example.version]));
+          if (scripts.sh) blocks += codeBlock("Specific version, " + (variant.name === "default" ? "Linux or macOS" : variant.description), shCommand([example.version].concat(variantArgs)));
+        }
+        if (scripts.ps) blocks += codeBlock("Stable, silent (default answers, no questions), Windows", psCommand(["stable", "-Silent"]));
+        if (scripts.sh) blocks += codeBlock("Stable, silent (default answers, no questions), " + (variant.name === "default" ? "Linux or macOS" : variant.description), shCommand(["stable", "--silent"].concat(variantArgs)));
+        if (scripts.ps) blocks += codeBlock("Nightly, silent, Windows", psCommand(["nightly", "-Silent"]));
+        if (scripts.sh) blocks += codeBlock("Nightly, silent, " + (variant.name === "default" ? "Linux or macOS" : variant.description), shCommand(["nightly", "--silent"].concat(variantArgs)));
+        return '<details class="group"><summary>More commands</summary><div class="more">' + blocks + "</div></details>";
+      }
+
+      function panel(entry) {
+        var variant = entry.variant;
+        var channels = entry.channels;
+        var html = "";
+        if (variant.installNote) {
+          html += '<p class="note">' + esc(variant.installNote) +
+            (variant.installNoteUrl ? ' <a href="' + esc(variant.installNoteUrl) + '">' + esc(variant.installNoteUrl.replace(/^https:\/\/github\.com\//, "")) + "</a>" : "") + "</p>";
+        }
+        html += card(variant, "stable", channels.stable, true);
+        html += card(variant, "alpha", channels.alpha, false);
+        html += '<details class="group"><summary>Engineering builds (candidate and nightly)</summary><div class="stack">' +
+          card(variant, "candidate", channels.candidate, false) + card(variant, "nightly", channels.nightly, false) + "</div></details>";
+        html += moreCommands(entry);
+        return '<div class="panel" role="tabpanel" id="panel-' + esc(variant.name) + '" data-panel="' + esc(variant.name) + '">' + html + "</div>";
+      }
+
+      function select(name) {
+        tabsEl.querySelectorAll(".tab").forEach(function (tab) {
+          var on = tab.getAttribute("data-tab") === name;
+          tab.classList.toggle("active", on);
+          tab.setAttribute("aria-selected", on ? "true" : "false");
+        });
+        panelsEl.querySelectorAll(".panel").forEach(function (p) {
+          p.classList.toggle("active", p.getAttribute("data-panel") === name);
+        });
+      }
+
+      function render(entries) {
+        tabsEl.innerHTML = entries.map(function (e) {
+          return '<button class="tab" type="button" role="tab" aria-selected="false" aria-controls="panel-' + esc(e.variant.name) +
+            '" data-tab="' + esc(e.variant.name) + '">' + esc(e.variant.description) + "</button>";
+        }).join("");
+        panelsEl.innerHTML = entries.map(panel).join("");
+        var wanted = location.hash.replace(/^#/, "");
+        var names = entries.map(function (e) { return e.variant.name; });
+        select(names.indexOf(wanted) >= 0 ? wanted : "default");
+      }
+
+      tabsEl.addEventListener("click", function (event) {
+        var tab = event.target.closest(".tab");
+        if (!tab) return;
+        var name = tab.getAttribute("data-tab");
+        select(name);
+        // A link to a tab (#mp257) opens that tab; the default tab has no fragment.
+        history.replaceState(null, "", name === "default" ? location.pathname : "#" + name);
       });
 
-      function copyText(id, button) {
-        var text = document.getElementById(id).innerText;
+      window.addEventListener("hashchange", function () {
+        var name = location.hash.replace(/^#/, "") || "default";
+        if (panelsEl.querySelector('[data-panel="' + CSS.escape(name) + '"]')) select(name);
+      });
+
+      function markCopied(button) {
+        button.classList.add("copied");
+        setTimeout(function () { button.classList.remove("copied"); }, 1200);
+      }
+
+      panelsEl.addEventListener("click", function (event) {
+        var button = event.target.closest(".copy-btn");
+        if (!button) return;
+        var text = button.parentNode.querySelector("code").innerText;
         if (navigator.clipboard && navigator.clipboard.writeText) {
-          navigator.clipboard.writeText(text).then(function () {
-            button.classList.add("copied");
-            setTimeout(function () { button.classList.remove("copied"); }, 1200);
-          });
+          navigator.clipboard.writeText(text).then(function () { markCopied(button); });
           return;
         }
         var area = document.createElement("textarea");
@@ -561,15 +685,19 @@
         area.select();
         document.execCommand("copy");
         document.body.removeChild(area);
-        button.classList.add("copied");
-        setTimeout(function () { button.classList.remove("copied"); }, 1200);
-      }
-
-      document.querySelectorAll(".copy-btn").forEach(function (btn) {
-        btn.addEventListener("click", function () {
-          copyText(btn.getAttribute("data-copy"), btn);
-        });
+        markCopied(button);
       });
+
+      fetchText("./variants.json")
+        .then(function (text) { return JSON.parse(text).variants || []; })
+        .catch(function () { return []; })
+        .then(function (variants) {
+          return Promise.all([DEFAULT_VARIANT].concat(variants).map(loadVariant));
+        })
+        .then(render)
+        .catch(function () {
+          document.getElementById("status").textContent = "Could not load the release index. Reload the page, or check that arbin-com.github.io is reachable.";
+        });
     })();
   </script>
 </body>
