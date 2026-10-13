@@ -1,0 +1,43 @@
+{
+  "version": "8.0.9",
+  "channel": "candidate",
+  "published": "2026-10-13T08:31:52Z",
+  "platforms": {
+    "osx-x64": {
+      "url": "https://github.com/Arbin-com/MITS11-stable/releases/download/8.0.9/MITS11.8.0.9-osx-x64.zip",
+      "github_asset_api_url": "https://api.github.com/repos/Arbin-com/MITS11-stable/releases/assets/636390542",
+      "github_owner": "Arbin-com",
+      "github_repo": "MITS11-stable",
+      "github_tag": "8.0.9",
+      "github_asset": "MITS11.8.0.9-osx-x64.zip",
+      "sha256": "9315c84a33e9d51da48adaaddac93b2d447e9dc2624e70480dce8827e44cf875"
+    },
+    "linux-x64": {
+      "url": "https://github.com/Arbin-com/MITS11-stable/releases/download/8.0.9/MITS11.8.0.9-linux-x64.zip",
+      "github_asset_api_url": "https://api.github.com/repos/Arbin-com/MITS11-stable/releases/assets/636392671",
+      "github_owner": "Arbin-com",
+      "github_repo": "MITS11-stable",
+      "github_tag": "8.0.9",
+      "github_asset": "MITS11.8.0.9-linux-x64.zip",
+      "sha256": "a4dc23edcc04b9888a465d8c88309958b537eced715d73879084136ee9e119c8"
+    },
+    "osx-arm64": {
+      "url": "https://github.com/Arbin-com/MITS11-stable/releases/download/8.0.9/MITS11.8.0.9-osx-arm64.zip",
+      "github_asset_api_url": "https://api.github.com/repos/Arbin-com/MITS11-stable/releases/assets/636393097",
+      "github_owner": "Arbin-com",
+      "github_repo": "MITS11-stable",
+      "github_tag": "8.0.9",
+      "github_asset": "MITS11.8.0.9-osx-arm64.zip",
+      "sha256": "acc0cf3189a7b9f2a22c3c4ed9dda53a11caade7b5b6669b142e470b197ccc9b"
+    },
+    "win-x64": {
+      "url": "https://github.com/Arbin-com/MITS11-stable/releases/download/8.0.9/MITS11.8.0.9-win-x64.zip",
+      "github_asset_api_url": "https://api.github.com/repos/Arbin-com/MITS11-stable/releases/assets/636334431",
+      "github_owner": "Arbin-com",
+      "github_repo": "MITS11-stable",
+      "github_tag": "8.0.9",
+      "github_asset": "MITS11.8.0.9-win-x64.zip",
+      "sha256": "5c72028904cb5196a9b9753eb4730d4d411143ad75530db8bfc637c4bd177278"
+    }
+  }
+}
