@@ -312,13 +312,22 @@ populate_github_metadata_from_url_if_needed() {
   IFS=$'\t' read -r github_owner github_repo github_tag github_asset <<< "$parsed_url"
 }
 
+# True when the run may ask its user something: not --silent, and a
+# terminal that really opens. `[ -r /dev/tty ]` is not enough -- it only
+# checks the device node's permissions, so it passes with no controlling
+# terminal (cron, systemd, CI, `ssh host cmd`) and the open then fails
+# with "No such device or address".
+have_tty() {
+  [ -z "$SILENT_FLAG" ] && (exec </dev/tty) 2>/dev/null
+}
+
 require_pat_token() {
   if [ -n "${GITHUB_AUTH_TOKEN:-}" ]; then
     AUTH_KIND="pat"
     return 0
   fi
 
-  if [ -n "$SILENT_FLAG" ] || [ ! -r /dev/tty ]; then
+  if ! have_tty; then
     echo "GH_TOKEN or GITHUB_TOKEN is required for authenticated downloads in non-interactive mode" >&2
     exit 1
   fi
@@ -547,7 +556,7 @@ resolve_app_token() {
     return 0
   fi
 
-  if [ -n "$SILENT_FLAG" ] || [ ! -r /dev/tty ]; then
+  if ! have_tty; then
     echo "GitHub App authentication requires an interactive terminal or a cached token in non-interactive mode" >&2
     exit 1
   fi
@@ -589,7 +598,7 @@ resolve_github_auth() {
       if use_cached_app_token_if_available; then
         return 0
       fi
-      if [ -n "$SILENT_FLAG" ] || [ ! -r /dev/tty ]; then
+      if ! have_tty; then
         echo "Authentication required. Provide GH_TOKEN/GITHUB_TOKEN or use a cached GitHub App token." >&2
         exit 1
       fi
@@ -681,7 +690,7 @@ prompt_yes_no_default_yes() {
   local prompt="$1"
   local answer=""
 
-  if [ -r /dev/tty ]; then
+  if have_tty; then
     printf '%s [Y/n] ' "$prompt" >/dev/tty
     if IFS= read -r answer </dev/tty; then
       case "$answer" in
@@ -699,7 +708,7 @@ prompt_yes_no_default_no() {
   local prompt="$1"
   local answer=""
 
-  if [ -r /dev/tty ] && [ -z "$SILENT_FLAG" ]; then
+  if have_tty; then
     printf '%s [y/N] ' "$prompt" >/dev/tty
     if IFS= read -r answer </dev/tty; then
       case "$answer" in
@@ -1013,7 +1022,10 @@ if [ ! -f "$zip_path" ]; then
   if [ -n "$github_asset_api_url" ]; then
     if ! download_github_asset "$github_asset_api_url" - | write_stream_to_file "$zip_path"; then
       echo "Failed to download ${github_owner:-GitHub}/${github_repo:-release} asset ${github_asset:-for $platform}" >&2
-      echo "Auth mode: ${AUTH_KIND:-unknown}. If this is a private repository, re-run with --auth app or --auth pat, or refresh your cached GitHub App login." >&2
+      # The download runs in a subshell, so AUTH_KIND (set there) is not
+      # visible here; report what was asked for and what was available.
+      if [ -n "${GITHUB_AUTH_TOKEN:-}" ]; then _token_state="a token was provided"; else _token_state="no GH_TOKEN/GITHUB_TOKEN was set"; fi
+      echo "Auth mode requested: ${AUTH_MODE}; ${_token_state}. If this is a private repository, re-run with --auth app or --auth pat, or refresh your cached GitHub App login." >&2
       exit 1
     fi
   else
@@ -1054,34 +1066,22 @@ installer_args=()
 if [ -n "$SILENT_FLAG" ]; then
   installer_args+=("$SILENT_FLAG")
 fi
-if [ "${#installer_args[@]}" -gt 0 ]; then
-  if [ -r /dev/tty ]; then
-    if [ "$use_sudo" -eq 1 ]; then
-      sudo "$install_script" "${installer_args[@]}" </dev/tty
-    else
-      "$install_script" "${installer_args[@]}" </dev/tty
-    fi
-  else
-    if [ "$use_sudo" -eq 1 ]; then
-      sudo "$install_script" "${installer_args[@]}"
-    else
-      "$install_script" "${installer_args[@]}"
-    fi
-  fi
+
+# Where the installer reads its answers. --silent means non-interactive:
+# never touch the terminal, so the one-liner also works under cron, systemd,
+# CI or `ssh host cmd`. Interactively, use the terminal only when it opens.
+if [ -n "$SILENT_FLAG" ]; then
+  installer_stdin=/dev/null
+elif have_tty; then
+  installer_stdin=/dev/tty
 else
-  if [ -r /dev/tty ]; then
-    if [ "$use_sudo" -eq 1 ]; then
-      sudo "$install_script" </dev/tty
-    else
-      "$install_script" </dev/tty
-    fi
-  else
-    if [ "$use_sudo" -eq 1 ]; then
-      sudo "$install_script"
-    else
-      "$install_script"
-    fi
-  fi
+  installer_stdin=/dev/stdin
+fi
+
+if [ "$use_sudo" -eq 1 ]; then
+  sudo "$install_script" ${installer_args[@]+"${installer_args[@]}"} <"$installer_stdin"
+else
+  "$install_script" ${installer_args[@]+"${installer_args[@]}"} <"$installer_stdin"
 fi
 
 install_success=1
