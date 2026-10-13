@@ -312,13 +312,22 @@ populate_github_metadata_from_url_if_needed() {
   IFS=$'\t' read -r github_owner github_repo github_tag github_asset <<< "$parsed_url"
 }
 
+# True when the run may ask its user something: not --silent, and a
+# terminal that really opens. `[ -r /dev/tty ]` is not enough -- it only
+# checks the device node's permissions, so it passes with no controlling
+# terminal (cron, systemd, CI, `ssh host cmd`) and the open then fails
+# with "No such device or address".
+have_tty() {
+  [ -z "$SILENT_FLAG" ] && (exec </dev/tty) 2>/dev/null
+}
+
 require_pat_token() {
   if [ -n "${GITHUB_AUTH_TOKEN:-}" ]; then
     AUTH_KIND="pat"
     return 0
   fi
 
-  if [ -n "$SILENT_FLAG" ] || [ ! -r /dev/tty ]; then
+  if ! have_tty; then
     echo "GH_TOKEN or GITHUB_TOKEN is required for authenticated downloads in non-interactive mode" >&2
     exit 1
   fi
@@ -547,7 +556,7 @@ resolve_app_token() {
     return 0
   fi
 
-  if [ -n "$SILENT_FLAG" ] || [ ! -r /dev/tty ]; then
+  if ! have_tty; then
     echo "GitHub App authentication requires an interactive terminal or a cached token in non-interactive mode" >&2
     exit 1
   fi
@@ -589,7 +598,7 @@ resolve_github_auth() {
       if use_cached_app_token_if_available; then
         return 0
       fi
-      if [ -n "$SILENT_FLAG" ] || [ ! -r /dev/tty ]; then
+      if ! have_tty; then
         echo "Authentication required. Provide GH_TOKEN/GITHUB_TOKEN or use a cached GitHub App token." >&2
         exit 1
       fi
@@ -681,7 +690,7 @@ prompt_yes_no_default_yes() {
   local prompt="$1"
   local answer=""
 
-  if [ -r /dev/tty ]; then
+  if have_tty; then
     printf '%s [Y/n] ' "$prompt" >/dev/tty
     if IFS= read -r answer </dev/tty; then
       case "$answer" in
@@ -699,7 +708,7 @@ prompt_yes_no_default_no() {
   local prompt="$1"
   local answer=""
 
-  if [ -r /dev/tty ] && [ -z "$SILENT_FLAG" ]; then
+  if have_tty; then
     printf '%s [y/N] ' "$prompt" >/dev/tty
     if IFS= read -r answer </dev/tty; then
       case "$answer" in
@@ -1060,13 +1069,10 @@ fi
 
 # Where the installer reads its answers. --silent means non-interactive:
 # never touch the terminal, so the one-liner also works under cron, systemd,
-# CI or `ssh host cmd` -- there `[ -r /dev/tty ]` is true (it only checks
-# the device node's permissions) but opening it fails with "No such device
-# or address", which aborted the install. Interactively, use the terminal
-# only when it really opens.
+# CI or `ssh host cmd`. Interactively, use the terminal only when it opens.
 if [ -n "$SILENT_FLAG" ]; then
   installer_stdin=/dev/null
-elif (exec </dev/tty) 2>/dev/null; then
+elif have_tty; then
   installer_stdin=/dev/tty
 else
   installer_stdin=/dev/stdin
