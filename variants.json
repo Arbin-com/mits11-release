@@ -6,6 +6,12 @@
       "deviceTreeCompatiblePrefix": "st,stm32mp25",
       "installNote": "Flash the board's golden image first.",
       "installNoteUrl": "https://github.com/Arbin-com/MITS11-mp257-release"
+    },
+    {
+      "name": "charger",
+      "description": "Charger",
+      "installNote": "Flash the board's golden image first.",
+      "installNoteUrl": "https://github.com/Arbin-com/MITS11-mp257-release"
     }
   ]
 }
