@@ -1,0 +1,43 @@
+{
+  "version": "8.0.12",
+  "channel": "candidate",
+  "published": "2026-10-15T13:19:50Z",
+  "platforms": {
+    "osx-x64": {
+      "url": "https://github.com/Arbin-com/MITS11-stable/releases/download/8.0.12/MITS11.8.0.12-osx-x64.zip",
+      "github_asset_api_url": "https://api.github.com/repos/Arbin-com/MITS11-stable/releases/assets/643906430",
+      "github_owner": "Arbin-com",
+      "github_repo": "MITS11-stable",
+      "github_tag": "8.0.12",
+      "github_asset": "MITS11.8.0.12-osx-x64.zip",
+      "sha256": "fcc7faf8769759c9eb7492cbf16d5e7016f8f54eb6814f7425bbfc07a24dcc0e"
+    },
+    "linux-x64": {
+      "url": "https://github.com/Arbin-com/MITS11-stable/releases/download/8.0.12/MITS11.8.0.12-linux-x64.zip",
+      "github_asset_api_url": "https://api.github.com/repos/Arbin-com/MITS11-stable/releases/assets/643925135",
+      "github_owner": "Arbin-com",
+      "github_repo": "MITS11-stable",
+      "github_tag": "8.0.12",
+      "github_asset": "MITS11.8.0.12-linux-x64.zip",
+      "sha256": "c3770e92f2d177fd7b8a8d3195f78002bb1f0a40e07f6b81c4bf674c1296c0ee"
+    },
+    "osx-arm64": {
+      "url": "https://github.com/Arbin-com/MITS11-stable/releases/download/8.0.12/MITS11.8.0.12-osx-arm64.zip",
+      "github_asset_api_url": "https://api.github.com/repos/Arbin-com/MITS11-stable/releases/assets/643909287",
+      "github_owner": "Arbin-com",
+      "github_repo": "MITS11-stable",
+      "github_tag": "8.0.12",
+      "github_asset": "MITS11.8.0.12-osx-arm64.zip",
+      "sha256": "2dbcf7d86539c0e02378f285adc49e6ed7784ddfca642ccffc2783e459e4596a"
+    },
+    "win-x64": {
+      "url": "https://github.com/Arbin-com/MITS11-stable/releases/download/8.0.12/MITS11.8.0.12-win-x64.zip",
+      "github_asset_api_url": "https://api.github.com/repos/Arbin-com/MITS11-stable/releases/assets/643873350",
+      "github_owner": "Arbin-com",
+      "github_repo": "MITS11-stable",
+      "github_tag": "8.0.12",
+      "github_asset": "MITS11.8.0.12-win-x64.zip",
+      "sha256": "866d51e84d36c5a0e28abf9caf71ffd075ef6fb221db3eb665b566d0cca65e06"
+    }
+  }
+}
