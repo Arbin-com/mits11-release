@@ -39,5 +39,11 @@
       "github_asset": "MITS11.8.0.10-win-x64.zip",
       "sha256": "49ecf503ad62f1c6a42ccd36526210b0db3ef569b7d4e67ea8cec512c2e2a7e9"
     }
+  },
+  "promoted": {
+    "at": "2026-10-16T15:32:38Z",
+    "by": "khanhtd36arb",
+    "run": "https://github.com/Arbin-com/mits11-release/actions/runs/38924776959",
+    "note": "QA smoke test MITS11-3464 flagged minor bugs; promoted anyway as first stable 8.0.x"
   }
 }
