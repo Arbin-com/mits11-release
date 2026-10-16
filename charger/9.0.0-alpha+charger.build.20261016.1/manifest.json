@@ -1,0 +1,16 @@
+{
+  "version": "9.0.0-alpha+charger.build.20261016.1",
+  "channel": "alpha",
+  "published": "2026-10-16T02:12:52Z",
+  "platforms": {
+    "linux-arm64": {
+      "url": "https://github.com/Arbin-com/MITS11-develop/releases/download/9.0.0-alpha+charger.build.20261016.1/MITS11.9.0.0-alpha+charger.build.20261016.1-linux-arm64.zip",
+      "github_asset_api_url": "https://api.github.com/repos/Arbin-com/MITS11-develop/releases/assets/645846137",
+      "github_owner": "Arbin-com",
+      "github_repo": "MITS11-develop",
+      "github_tag": "9.0.0-alpha+charger.build.20261016.1",
+      "github_asset": "MITS11.9.0.0-alpha+charger.build.20261016.1-linux-arm64.zip",
+      "sha256": "a47ef8dca0d5f64d52ddd29bb527c65f95982a2f289d4de6c8f1d7fd99269d50"
+    }
+  }
+}
