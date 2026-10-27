@@ -1,0 +1,16 @@
+{
+  "version": "9.0.0-alpha+mp257.build.20261027.2",
+  "channel": "alpha",
+  "published": "2026-10-27T12:41:38Z",
+  "platforms": {
+    "linux-arm64": {
+      "url": "https://github.com/Arbin-com/MITS11-develop/releases/download/9.0.0-alpha+mp257.build.20261027.2/MITS11.9.0.0-alpha+mp257.build.20261027.2-linux-arm64.zip",
+      "github_asset_api_url": "https://api.github.com/repos/Arbin-com/MITS11-develop/releases/assets/681562141",
+      "github_owner": "Arbin-com",
+      "github_repo": "MITS11-develop",
+      "github_tag": "9.0.0-alpha+mp257.build.20261027.2",
+      "github_asset": "MITS11.9.0.0-alpha+mp257.build.20261027.2-linux-arm64.zip",
+      "sha256": "8487c25d591e4b25ae3c29eb373448a1a813653a3bcb08ecae06d6ff5b3a2ab6"
+    }
+  }
+}
