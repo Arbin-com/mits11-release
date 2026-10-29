@@ -1,0 +1,43 @@
+{
+  "version": "8.0.19",
+  "channel": "candidate",
+  "published": "2026-10-29T10:53:44Z",
+  "platforms": {
+    "osx-x64": {
+      "url": "https://github.com/Arbin-com/MITS11-stable/releases/download/8.0.19/MITS11.8.0.19-osx-x64.zip",
+      "github_asset_api_url": "https://api.github.com/repos/Arbin-com/MITS11-stable/releases/assets/688212075",
+      "github_owner": "Arbin-com",
+      "github_repo": "MITS11-stable",
+      "github_tag": "8.0.19",
+      "github_asset": "MITS11.8.0.19-osx-x64.zip",
+      "sha256": "3f27a2621173f2aecb1a1c1f9e7b03ac8922b9dbc0c7f4a12152713917b54239"
+    },
+    "osx-arm64": {
+      "url": "https://github.com/Arbin-com/MITS11-stable/releases/download/8.0.19/MITS11.8.0.19-osx-arm64.zip",
+      "github_asset_api_url": "https://api.github.com/repos/Arbin-com/MITS11-stable/releases/assets/688214759",
+      "github_owner": "Arbin-com",
+      "github_repo": "MITS11-stable",
+      "github_tag": "8.0.19",
+      "github_asset": "MITS11.8.0.19-osx-arm64.zip",
+      "sha256": "89ea70e7a4ac24d6b903f10e361e8b8af36dad029727b8f28cf43a7946bd227f"
+    },
+    "win-x64": {
+      "url": "https://github.com/Arbin-com/MITS11-stable/releases/download/8.0.19/MITS11.8.0.19-win-x64.zip",
+      "github_asset_api_url": "https://api.github.com/repos/Arbin-com/MITS11-stable/releases/assets/688151395",
+      "github_owner": "Arbin-com",
+      "github_repo": "MITS11-stable",
+      "github_tag": "8.0.19",
+      "github_asset": "MITS11.8.0.19-win-x64.zip",
+      "sha256": "38e3b686739616deb2b3d5a2157e77331fd02fb7a1f918a0c6bd37e34fd2ca9b"
+    },
+    "linux-x64": {
+      "url": "https://github.com/Arbin-com/MITS11-stable/releases/download/8.0.19/MITS11.8.0.19-linux-x64.zip",
+      "github_asset_api_url": "https://api.github.com/repos/Arbin-com/MITS11-stable/releases/assets/688226023",
+      "github_owner": "Arbin-com",
+      "github_repo": "MITS11-stable",
+      "github_tag": "8.0.19",
+      "github_asset": "MITS11.8.0.19-linux-x64.zip",
+      "sha256": "211963bc0ef920386e6871aa2bdec2729287bef7c266c78b2104f1ff62ed7759"
+    }
+  }
+}
