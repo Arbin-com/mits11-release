@@ -206,6 +206,7 @@
     .badge.candidate { color: var(--candidate); }
     .badge.alpha { color: var(--alpha); }
     .badge.nightly { color: var(--nightly); }
+    .badge.kind { color: var(--muted); letter-spacing: 0.3px; }
 
     .version {
       font-family: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
@@ -441,6 +442,9 @@
         alpha: "Preview of the next release.",
         nightly: "Engineering builds."
       };
+      // The alpha channel keeps one pointer per release line (alpha-8.1), so a
+      // new line's builds do not hide another line QA is still verifying.
+      var MAX_ALPHA_LINES = 3;
       var PLATFORM_LABELS = {
         "win-x64": "Windows x64",
         "linux-x64": "Linux x64",
@@ -485,11 +489,35 @@
           .catch(function () { return null; });
       }
 
+      // alpha-lines lists the release lines (8.1, 9.0) that have an alpha-<line>
+      // pointer, one per row. Without it (a variant not yet rebuilt), the
+      // single alpha pointer is shown on its own.
+      function loadAlphaLines(variant) {
+        return fetchText(variantDir(variant) + "/alpha-lines")
+          .then(function (text) {
+            var lines = text.split(/\s+/).filter(function (l) { return /^\d+\.\d+$/.test(l); });
+            lines.sort(function (a, b) {
+              var pa = a.split("."), pb = b.split(".");
+              return (pb[0] - pa[0]) || (pb[1] - pa[1]);
+            });
+            return lines.slice(0, MAX_ALPHA_LINES);
+          })
+          .catch(function () { return []; })
+          .then(function (lines) {
+            if (!lines.length) return loadChannel(variant, "alpha").then(function (build) { return [{ line: "", build: build }]; });
+            return Promise.all(lines.map(function (line) {
+              return loadChannel(variant, "alpha-" + line).then(function (build) { return { line: line, build: build }; });
+            }));
+          });
+      }
+
       function loadVariant(variant) {
-        var names = Object.keys(CHANNELS);
-        return Promise.all(names.map(function (c) { return loadChannel(variant, c); })).then(function (builds) {
+        var names = ["stable", "candidate", "nightly"];
+        return Promise.all(names.map(function (c) { return loadChannel(variant, c); }).concat([loadAlphaLines(variant)])).then(function (builds) {
           var channels = {};
           names.forEach(function (c, i) { channels[c] = builds[i]; });
+          channels.alphaLines = builds[names.length];
+          channels.alpha = channels.alphaLines[0] ? channels.alphaLines[0].build : null;
           return { variant: variant, channels: channels };
         });
       }
@@ -575,14 +603,28 @@
         }).join("") + "</div></div>";
       }
 
-      function card(variant, channel, build, primary) {
-        var head = '<div class="card-head"><span class="badge ' + channel + '">' + channel + "</span>";
+      // What kind of build a version is: GA (x.y.z, -release, -patch), or the
+      // first word of its prerelease part (alpha, beta, rc).
+      function buildKind(version) {
+        var core = version.split("+")[0];
+        var dash = core.indexOf("-");
+        if (dash < 0) return "GA";
+        var pre = core.slice(dash + 1);
+        if (pre === "release" || pre === "patch") return "GA";
+        var word = /^(alpha|beta|rc|pre|preview)/.exec(pre);
+        return word ? word[1] : "";
+      }
+
+      function card(variant, channel, build, primary, line) {
+        var head = '<div class="card-head"><span class="badge ' + channel + '">' + channel + (line ? " " + esc(line) : "") + "</span>";
         if (!build) {
           var hint = channel === "stable"
             ? "No release of this variant has been approved by QA yet. Use alpha until the first one is."
             : "No " + channel + " build yet.";
           return '<div class="card">' + head + '</div><p class="empty">' + esc(hint) + "</p></div>";
         }
+        var kind = channel === "alpha" ? buildKind(build.version) : "";
+        if (kind) head += '<span class="badge kind">' + esc(kind) + "</span>";
         head += '<span class="version">' + esc(build.version) + '</span><span class="channel-hint">' + esc(CHANNELS[channel]) + "</span></div>";
         var meta = [];
         var manifest = build.manifest || {};
@@ -593,7 +635,7 @@
         if (manifest.published) meta.push("<span>Published " + esc(formatDate(manifest.published)) + "</span>");
         var links = releaseLinks(variant, build);
         if (links) meta.push(links);
-        var args = channel === "stable" ? [] : [channel];
+        var args = channel === "stable" ? [] : [line ? channel + "-" + line : channel];
         return '<div class="card' + (primary ? " primary" : "") + '">' + head +
           (meta.length ? '<div class="meta">' + meta.join("") + "</div>" : "") +
           commandBlocks(variant, build, args, "") + downloads(build) + "</div>";
@@ -626,9 +668,12 @@
             (variant.installNoteUrl ? ' <a href="' + esc(variant.installNoteUrl) + '">' + esc(variant.installNoteUrl.replace(/^https:\/\/github\.com\//, "")) + "</a>" : "") + "</p>";
         }
         html += card(variant, "stable", channels.stable, true);
-        html += card(variant, "alpha", channels.alpha, false);
-        html += '<details class="group"><summary>Engineering builds (candidate and nightly)</summary><div class="stack">' +
-          card(variant, "candidate", channels.candidate, false) + card(variant, "nightly", channels.nightly, false) + "</div></details>";
+        channels.alphaLines.forEach(function (entry) {
+          html += card(variant, "alpha", entry.build, false, entry.line);
+        });
+        html += card(variant, "candidate", channels.candidate, false);
+        html += '<details class="group"><summary>Engineering builds (nightly)</summary><div class="stack">' +
+          card(variant, "nightly", channels.nightly, false) + "</div></details>";
         html += moreCommands(entry);
         return '<div class="panel" role="tabpanel" id="panel-' + esc(variant.name) + '" data-panel="' + esc(variant.name) + '">' + html + "</div>";
       }
