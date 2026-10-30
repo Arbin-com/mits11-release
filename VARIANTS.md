@@ -22,7 +22,7 @@ to be linux-arm64 too.
 | Prerelease tag | `9.0.0-alpha+build.<stamp>`, `9.0.0-dev.<branch>+build.<stamp>` | `9.0.0-alpha+mp257.build.<stamp>`, `9.0.0-dev.<branch>+mp257.build.<stamp>` |
 | GitHub release | `MITS11-stable` (GA), `MITS11-develop` (prerelease) | same repos, title ends with `(<description>)` |
 | Release record | `<maj>/<min>/<tag>.md` | `<variant>/<maj>/<min>/<tag>.md` |
-| Pointers | `stable`, `candidate`, `alpha`, `alpha-<line>`, `alpha-lines`, `nightly` | `<variant>/stable`, `<variant>/candidate`, `<variant>/alpha`, `<variant>/alpha-<line>`, `<variant>/alpha-lines`, `<variant>/nightly` |
+| Pointers | `stable`, `candidate`, `alpha`, `nightly` | `<variant>/stable`, `<variant>/candidate`, `<variant>/alpha`, `<variant>/nightly` |
 | Manifest | `<tag>/manifest.json` | `<variant>/<tag>/manifest.json` |
 | Install | `install.sh` | `install.sh --variant <variant>` |
 | Retention groups | `alpha`, `dev:<branch>`, `9.0` | `<variant>:alpha`, `<variant>:dev:<branch>`, `<variant>:9.0` |
@@ -46,15 +46,8 @@ newest version in it:
 |---|---|---|
 | `stable` | The release QA approved. What `install.sh`/`install.ps1` install by default (`latest` is an alias). | Promotion only |
 | `candidate` | The newest release (GA) build, waiting for QA. | The MITS11 pipeline, on a GA tag |
-| `alpha` | The newest alpha/beta/rc/pre/preview build (`-rc1` and `-rc.1` both count). | The pipeline |
+| `alpha` | The newest alpha/beta/rc/pre/preview build (`-rc1` and `-rc.1` both count), of any release line. | The pipeline |
 | `nightly` | The newest prerelease build of any kind. | The pipeline |
-
-`alpha` is the newest build of any release line, so it moves back and forth
-when two lines (8.1 rc, 9.0 alpha) build in turn. The pipeline also writes
-`alpha-<major>.<minor>` (e.g. `alpha-8.1`), the newest alpha build of one
-line, and `alpha-lines`, the lines that have such a pointer, one per row.
-`install.sh alpha-8.1` installs it, and the page shows one alpha card per
-line (newest three), then the candidate card.
 
 Each version's `manifest.json` records `channel` (where the pipeline
 published it) and `published` (when, UTC). Promotion adds `promoted`
