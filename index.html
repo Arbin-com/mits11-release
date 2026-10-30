@@ -441,11 +441,7 @@
         candidate: "Newest release build, waiting for QA.",
         alpha: "Preview of the next release.",
         nightly: "Engineering builds."
-      };
-      // The alpha channel keeps one pointer per release line (alpha-8.1), so a
-      // new line's builds do not hide another line QA is still verifying.
-      var MAX_ALPHA_LINES = 3;
-      var PLATFORM_LABELS = {
+      };      var PLATFORM_LABELS = {
         "win-x64": "Windows x64",
         "linux-x64": "Linux x64",
         "linux-arm64": "Linux arm64",
@@ -489,35 +485,11 @@
           .catch(function () { return null; });
       }
 
-      // alpha-lines lists the release lines (8.1, 9.0) that have an alpha-<line>
-      // pointer, one per row. Without it (a variant not yet rebuilt), the
-      // single alpha pointer is shown on its own.
-      function loadAlphaLines(variant) {
-        return fetchText(variantDir(variant) + "/alpha-lines")
-          .then(function (text) {
-            var lines = text.split(/\s+/).filter(function (l) { return /^\d+\.\d+$/.test(l); });
-            lines.sort(function (a, b) {
-              var pa = a.split("."), pb = b.split(".");
-              return (pb[0] - pa[0]) || (pb[1] - pa[1]);
-            });
-            return lines.slice(0, MAX_ALPHA_LINES);
-          })
-          .catch(function () { return []; })
-          .then(function (lines) {
-            if (!lines.length) return loadChannel(variant, "alpha").then(function (build) { return [{ line: "", build: build }]; });
-            return Promise.all(lines.map(function (line) {
-              return loadChannel(variant, "alpha-" + line).then(function (build) { return { line: line, build: build }; });
-            }));
-          });
-      }
-
       function loadVariant(variant) {
-        var names = ["stable", "candidate", "nightly"];
-        return Promise.all(names.map(function (c) { return loadChannel(variant, c); }).concat([loadAlphaLines(variant)])).then(function (builds) {
+        var names = Object.keys(CHANNELS);
+        return Promise.all(names.map(function (c) { return loadChannel(variant, c); })).then(function (builds) {
           var channels = {};
           names.forEach(function (c, i) { channels[c] = builds[i]; });
-          channels.alphaLines = builds[names.length];
-          channels.alpha = channels.alphaLines[0] ? channels.alphaLines[0].build : null;
           return { variant: variant, channels: channels };
         });
       }
@@ -615,8 +587,8 @@
         return word ? word[1] : "";
       }
 
-      function card(variant, channel, build, primary, line) {
-        var head = '<div class="card-head"><span class="badge ' + channel + '">' + channel + (line ? " " + esc(line) : "") + "</span>";
+      function card(variant, channel, build, primary) {
+        var head = '<div class="card-head"><span class="badge ' + channel + '">' + channel + "</span>";
         if (!build) {
           var hint = channel === "stable"
             ? "No release of this variant has been approved by QA yet. Use alpha until the first one is."
@@ -635,7 +607,7 @@
         if (manifest.published) meta.push("<span>Published " + esc(formatDate(manifest.published)) + "</span>");
         var links = releaseLinks(variant, build);
         if (links) meta.push(links);
-        var args = channel === "stable" ? [] : [line ? channel + "-" + line : channel];
+        var args = channel === "stable" ? [] : [channel];
         return '<div class="card' + (primary ? " primary" : "") + '">' + head +
           (meta.length ? '<div class="meta">' + meta.join("") + "</div>" : "") +
           commandBlocks(variant, build, args, "") + downloads(build) + "</div>";
@@ -668,9 +640,7 @@
             (variant.installNoteUrl ? ' <a href="' + esc(variant.installNoteUrl) + '">' + esc(variant.installNoteUrl.replace(/^https:\/\/github\.com\//, "")) + "</a>" : "") + "</p>";
         }
         html += card(variant, "stable", channels.stable, true);
-        channels.alphaLines.forEach(function (entry) {
-          html += card(variant, "alpha", entry.build, false, entry.line);
-        });
+        html += card(variant, "alpha", channels.alpha, false);
         html += card(variant, "candidate", channels.candidate, false);
         html += '<details class="group"><summary>Engineering builds (nightly)</summary><div class="stack">' +
           card(variant, "nightly", channels.nightly, false) + "</div></details>";

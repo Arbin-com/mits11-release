@@ -3,16 +3,14 @@ set -euo pipefail
 
 usage() {
   cat <<'EOF'
-Usage: install.sh [stable|latest|candidate|alpha|alpha-X.Y|nightly|VERSION] [--variant NAME] [--auth auto|app|pat] [--silent|--non-interactive] [--no-browser-open]
+Usage: install.sh [stable|latest|candidate|alpha|nightly|VERSION] [--variant NAME] [--auth auto|app|pat] [--silent|--non-interactive] [--no-browser-open]
 Variants are listed in https://arbin-com.github.io/mits11-release/variants.json.
 Without --variant, the default (host) variant is installed.
 stable (or latest) is the release QA approved; candidate is the newest release
-build, still waiting for QA; alpha is the newest alpha, beta or rc build
-(alpha-X.Y is the newest of one release line, e.g. alpha-8.1).
+build, still waiting for QA.
 Examples:
   install.sh
   install.sh alpha
-  install.sh alpha-8.1
   install.sh candidate
   install.sh --variant mp257
   install.sh alpha --variant mp257
@@ -87,7 +85,7 @@ while [ $# -gt 0 ]; do
   shift
 done
 
-if [[ -n "$TARGET" ]] && [[ ! "$TARGET" =~ ^(stable|latest|candidate|alpha|alpha-[0-9]+\.[0-9]+|nightly|[0-9]+\.[0-9]+\.[0-9]+([\-+][^[:space:]]+)?)$ ]]; then
+if [[ -n "$TARGET" ]] && [[ ! "$TARGET" =~ ^(stable|latest|candidate|alpha|nightly|[0-9]+\.[0-9]+\.[0-9]+([\-+][^[:space:]]+)?)$ ]]; then
   echo "Invalid target: $TARGET" >&2
   usage
   exit 1
@@ -853,7 +851,7 @@ if [[ "$target" == "latest" || -z "$target" ]]; then
   target="stable"
 fi
 
-if [[ "$target" =~ ^(stable|candidate|alpha|alpha-[0-9]+\.[0-9]+|nightly)$ ]]; then
+if [[ "$target" =~ ^(stable|candidate|alpha|nightly)$ ]]; then
   # A channel's pointer is missing until its first release (a new variant has
   # no stable release until one is promoted).
   if ! version="$(download "$index_url/$target")"; then
