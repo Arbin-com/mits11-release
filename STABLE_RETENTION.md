@@ -48,8 +48,9 @@ without protecting anything the floor doesn't already protect.
 **Hard exceptions**, regardless of floor position:
 
 - A release is never deleted if its version is the current value of
-  `stable`, `candidate`, `alpha`, or `nightly` in this repo, or of a
-  variant's `<variant>/stable|candidate|alpha|nightly`.
+  `stable`, `candidate`, `alpha`, `alpha-<line>` (e.g. `alpha-8.1`), or
+  `nightly` in this repo, or of a variant's
+  `<variant>/stable|candidate|alpha|alpha-<line>|nightly`.
 - A release that is not marked prerelease is never deleted. Only promotion
   (`promote-stable.yml`, or by hand before it existed) takes a release off
   prerelease, so these are every release QA ever approved: the rollback
