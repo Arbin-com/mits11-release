@@ -49,8 +49,7 @@ jobs:
           VARIANTS_JSON=$(jq -c '[.variants[].name]' variants.json)
           POINTER_FILES=""
           for DIR in . $(echo "$VARIANTS_JSON" | jq -r '.[]'); do
-            # alpha-<line> (alpha-8.1) is the alpha channel's per-line pointer;
-            # candidate is kept for one release as a copy of alpha.
+            # alpha-<line> (alpha-8.1) is the alpha channel's per-line pointer.
             for POINTER in "$DIR"/stable "$DIR"/candidate "$DIR"/alpha "$DIR"/alpha-[0-9]* "$DIR"/nightly; do
               [ -f "$POINTER" ] && POINTER_FILES="$POINTER_FILES $POINTER"
             done

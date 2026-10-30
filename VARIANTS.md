@@ -22,7 +22,7 @@ to be linux-arm64 too.
 | Prerelease tag | `9.0.0-alpha+build.<stamp>`, `9.0.0-dev.<branch>+build.<stamp>` | `9.0.0-alpha+mp257.build.<stamp>`, `9.0.0-dev.<branch>+mp257.build.<stamp>` |
 | GitHub release | `MITS11-stable` (GA), `MITS11-develop` (prerelease) | same repos, title ends with `(<description>)` |
 | Release record | `<maj>/<min>/<tag>.md` | `<variant>/<maj>/<min>/<tag>.md` |
-| Pointers | `stable`, `alpha`, `alpha-<line>`, `alpha-lines`, `nightly` | `<variant>/stable`, `<variant>/alpha`, `<variant>/alpha-<line>`, `<variant>/alpha-lines`, `<variant>/nightly` |
+| Pointers | `stable`, `candidate`, `alpha`, `alpha-<line>`, `alpha-lines`, `nightly` | `<variant>/stable`, `<variant>/candidate`, `<variant>/alpha`, `<variant>/alpha-<line>`, `<variant>/alpha-lines`, `<variant>/nightly` |
 | Manifest | `<tag>/manifest.json` | `<variant>/<tag>/manifest.json` |
 | Install | `install.sh` | `install.sh --variant <variant>` |
 | Retention groups | `alpha`, `dev:<branch>`, `9.0` | `<variant>:alpha`, `<variant>:dev:<branch>`, `<variant>:9.0` |
@@ -39,26 +39,22 @@ synced from, with its own patch counter. `9.0.3+mp257` is not the same code as
 
 ## Release channels
 
-Each variant has three release channels, by who installs them. Each is a
-pointer file holding the newest version in it:
+Each variant has four release channels, each a pointer file holding the
+newest version in it:
 
 | Channel | What it holds | Written by |
 |---|---|---|
-| `stable` | The release QA approved, for customer service and production to install for customers. What `install.sh`/`install.ps1` install by default (`latest` is an alias). | Promotion only |
-| `alpha` | What QA verifies: the newest release (GA), alpha, beta, rc, pre or preview build. | The MITS11 pipeline |
-| `nightly` | Developers' own builds: any tag with another suffix (`-dev.<branch>`). | The pipeline |
+| `stable` | The release QA approved. What `install.sh`/`install.ps1` install by default (`latest` is an alias). | Promotion only |
+| `candidate` | The newest release (GA) build, waiting for QA. | The MITS11 pipeline, on a GA tag |
+| `alpha` | The newest alpha/beta/rc/pre/preview build (`-rc1` and `-rc.1` both count). | The pipeline |
+| `nightly` | The newest prerelease build of any kind. | The pipeline |
 
 `alpha` is the newest build of any release line, so it moves back and forth
 when two lines (8.1 rc, 9.0 alpha) build in turn. The pipeline also writes
-`alpha-<major>.<minor>` (e.g. `alpha-8.1`), the newest alpha-channel build of
-one line, and `alpha-lines`, the lines that have such a pointer, one per row.
+`alpha-<major>.<minor>` (e.g. `alpha-8.1`), the newest alpha build of one
+line, and `alpha-lines`, the lines that have such a pointer, one per row.
 `install.sh alpha-8.1` installs it, and the page shows one alpha card per
-line (newest three).
-
-`candidate` was a fourth channel, the newest GA build waiting for QA. It is
-folded into `alpha`. For one release the pipeline still writes `candidate` as
-a copy of `alpha`, so old install commands keep working; after that it is
-deleted.
+line (newest three), then the candidate card.
 
 Each version's `manifest.json` records `channel` (where the pipeline
 published it) and `published` (when, UTC). Promotion adds `promoted`
@@ -66,7 +62,7 @@ published it) and `published` (when, UTC). Promotion adds `promoted`
 
 ## Promotion
 
-When a release (GA) build on `alpha` passes its QA smoke test, run the **Promote to stable**
+When a candidate passes its QA smoke test, run the **Promote to stable**
 workflow (Actions tab, `promote-stable.yml`) with the variant (`default` or
 a name from `variants.json`), the version, and a note saying which QA
 result approved it (shown on the page). In MITS11, the `release-promote`

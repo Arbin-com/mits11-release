@@ -81,7 +81,7 @@ if (-not (Test-Admin)) {
 }
 
 if ($Target -and ($Target -notmatch '^(stable|latest|candidate|alpha|alpha-[0-9]+\.[0-9]+|nightly|[0-9]+\.[0-9]+\.[0-9]+([\-+][^\s]+)?)$')) {
-  Fail "Usage: install.ps1 [stable|latest|alpha|alpha-X.Y|nightly|VERSION] [-Auth auto|app|pat] [-Silent] [-NoBrowserOpen]. stable (or latest) is the release QA approved; alpha is what QA verifies (alpha-X.Y is the newest of one release line, e.g. alpha-8.1); nightly is for developers' own builds. candidate still works for one release as another name for alpha."
+  Fail "Usage: install.ps1 [stable|latest|candidate|alpha|alpha-X.Y|nightly|VERSION] [-Auth auto|app|pat] [-Silent] [-NoBrowserOpen]. stable (or latest) is the release QA approved; candidate is the newest release build, still waiting for QA; alpha is the newest alpha, beta or rc build (alpha-X.Y is the newest of one release line, e.g. alpha-8.1)."
 }
 
 $baseUrl = "https://arbin-com.github.io/mits11-release"

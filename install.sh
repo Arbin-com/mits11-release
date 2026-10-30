@@ -3,17 +3,17 @@ set -euo pipefail
 
 usage() {
   cat <<'EOF'
-Usage: install.sh [stable|latest|alpha|alpha-X.Y|nightly|VERSION] [--variant NAME] [--auth auto|app|pat] [--silent|--non-interactive] [--no-browser-open]
+Usage: install.sh [stable|latest|candidate|alpha|alpha-X.Y|nightly|VERSION] [--variant NAME] [--auth auto|app|pat] [--silent|--non-interactive] [--no-browser-open]
 Variants are listed in https://arbin-com.github.io/mits11-release/variants.json.
 Without --variant, the default (host) variant is installed.
-stable (or latest) is the release QA approved; alpha is what QA verifies (the
-newest release, alpha, beta or rc build; alpha-X.Y is the newest of one release
-line, e.g. alpha-8.1); nightly is for developers' own builds.
-(candidate still works for one release as another name for alpha.)
+stable (or latest) is the release QA approved; candidate is the newest release
+build, still waiting for QA; alpha is the newest alpha, beta or rc build
+(alpha-X.Y is the newest of one release line, e.g. alpha-8.1).
 Examples:
   install.sh
   install.sh alpha
   install.sh alpha-8.1
+  install.sh candidate
   install.sh --variant mp257
   install.sh alpha --variant mp257
   install.sh 5.0.1
@@ -857,7 +857,7 @@ if [[ "$target" =~ ^(stable|candidate|alpha|alpha-[0-9]+\.[0-9]+|nightly)$ ]]; t
   # A channel's pointer is missing until its first release (a new variant has
   # no stable release until one is promoted).
   if ! version="$(download "$index_url/$target")"; then
-    echo "No $target release${VARIANT:+ of the $VARIANT variant} yet. Try another channel (stable, alpha, nightly) or a version." >&2
+    echo "No $target release${VARIANT:+ of the $VARIANT variant} yet. Try another channel (stable, candidate, alpha, nightly) or a version." >&2
     exit 1
   fi
 else

@@ -18,6 +18,7 @@
       --code: #0d1117;
       --shadow: rgba(0, 0, 0, 0.35);
       --stable: #3fb950;
+      --candidate: #a371f7;
       --alpha: #d29922;
       --nightly: #8b949e;
       --hl-cmd: #79c0ff;
@@ -38,6 +39,7 @@
       --code: #f6f8fa;
       --shadow: rgba(20, 24, 30, 0.12);
       --stable: #1a7f37;
+      --candidate: #8250df;
       --alpha: #9a6700;
       --nightly: #57606a;
       --hl-cmd: #0550ae;
@@ -201,6 +203,7 @@
     }
 
     .badge.stable { color: var(--stable); }
+    .badge.candidate { color: var(--candidate); }
     .badge.alpha { color: var(--alpha); }
     .badge.nightly { color: var(--nightly); }
     .badge.kind { color: var(--muted); letter-spacing: 0.3px; }
@@ -435,8 +438,9 @@
       var DEFAULT_VARIANT = { name: "default", description: "Windows · Linux · macOS" };
       var CHANNELS = {
         stable: "Approved by QA. Use this one.",
-        alpha: "For QA to verify: release, alpha, beta and rc builds.",
-        nightly: "Developer builds."
+        candidate: "Newest release build, waiting for QA.",
+        alpha: "Preview of the next release.",
+        nightly: "Engineering builds."
       };
       // The alpha channel keeps one pointer per release line (alpha-8.1), so a
       // new line's builds do not hide another line QA is still verifying.
@@ -508,7 +512,7 @@
       }
 
       function loadVariant(variant) {
-        var names = ["stable", "nightly"];
+        var names = ["stable", "candidate", "nightly"];
         return Promise.all(names.map(function (c) { return loadChannel(variant, c); }).concat([loadAlphaLines(variant)])).then(function (builds) {
           var channels = {};
           names.forEach(function (c, i) { channels[c] = builds[i]; });
@@ -640,7 +644,7 @@
       function moreCommands(entry) {
         var variant = entry.variant;
         var channels = entry.channels;
-        var example = channels.stable || channels.alpha || channels.nightly;
+        var example = channels.stable || channels.candidate || channels.alpha || channels.nightly;
         var blocks = "";
         var scripts = scriptsFor(variant, example);
         var variantArgs = variant.name === "default" ? [] : ["--variant", variant.name];
@@ -667,7 +671,8 @@
         channels.alphaLines.forEach(function (entry) {
           html += card(variant, "alpha", entry.build, false, entry.line);
         });
-        html += '<details class="group"><summary>Developer builds (nightly)</summary><div class="stack">' +
+        html += card(variant, "candidate", channels.candidate, false);
+        html += '<details class="group"><summary>Engineering builds (nightly)</summary><div class="stack">' +
           card(variant, "nightly", channels.nightly, false) + "</div></details>";
         html += moreCommands(entry);
         return '<div class="panel" role="tabpanel" id="panel-' + esc(variant.name) + '" data-panel="' + esc(variant.name) + '">' + html + "</div>";

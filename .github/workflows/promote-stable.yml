@@ -1,6 +1,6 @@
 name: Promote to stable
 
-# Promotion: after an alpha-channel release (GA tag) passes its QA smoke test, make it the
+# Promotion: after a candidate release passes its QA smoke test, make it the
 # variant's stable release. Moves the variant's `stable` pointer (what
 # install.sh/install.ps1 install by default), records the promotion in the
 # version's manifest, and takes the GitHub release in MITS11-stable off
