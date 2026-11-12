@@ -973,7 +973,7 @@ SKIP_CHECKSUM_VERIFICATION=0
 resolve_checksum_command() {
   local checksum_tool=""
 
-  if [ "$os" = "darwin" ]; then
+  if [ "$os" = "osx" ]; then
     checksum_tool="shasum"
     if command -v shasum >/dev/null 2>&1; then
       checksum_cmd() { shasum -a 256 "$1" | cut -d' ' -f1; }
