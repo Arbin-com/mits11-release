@@ -108,11 +108,6 @@ else
   exit 1
 fi
 
-if ! command -v unzip >/dev/null 2>&1; then
-  echo "unzip is required but not installed" >&2
-  exit 1
-fi
-
 HAS_JQ=false
 if command -v jq >/dev/null 2>&1; then
   HAS_JQ=true
@@ -926,11 +921,33 @@ case "$cache_root" in
     ;;
 esac
 
-zip_name="mits11-${version}-${platform}.zip"
+# The package format follows the asset's name in the manifest: a .tar.zst is unpacked with tar, anything
+# else is a .zip as it always was (so every release published before .tar.zst installs unchanged).
+package_asset_name="${github_asset:-${url%%\?*}}"
+case "$package_asset_name" in
+  *.tar.zst)
+    package_ext="tar.zst"
+    for tool in tar zstd; do
+      if ! command -v "$tool" >/dev/null 2>&1; then
+        echo "$tool is required to unpack this package but is not installed" >&2
+        exit 1
+      fi
+    done
+    ;;
+  *)
+    package_ext="zip"
+    if ! command -v unzip >/dev/null 2>&1; then
+      echo "unzip is required but not installed" >&2
+      exit 1
+    fi
+    ;;
+esac
+
+package_file="mits11-${version}-${platform}.${package_ext}"
 timestamp="$(date +%Y%m%d%H%M%S)"
 extract_name="${timestamp}-$$"
 
-zip_path="$cache_root/$zip_name"
+package_path="$cache_root/$package_file"
 tmp_dir="$cache_root/$extract_name"
 extract_root="$tmp_dir"
 
@@ -962,8 +979,8 @@ cleanup() {
   if [ -n "${tmp_dir:-}" ] && [ -d "$tmp_dir" ]; then
     run_priv rm -rf "$tmp_dir"
   fi
-  if [ "$install_success" = "1" ] && [ -n "${zip_path:-}" ]; then
-    run_priv rm -f "$zip_path"
+  if [ "$install_success" = "1" ] && [ -n "${package_path:-}" ]; then
+    run_priv rm -f "$package_path"
   fi
 }
 trap cleanup EXIT
@@ -1000,27 +1017,27 @@ resolve_checksum_command() {
 
 resolve_checksum_command
 
-if [ -f "$zip_path" ]; then
+if [ -f "$package_path" ]; then
   if [ "$SKIP_CHECKSUM_VERIFICATION" = "1" ]; then
-    echo "Using cached package without checksum verification: $zip_path"
+    echo "Using cached package without checksum verification: $package_path"
   else
     echo "Verifying cached package checksum..."
-    actual="$(checksum_cmd "$zip_path")"
+    actual="$(checksum_cmd "$package_path")"
     if [ "$actual" = "$checksum" ]; then
-      echo "Using cached package: $zip_path"
+      echo "Using cached package: $package_path"
     else
-      run_priv rm -f "$zip_path"
+      run_priv rm -f "$package_path"
     fi
   fi
 fi
 
-if [ ! -f "$zip_path" ]; then
+if [ ! -f "$package_path" ]; then
   echo "Downloading MITS11 $version ($platform)..."
   if [ -z "$github_asset_api_url" ] && [ -n "${github_owner:-}" ] && [ -n "${github_repo:-}" ] && [ -n "${github_tag:-}" ] && [ -n "${github_asset:-}" ]; then
     github_asset_api_url="$(resolve_github_asset_api_url_from_metadata "$github_owner" "$github_repo" "$github_tag" "$github_asset")"
   fi
   if [ -n "$github_asset_api_url" ]; then
-    if ! download_github_asset "$github_asset_api_url" - | write_stream_to_file "$zip_path"; then
+    if ! download_github_asset "$github_asset_api_url" - | write_stream_to_file "$package_path"; then
       echo "Failed to download ${github_owner:-GitHub}/${github_repo:-release} asset ${github_asset:-for $platform}" >&2
       # The download runs in a subshell, so AUTH_KIND (set there) is not
       # visible here; report what was asked for and what was available.
@@ -1029,19 +1046,19 @@ if [ ! -f "$zip_path" ]; then
       exit 1
     fi
   else
-    if ! download_with_progress "$url" - | write_stream_to_file "$zip_path"; then
+    if ! download_with_progress "$url" - | write_stream_to_file "$package_path"; then
       echo "Failed to download $url" >&2
       exit 1
     fi
   fi
-  run_priv chmod 0644 "$zip_path"
+  run_priv chmod 0644 "$package_path"
   if [ "$SKIP_CHECKSUM_VERIFICATION" = "1" ]; then
     echo "Skipping checksum verification."
   else
     echo "Verifying downloaded package checksum..."
-    actual="$(checksum_cmd "$zip_path")"
+    actual="$(checksum_cmd "$package_path")"
     if [ "$actual" != "$checksum" ]; then
-      run_priv rm -f "$zip_path"
+      run_priv rm -f "$package_path"
       echo "Checksum verification failed" >&2
       exit 1
     fi
@@ -1052,7 +1069,12 @@ if [ -d "$tmp_dir" ]; then
   run_priv rm -rf "$tmp_dir"
 fi
 run_priv mkdir -p "$extract_root"
-run_priv unzip -q "$zip_path" -d "$extract_root"
+if [ "$package_ext" = "tar.zst" ]; then
+  # --no-same-owner: the files belong to whoever extracts them, not to the builder's uid.
+  run_priv tar --zstd --no-same-owner -xf "$package_path" -C "$extract_root"
+else
+  run_priv unzip -q "$package_path" -d "$extract_root"
+fi
 
 install_script="$(find "$extract_root" -type f -path "*/script/install.sh" | head -n 1)"
 if [ -z "$install_script" ]; then
