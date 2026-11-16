@@ -39,5 +39,10 @@
       "github_asset": "MITS11.8.1.0-linux-x64.zip",
       "sha256": "d2b0dd7238adf6e06692e8b207d65ec5fdbd478d6919484f4f5733261333c17d"
     }
+  },
+  "promoted": {
+    "at": "2026-11-16T09:44:03Z",
+    "by": "khanhtd36arb",
+    "run": "https://github.com/Arbin-com/mits11-release/actions/runs/43842365715"
   }
 }
