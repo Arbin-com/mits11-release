@@ -1,0 +1,43 @@
+{
+  "version": "9.0.0-alpha+build.20261117.1",
+  "channel": "alpha",
+  "published": "2026-11-17T15:53:38Z",
+  "platforms": {
+    "win-x64": {
+      "url": "https://github.com/Arbin-com/MITS11-develop/releases/download/9.0.0-alpha+build.20261117.1/MITS11.9.0.0-alpha+build.20261117.1-win-x64.zip",
+      "github_asset_api_url": "https://api.github.com/repos/Arbin-com/MITS11-develop/releases/assets/759575528",
+      "github_owner": "Arbin-com",
+      "github_repo": "MITS11-develop",
+      "github_tag": "9.0.0-alpha+build.20261117.1",
+      "github_asset": "MITS11.9.0.0-alpha+build.20261117.1-win-x64.zip",
+      "sha256": "503c5edbad9699897564cf9bc64d60865e517aa7eb9894820398a36697bde896"
+    },
+    "osx-arm64": {
+      "url": "https://github.com/Arbin-com/MITS11-develop/releases/download/9.0.0-alpha+build.20261117.1/MITS11.9.0.0-alpha+build.20261117.1-osx-arm64.zip",
+      "github_asset_api_url": "https://api.github.com/repos/Arbin-com/MITS11-develop/releases/assets/759619076",
+      "github_owner": "Arbin-com",
+      "github_repo": "MITS11-develop",
+      "github_tag": "9.0.0-alpha+build.20261117.1",
+      "github_asset": "MITS11.9.0.0-alpha+build.20261117.1-osx-arm64.zip",
+      "sha256": "32edf38c32c194620715b6985705fee927554b8384c738a7d1ce7be36691f1ad"
+    },
+    "osx-x64": {
+      "url": "https://github.com/Arbin-com/MITS11-develop/releases/download/9.0.0-alpha+build.20261117.1/MITS11.9.0.0-alpha+build.20261117.1-osx-x64.zip",
+      "github_asset_api_url": "https://api.github.com/repos/Arbin-com/MITS11-develop/releases/assets/759615770",
+      "github_owner": "Arbin-com",
+      "github_repo": "MITS11-develop",
+      "github_tag": "9.0.0-alpha+build.20261117.1",
+      "github_asset": "MITS11.9.0.0-alpha+build.20261117.1-osx-x64.zip",
+      "sha256": "317983f4ec3e734cf6d2a7d9fc69c8f3be9c5a889d846ff46d09f9ac5cb9e56a"
+    },
+    "linux-x64": {
+      "url": "https://github.com/Arbin-com/MITS11-develop/releases/download/9.0.0-alpha+build.20261117.1/MITS11.9.0.0-alpha+build.20261117.1-linux-x64.zip",
+      "github_asset_api_url": "https://api.github.com/repos/Arbin-com/MITS11-develop/releases/assets/759657773",
+      "github_owner": "Arbin-com",
+      "github_repo": "MITS11-develop",
+      "github_tag": "9.0.0-alpha+build.20261117.1",
+      "github_asset": "MITS11.9.0.0-alpha+build.20261117.1-linux-x64.zip",
+      "sha256": "818b54a125c753db434aa37eb700f02471a85df4fe42bc657e969773e4b75575"
+    }
+  }
+}
