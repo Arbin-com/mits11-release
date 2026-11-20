@@ -1,0 +1,43 @@
+{
+  "version": "8.1.4",
+  "channel": "candidate",
+  "published": "2026-11-20T12:03:29Z",
+  "platforms": {
+    "win-x64": {
+      "url": "https://github.com/Arbin-com/MITS11-stable/releases/download/8.1.4/MITS11.8.1.4-win-x64.zip",
+      "github_asset_api_url": "https://api.github.com/repos/Arbin-com/MITS11-stable/releases/assets/771466604",
+      "github_owner": "Arbin-com",
+      "github_repo": "MITS11-stable",
+      "github_tag": "8.1.4",
+      "github_asset": "MITS11.8.1.4-win-x64.zip",
+      "sha256": "a0495017f03119d6f75c8fd316234d4c4287803e4d1e672c9098e43617da2c91"
+    },
+    "linux-x64": {
+      "url": "https://github.com/Arbin-com/MITS11-stable/releases/download/8.1.4/MITS11.8.1.4-linux-x64.zip",
+      "github_asset_api_url": "https://api.github.com/repos/Arbin-com/MITS11-stable/releases/assets/771658070",
+      "github_owner": "Arbin-com",
+      "github_repo": "MITS11-stable",
+      "github_tag": "8.1.4",
+      "github_asset": "MITS11.8.1.4-linux-x64.zip",
+      "sha256": "40c714261eb347d236e9f1a6b95d514bf29ce9e48726b291a6a81d4fd3062fb9"
+    },
+    "osx-arm64": {
+      "url": "https://github.com/Arbin-com/MITS11-stable/releases/download/8.1.4/MITS11.8.1.4-osx-arm64.zip",
+      "github_asset_api_url": "https://api.github.com/repos/Arbin-com/MITS11-stable/releases/assets/771621740",
+      "github_owner": "Arbin-com",
+      "github_repo": "MITS11-stable",
+      "github_tag": "8.1.4",
+      "github_asset": "MITS11.8.1.4-osx-arm64.zip",
+      "sha256": "7e0274a8414f74b16a38d201d8c450a229f66dd251bd3f32856be255e0af36b4"
+    },
+    "osx-x64": {
+      "url": "https://github.com/Arbin-com/MITS11-stable/releases/download/8.1.4/MITS11.8.1.4-osx-x64.zip",
+      "github_asset_api_url": "https://api.github.com/repos/Arbin-com/MITS11-stable/releases/assets/771617869",
+      "github_owner": "Arbin-com",
+      "github_repo": "MITS11-stable",
+      "github_tag": "8.1.4",
+      "github_asset": "MITS11.8.1.4-osx-x64.zip",
+      "sha256": "c5b7eb7db02c8db2f5157e3ef105845205dd3e4cf5153320b32067c646bb39a1"
+    }
+  }
+}
