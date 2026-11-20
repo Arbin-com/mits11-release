@@ -39,5 +39,11 @@
       "github_asset": "MITS11.8.1.2-linux-x64.zip",
       "sha256": "cf41cecc4c156966b528128e5e6b3dcab523919293bbc7d6c90f802aa3377146"
     }
+  },
+  "promoted": {
+    "at": "2026-11-20T09:50:31Z",
+    "by": "khanhtd36arb",
+    "run": "https://github.com/Arbin-com/mits11-release/actions/runs/44714093687",
+    "note": "https://arbininstruments.atlassian.net/browse/MITS11-3464?focusedCommentId=72012"
   }
 }
