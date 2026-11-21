@@ -1,0 +1,25 @@
+{
+  "version": "9.0.0-alpha+build.20261121.2",
+  "channel": "alpha",
+  "published": "2026-11-21T14:25:37Z",
+  "platforms": {
+    "win-x64": {
+      "url": "https://github.com/Arbin-com/MITS11-develop/releases/download/9.0.0-alpha+build.20261121.2/MITS11.9.0.0-alpha+build.20261121.2-win-x64.zip",
+      "github_asset_api_url": "https://api.github.com/repos/Arbin-com/MITS11-develop/releases/assets/775781935",
+      "github_owner": "Arbin-com",
+      "github_repo": "MITS11-develop",
+      "github_tag": "9.0.0-alpha+build.20261121.2",
+      "github_asset": "MITS11.9.0.0-alpha+build.20261121.2-win-x64.zip",
+      "sha256": "e587ff060c81214bcfa6f5ae22364aa240e3045af143ec955cce2126480d28d7"
+    },
+    "linux-x64": {
+      "url": "https://github.com/Arbin-com/MITS11-develop/releases/download/9.0.0-alpha+build.20261121.2/MITS11.9.0.0-alpha+build.20261121.2-linux-x64.zip",
+      "github_asset_api_url": "https://api.github.com/repos/Arbin-com/MITS11-develop/releases/assets/775821967",
+      "github_owner": "Arbin-com",
+      "github_repo": "MITS11-develop",
+      "github_tag": "9.0.0-alpha+build.20261121.2",
+      "github_asset": "MITS11.9.0.0-alpha+build.20261121.2-linux-x64.zip",
+      "sha256": "d29bcb158f15dae04a5270add4bab7a7647e1b6fdf648f5150a45c86d26434b1"
+    }
+  }
+}
